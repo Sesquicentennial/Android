@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="15dp"
+    android:background="@color/tan">
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="@color/dark_gray_orange"/>
+
+    <TextView
+        android:id="@+id/secondary_text"
+        android:textSize="15sp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="15dp"
+        android:textColor="@color/dark_gray_orange"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <Button
+        android:id="@+id/btnOk"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/semi_transparent_dark_gray_orange"
+        android:textColor="@color/tan"
+        style="@android:style/Widget.Holo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="OK"/>
+
+</LinearLayout>
