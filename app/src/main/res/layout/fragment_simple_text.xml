@@ -3,7 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="15dp"
-    android:background="@color/tan">
+    android:background="@color/colorPrimary">
 
     <TextView
         android:id="@+id/text"
@@ -12,7 +12,7 @@
         android:paddingRight="15dp"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:textColor="@color/dark_gray_orange"/>
+        android:textColor="@color/colorAccent"/>
 
     <TextView
         android:id="@+id/secondary_text"
@@ -20,7 +20,7 @@
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
         android:paddingBottom="15dp"
-        android:textColor="@color/dark_gray_orange"
+        android:textColor="@color/colorPrimaryDark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -28,8 +28,8 @@
     <Button
         android:id="@+id/btnOk"
         android:layout_gravity="center_horizontal"
-        android:background="@color/semi_transparent_dark_gray_orange"
-        android:textColor="@color/tan"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorAccent"
         style="@android:style/Widget.Holo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

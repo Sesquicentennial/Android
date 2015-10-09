@@ -55,6 +55,7 @@ public class SimpleTextDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View v = inflater.inflate(R.layout.fragment_simple_text, container, false);
 
         TextView tv = (TextView) v.findViewById(R.id.text);

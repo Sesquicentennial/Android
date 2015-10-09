@@ -13,8 +13,15 @@
     <color name="semi_transparent_tan">#8BEDDFD3</color>
     <color name="hot_pink">#FF0066</color>
 
-    <color name ="colorPrimary">#747000</color>
-    <color name ="colorPrimaryDark">#300000</color>
-    <color name ="colorAccent">#EDDFD3</color>
+    <color name ="toolbar_background">#8B90CDD4</color>
+
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+
+    <color name = "colorSecondary">#abcdef</color>
+    <color name ="white">#FFFFFF</color>
+
 
 </resources>
