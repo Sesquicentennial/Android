@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,6 @@ import java.util.List;
 
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.Models.DummyLocations;
-import carleton150.edu.carleton.carleton150.Models.MyLocationListener;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
@@ -51,9 +51,10 @@ public class HistoryFragment extends Fragment {
 
     private static View view;
 
-    private MyLocationListener locationListener;
 
     private Handler mHandler;
+
+    private boolean zoomCamera = true;
     /**
      * Note that this may be null if the Google Play services APK is not
      * available.
@@ -71,6 +72,8 @@ public class HistoryFragment extends Fragment {
 
     MarkerOptions curLocationMarkerOptions;
     Marker curLocationMarker = null;
+
+    private MainActivity mainActivity;
 
 
     /**
@@ -98,6 +101,8 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mainActivity= (MainActivity) getActivity();
+
 
 
         if (getArguments() != null) {
@@ -124,8 +129,7 @@ public class HistoryFragment extends Fragment {
         txt_lat = (TextView) view.findViewById(R.id.txt_lat);
         txt_long = (TextView) view.findViewById(R.id.txt_long);
 
-        MainActivity mainActivity = (MainActivity) getActivity();
-        locationListener = mainActivity.getLocationListener();
+        mainActivity = (MainActivity) getActivity();
         mHandler = new Handler();
         getLocationUpdates();
 
@@ -211,16 +215,20 @@ public class HistoryFragment extends Fragment {
 
 
     Runnable mStatusChecker = new Runnable() {
-        private int mInterval = 100;
+        private int mInterval = 1000;
 
         @Override
         public void run() {
-            currentLocation = locationListener.getMyLocation();
+            currentLocation = mainActivity.getMLastLocation();
             if(currentLocation != null) {
+                setCamera();
                 txt_lat.setText("Latitude: " + currentLocation.getLatitude());
                 txt_long.setText("Longitude: " + currentLocation.getLongitude());
                 setUpMapIfNeeded();
                 //addCurLocationMarker();
+            }
+            else{
+                Log.i("location info", "current location is null");
             }
             mHandler.postDelayed(mStatusChecker, mInterval);
         }
@@ -266,12 +274,15 @@ public class HistoryFragment extends Fragment {
     }
 
     private void setCamera(){
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
-                .zoom(13)
-                .bearing(0)
-                .build();
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        if(currentLocation != null && zoomCamera) {
+            zoomCamera = false;
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
+                    .zoom(13)
+                    .bearing(0)
+                    .build();
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
     }
 
     @Override
