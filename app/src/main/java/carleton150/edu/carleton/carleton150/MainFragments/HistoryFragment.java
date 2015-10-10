@@ -1,7 +1,13 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.location.Location;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -46,10 +52,13 @@ public class HistoryFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private String NO_NETWORK_ERROR = "No network connected. Please connect and try again";
 
     private OnFragmentInteractionListener mListener;
 
     private static View view;
+
+    private boolean gettingLocationUpdates = false;
 
 
     private Handler mHandler;
@@ -109,6 +118,7 @@ public class HistoryFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
     @Override
@@ -131,10 +141,15 @@ public class HistoryFragment extends Fragment {
 
         mainActivity = (MainActivity) getActivity();
         mHandler = new Handler();
-        getLocationUpdates();
+
+        if(isConnectedToNetwork()) {
+            getLocationUpdates();
 
 
-        setUpMapIfNeeded(); // For setting up the MapFragment
+            setUpMapIfNeeded(); // For setting up the MapFragment
+        } else {
+            showAlertDialog(NO_NETWORK_ERROR);
+        }
 
         return view;
     }
@@ -196,6 +211,7 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         // TODO Auto-generated method stub
+
         if (mMap != null)
             setUpMap();
 
@@ -207,9 +223,11 @@ public class HistoryFragment extends Fragment {
             if (mMap != null)
                 setUpMap();
         }
+
     }
 
     public void getLocationUpdates(){
+        gettingLocationUpdates = true;
         mStatusChecker.run();
     }
 
@@ -235,6 +253,7 @@ public class HistoryFragment extends Fragment {
     };
 
     void stopLocationUpdates() {
+        gettingLocationUpdates = false;
         mHandler.removeCallbacks(mStatusChecker);
     }
 
@@ -289,5 +308,29 @@ public class HistoryFragment extends Fragment {
     public void onDestroyView() {
         stopLocationUpdates();
         super.onDestroyView();
+    }
+
+    private void showAlertDialog(String message){
+        mainActivity.showAlertDialog(message);
+    }
+
+    private boolean isConnectedToNetwork(){
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) mainActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(isConnectedToNetwork()) {
+            getLocationUpdates();
+
+
+            setUpMapIfNeeded(); // For setting up the MapFragment
+        } else {
+            showAlertDialog(NO_NETWORK_ERROR);
+        }
     }
 }
