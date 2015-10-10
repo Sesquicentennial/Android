@@ -1,27 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="transparent">#00000000</color>
-    <color name="white_orange">#E8C4A7</color>
-    <color name ="dark_red_orange">#300000</color>
-    <color name = "dark_gray_orange">#41321E</color>
-    <color name="bright_orange">#DC7D32</color>
-    <color name="transparent_dark_gray_orange">#4B41321E</color>
-    <color name="transparent_bright_orange">#4BDC7D32</color>
-    <color name="semi_transparent_dark_gray_orange">#8B41321E</color>
-    <color name="barely_transparent_dark_gray_orange">#AB41321E</color>
-    <color name="tan">#EDDFD3</color>
-    <color name="semi_transparent_tan">#8BEDDFD3</color>
-    <color name="hot_pink">#FF0066</color>
-
-    <color name ="toolbar_background">#8B90CDD4</color>
-
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
 
 
-    <color name = "colorSecondary">#abcdef</color>
+    <color name ="toolbar_background">#182142</color>
+    <color name = "darkAccent">#121831</color>
+
+    <color name="colorPrimary">#1D294B</color>
+    <color name="colorPrimaryDark">#121831</color>
+    <color name="colorAccent">#D3BB39</color>
+
+
+    <color name = "colorSecondary">#F7E042</color>
     <color name ="white">#FFFFFF</color>
+    <color name="windowBackground">#e4decf</color>
+    <color name="black">#181823</color>
 
 
 </resources>
