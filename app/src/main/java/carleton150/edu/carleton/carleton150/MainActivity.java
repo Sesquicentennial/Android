@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     // Location updates intervals in sec
     private static int UPDATE_INTERVAL = 3000; // 3 sec
     private static int FASTEST_INTERVAL = 1000; // 1 sec
-    private static int DISPLACEMENT = 1; // 1 meter
+    private static int DISPLACEMENT = 0; // 1 meter
 
 
     @Override
@@ -62,6 +62,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         // First we need to check availability of play services
         if (checkPlayServices()) {
 
+            Toast.makeText(getApplicationContext(),
+                    "play services available.", Toast.LENGTH_LONG)
+                    .show();
             // Building the GoogleApi client
             buildGoogleApiClient();
 
@@ -148,12 +151,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onConnected(Bundle bundle) {
+        Toast.makeText(getApplicationContext(),
+                "connected.", Toast.LENGTH_LONG)
+                .show();
         // Once connected with google api, get the location
         connectedSuccessfully = true;
         mLastLocation = LocationServices.FusedLocationApi
                 .getLastLocation(mGoogleApiClient);
 
-        if (!mRequestingLocationUpdates) {
+        if (mRequestingLocationUpdates) {
             startLocationUpdates();
         }
     }
@@ -170,6 +176,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     protected synchronized void buildGoogleApiClient() {
+        Toast.makeText(getApplicationContext(),
+                "building client", Toast.LENGTH_LONG)
+                .show();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -196,25 +205,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
         return true;
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if(!connectedSuccessfully){
-            if (checkPlayServices()) {
-
-                // Building the GoogleApi client
-                buildGoogleApiClient();
-
-                createLocationRequest();
-
-                mGoogleApiClient.connect();
-            }
-        }
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.connect();
-        }
-    }
+    
 
     @Override
     public void onLocationChanged(Location location) {
@@ -238,6 +229,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * Starting the location updates
      */
     protected void startLocationUpdates() {
+        Toast.makeText(getApplicationContext(),
+                "Started l updates.", Toast.LENGTH_LONG)
+                .show();
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
 
