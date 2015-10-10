@@ -1,5 +1,7 @@
 package carleton150.edu.carleton.carleton150;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -29,9 +31,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public static FragmentManager fragmentManager;
 
 
-
-
-
     // LogCat tag
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -46,13 +45,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private boolean mRequestingLocationUpdates = true;
 
     private LocationRequest mLocationRequest;
+    private boolean connectedSuccessfully = false;
 
     // Location updates intervals in sec
     private static int UPDATE_INTERVAL = 3000; // 3 sec
-    private static int FASTEST_INTERVAL = 100; // 1 sec
-    private static int DISPLACEMENT = 0; // 1 meter
-
-
+    private static int FASTEST_INTERVAL = 1000; // 1 sec
+    private static int DISPLACEMENT = 1; // 1 meter
 
 
     @Override
@@ -60,18 +58,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.i("Location info g:", "about to check play services");
-        Toast.makeText(getApplicationContext(),
-                "about to check play services.", Toast.LENGTH_LONG)
-                .show();
 
         // First we need to check availability of play services
         if (checkPlayServices()) {
-
-            Toast.makeText(getApplicationContext(),
-                    "play services available.", Toast.LENGTH_LONG)
-                    .show();
-            Log.i("Location info g:", "play services availabel. building client and creating request");
 
             // Building the GoogleApi client
             buildGoogleApiClient();
@@ -82,18 +71,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
 
 
-
-
         fragmentManager = getSupportFragmentManager();
-
-
-
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
-        if(getSupportActionBar()!=null) {
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         }
@@ -144,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -166,10 +149,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onConnected(Bundle bundle) {
         // Once connected with google api, get the location
+        connectedSuccessfully = true;
         mLastLocation = LocationServices.FusedLocationApi
                 .getLastLocation(mGoogleApiClient);
 
-        if (mRequestingLocationUpdates) {
+        if (!mRequestingLocationUpdates) {
             startLocationUpdates();
         }
     }
@@ -181,11 +165,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Toast.makeText(getApplicationContext(),
-                "connection failed.", Toast.LENGTH_LONG)
-                .show();
-        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = "
-                + connectionResult.getErrorCode());
+        showAlertDialog("Connection to play services failed with message: " +
+                connectionResult.getErrorMessage() + "\nCode: " + connectionResult.getErrorCode());
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -197,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     /**
      * Method to verify google play services on the device
-     * */
+     */
     private boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil
                 .isGooglePlayServicesAvailable(this);
@@ -219,6 +200,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onStart() {
         super.onStart();
+        if(!connectedSuccessfully){
+            if (checkPlayServices()) {
+
+                // Building the GoogleApi client
+                buildGoogleApiClient();
+
+                createLocationRequest();
+
+                mGoogleApiClient.connect();
+            }
+        }
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
@@ -226,22 +218,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.i("Location info g:", "location changed");
-        Log.i("Location info g:", "new lat:"+location.getLatitude());
         // Assign the new location
         mLastLocation = location;
-
-        Toast.makeText(getApplicationContext(), "Location changed!",
-                Toast.LENGTH_SHORT).show();
-
-
     }
-
 
 
     /**
      * Creating location request object
-     * */
+     */
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(UPDATE_INTERVAL);
@@ -252,12 +236,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     /**
      * Starting the location updates
-     * */
+     */
     protected void startLocationUpdates() {
-        Toast.makeText(getApplicationContext(),
-                "startLUpdates.", Toast.LENGTH_LONG)
-                .show();
-        Log.i("Location info g:", "location updates started");
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
 
@@ -275,7 +255,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 mGoogleApiClient, this);
     }
 
-    public Location getMLastLocation(){
+    public Location getMLastLocation() {
         return mLastLocation;
+    }
+
+    public void showAlertDialog(String message) {
+
+        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        alertDialog.setTitle("Alert");
+        alertDialog.setMessage(message);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,"OK",
+                new DialogInterface.OnClickListener()
+
+        {
+            public void onClick (DialogInterface dialog,int which){
+            dialog.dismiss();
+        }
+        }
+
+        );
+        alertDialog.show();
     }
 }
