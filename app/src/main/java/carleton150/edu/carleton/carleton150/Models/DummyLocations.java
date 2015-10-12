@@ -28,4 +28,18 @@ public class DummyLocations {
         return locations;
 
     }
+
+    public ArrayList<LatLng> getCircleCenters(){
+        LatLng point1 = new LatLng(44.46022369, -93.15448424);
+        LatLng point2 = new LatLng(44.46022369, -93.15748424);
+        LatLng point3 = new LatLng(44.46522369, -93.15748424);
+        LatLng point4 = new LatLng(44.46522369, -93.15448424);
+
+        ArrayList<LatLng> centerPoints = new ArrayList<>();
+        centerPoints.add(point1);
+        centerPoints.add(point2);
+        centerPoints.add(point3);
+        centerPoints.add(point4);
+        return centerPoints;
+    }
 }
