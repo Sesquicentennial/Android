@@ -5,8 +5,11 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
+import carleton150.edu.carleton.carleton150.GeoPoint;
+
 /**
  * Created by haleyhinze on 10/4/15.
+ *
  */
 public class DummyLocations {
 
@@ -29,17 +32,23 @@ public class DummyLocations {
 
     }
 
-    public ArrayList<LatLng> getCircleCenters(){
-        LatLng point1 = new LatLng(44.46022369, -93.15448424);
-        LatLng point2 = new LatLng(44.46022369, -93.15748424);
-        LatLng point3 = new LatLng(44.46522369, -93.15748424);
-        LatLng point4 = new LatLng(44.46522369, -93.15448424);
+    public ArrayList<GeoPoint> getCircleCenters(){
 
-        ArrayList<LatLng> centerPoints = new ArrayList<>();
-        centerPoints.add(point1);
-        centerPoints.add(point2);
-        centerPoints.add(point3);
-        centerPoints.add(point4);
+        GeoPoint recCenter = new GeoPoint(new LatLng(44.46430023, -93.14958939), "Recreation Center", 40, 60);
+        GeoPoint cmc = new GeoPoint(new LatLng(44.46234939, -93.15400795), "CMC", 30, 40);
+        GeoPoint goodhue = new GeoPoint(new LatLng(44.46260362, -93.14990513), "Goodhue", 40, 60);
+        GeoPoint laird = new GeoPoint(new LatLng(44.46217483, -93.15392314), "Laird", 20, 30);
+        GeoPoint collier = new GeoPoint(new LatLng(44.459351, -93.158082), "Collier House", 15, 25);
+
+
+        ArrayList<GeoPoint> centerPoints = new ArrayList<>();
+
+        centerPoints.add(recCenter);
+        centerPoints.add(cmc);
+        centerPoints.add(goodhue);
+        centerPoints.add(laird);
+        centerPoints.add(collier);
+
         return centerPoints;
     }
 }
