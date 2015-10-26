@@ -2,21 +2,22 @@ package carleton150.edu.carleton.carleton150;
 
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.service.carrier.CarrierMessagingService;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -30,49 +31,41 @@ import com.google.android.gms.location.LocationServices;
 
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import carleton150.edu.carleton.carleton150.MainFragments.MyFragmentPagerAdapter;
 import carleton150.edu.carleton.carleton150.Models.DummyLocations;
 import carleton150.edu.carleton.carleton150.Models.GeofenceErrorMessages;
-import carleton150.edu.carleton.carleton150.Models.GeofencingTransitionsIntentService;
 
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status> {
 
-
+    //things for managing fragments
     public static FragmentManager fragmentManager;
-
-
     // LogCat tag
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    //things for location
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
-
     private Location mLastLocation;
-
     // Google client to interact with Google API
     private GoogleApiClient mGoogleApiClient;
-
     // boolean flag to toggle periodic location updates
     private boolean mRequestingLocationUpdates = true;
-
     private LocationRequest mLocationRequest;
     private boolean connectedSuccessfully = false;
-
-    // Location updates intervals in sec
+    // Location updates intervals in milliseconds
     private static int UPDATE_INTERVAL = 3000; // 3 sec
     private static int FASTEST_INTERVAL = 1000; // 1 sec
     private static int DISPLACEMENT = 0; // 1 meter
 
-
+    //things for detecting geofence entry
     protected ArrayList<Geofence> mGeofenceList;
-    private boolean mGeofencesAdded;
+    private boolean mGeofencesAdded = false;
     private PendingIntent mGeofencePendingIntent;
+    private boolean removingAllGeofences = false;
 
 
 
@@ -81,44 +74,35 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        // First we need to check availability of play services
+        // check availability of play services for location data and geofencing
         if (checkPlayServices()) {
-
             Toast.makeText(getApplicationContext(),
                     "play services available.", Toast.LENGTH_LONG)
                     .show();
-            // Building the GoogleApi client
             buildGoogleApiClient();
-
             createLocationRequest();
-
             mGoogleApiClient.connect();
+        } else {
+            //TODO : display message
         }
-
 
         mGeofenceList = new ArrayList<Geofence>();
         mGeofencePendingIntent = null;
         populateGeofenceList();
 
-
+        //managing fragments and UI
         fragmentManager = getSupportFragmentManager();
-
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         }
-
-
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("History"));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_action_history));
+        //tabLayout.addTab(tabLayout.newTab().setText("History"));
         tabLayout.addTab(tabLayout.newTab().setText("Social"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         final MyFragmentPagerAdapter adapter = new MyFragmentPagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
@@ -140,7 +124,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             }
         });
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mMessageReceiver, new IntentFilter("GeofenceInfo"));
     }
+
+
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            String geofenceInfo = intent.getStringExtra("geofenceDetails");
+
+            Toast.makeText(getApplicationContext(),
+                    "GEOFENCE! " + geofenceInfo, Toast.LENGTH_LONG)
+                    .show();
+
+            //  ... react to local broadcast message
+        }
+    };
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -190,6 +194,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
         }
+
+        addGeofences();
     }
 
     @Override
@@ -216,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /**
      * Method to verify google play services on the device
      */
-    private boolean checkPlayServices() {
+    public boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil
                 .isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
@@ -277,10 +283,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 mGoogleApiClient, this);
     }
 
+    /**
+     * gets most recent location stored on device
+     * @return
+     */
     public Location getMLastLocation() {
         return mLastLocation;
     }
 
+    /**
+     * shows an alert dialog with the specified message
+     * @param message
+     */
     public void showAlertDialog(String message) {
 
         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
@@ -322,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * Adds geofences, which sets alerts to be notified when the device enters or exits one of the
      * specified geofences. Handles the success or failure results returned by addGeofences().
      */
-    public void addGeofencesButtonHandler(View view) {
+    public void addGeofences() {
         if (!mGoogleApiClient.isConnected()) {
             Toast.makeText(this, getString(R.string.not_connected), Toast.LENGTH_SHORT).show();
             return;
@@ -333,8 +347,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     mGoogleApiClient,
                     // The GeofenceRequest object.
                     getGeofencingRequest(),
-                    // A pending intent that that is reused when calling removeGeofences(). This
-                    // pending intent is used to generate an intent when a matched geofence
+                    // This pending intent is used to generate an intent when a matched geofence
                     // transition is observed.
                     getGeofencePendingIntent()
             ).setResultCallback(this); // Result processed in onResult().
@@ -361,8 +374,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     public void onResult(Status status) {
         if (status.isSuccess()) {
+
             // Update state and save in shared preferences.
             mGeofencesAdded = !mGeofencesAdded;
+
 
 
             Toast.makeText(
@@ -399,26 +414,24 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
     /**
-     * This sample hard codes geofence data. A real app might dynamically create geofences based on
-     * the user's location.
+     * Gets hard-coded geofences from DummyLocations
      */
     public void populateGeofenceList() {
         DummyLocations dummyLocations = new DummyLocations();
-
-        ArrayList<LatLng> centerPoints = dummyLocations.getCircleCenters();
+        ArrayList<GeoPoint> centerPoints = dummyLocations.getCircleCenters();
 
         for(int i = 0; i<centerPoints.size(); i++){
 
             mGeofenceList.add(new Geofence.Builder()
                     // Set the request ID of the geofence. This is a string to identify this
                     // geofence.
-                    .setRequestId("point" + i)
+                    .setRequestId(centerPoints.get(i).getName())
 
                             // Set the circular region of this geofence.
                     .setCircularRegion(
-                            centerPoints.get(i).latitude,
-                            centerPoints.get(i).longitude,
-                            1000
+                            centerPoints.get(i).getLatLng().latitude,
+                            centerPoints.get(i).getLatLng().longitude,
+                            centerPoints.get(i).getSmallRadius()
                     )
 
                             // Set the expiration duration of the geofence. This geofence gets automatically
@@ -426,11 +439,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     .setExpirationDuration(Geofence.NEVER_EXPIRE)
 
                             // Set the transition types of interest. Alerts are only generated for these
-                            // transition. We track entry transitions in this sample.
+                            // transition. We track entry and exit transitions in this sample.
                     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_EXIT)
 
                             // Create the geofence.
                     .build());
         }
+    }
+
+    /**
+     * Tells google play services api that we don't want to listen for the geofences anymore.
+     * This is necessary because Google play services won't remove geofences automatically
+     * when they are removed from the geofence list in the app.
+     */
+    private void removeAllGeofences(){
+        removingAllGeofences = true;
+        mGeofencesAdded = false;
+        LocationServices.GeofencingApi.removeGeofences(
+                mGoogleApiClient,
+                // This is the same pending intent that was used in addGeofences().
+                getGeofencePendingIntent()
+        ).setResultCallback(this); // Result processed in onResult().
     }
 }

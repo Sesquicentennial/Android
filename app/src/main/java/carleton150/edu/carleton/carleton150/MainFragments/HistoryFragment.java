@@ -29,8 +29,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import carleton150.edu.carleton.carleton150.GeoPoint;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.Models.DummyLocations;
 import carleton150.edu.carleton.carleton150.R;
@@ -112,8 +114,6 @@ public class HistoryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mainActivity= (MainActivity) getActivity();
 
-
-
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -130,12 +130,7 @@ public class HistoryFragment extends Fragment {
             return null;
         }
 
-
-
-
-
         view = (RelativeLayout) inflater.inflate(R.layout.fragment_history, container, false);
-        // Passing harcoded values for latitude & longitude. Please change as per your need. This is just used to drop a Marker on the Map
         txt_lat = (TextView) view.findViewById(R.id.txt_lat);
         txt_long = (TextView) view.findViewById(R.id.txt_long);
 
@@ -144,8 +139,6 @@ public class HistoryFragment extends Fragment {
 
         if(isConnectedToNetwork()) {
             getLocationUpdates();
-
-
             setUpMapIfNeeded(); // For setting up the MapFragment
         } else {
             showAlertDialog(NO_NETWORK_ERROR);
@@ -180,16 +173,22 @@ public class HistoryFragment extends Fragment {
 
 
     /***** Sets up the map if it is possible to do so *****/
-    public void setUpMapIfNeeded() {
+    public boolean setUpMapIfNeeded() {
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
             mMap = ((SupportMapFragment) getChildFragmentManager()
                     .findFragmentById(R.id.location_map)).getMap();
             // Check if we were successful in obtaining the map.
-            if (mMap != null)
+            if (mMap != null) {
                 setUpMap();
+                return true;
+            } else {
+                //TODO: display message saying unable to set up map
+                return false;
+            }
         }
+        return true;
     }
 
     /**
@@ -200,7 +199,7 @@ public class HistoryFragment extends Fragment {
      * is not null.
      */
     private void setUpMap() {
-        // For showing a move to my loction button
+        // For showing a move to my location button
         mMap.setMyLocationEnabled(true);
 
         //addCurLocationMarker();
@@ -210,20 +209,11 @@ public class HistoryFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
 
         if (mMap != null)
             setUpMap();
 
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) MainActivity.fragmentManager
-                    .findFragmentById(R.id.location_map)).getMap(); // getMap is deprecated
-            // Check if we were successful in obtaining the map.
-            if (mMap != null)
-                setUpMap();
-        }
-
+        setUpMapIfNeeded();
     }
 
     public void getLocationUpdates(){
@@ -271,25 +261,17 @@ public class HistoryFragment extends Fragment {
 
     private void addCampusOverlays(){
         DummyLocations dummyLocations = new DummyLocations();
-        List<List> locations = dummyLocations.getLocationsArray();
-        for(int i = 0; i<locations.size(); i++){
-            PolygonOptions myPolygon = new PolygonOptions();
-            for(int j = 0; j<locations.get(i).size(); j++){
-                LatLng point = (LatLng)locations.get(i).get(j);
-                myPolygon.add(point);
-            }
-            myPolygon.fillColor(getResources().getColor(R.color.colorAccent))
-                    .strokeWidth(4).strokeColor(R.color.colorPrimary);
-            mMap.addPolygon(myPolygon);
-        }
 
-        CircleOptions myCircleOptions = new CircleOptions();
-        myCircleOptions.center(new LatLng(44.45997433, -93.15474433));
-        myCircleOptions.radius(10.0);
-        myCircleOptions.fillColor(R.color.colorAccent);
-        myCircleOptions.strokeColor(R.color.colorPrimary);
-        myCircleOptions.strokeWidth(3);
-        mMap.addCircle(myCircleOptions);
+        ArrayList<GeoPoint> geofenceCenters = dummyLocations.getCircleCenters();
+        for(int i = 0; i<geofenceCenters.size(); i++){
+            CircleOptions myCircleOptions = new CircleOptions();
+            myCircleOptions.center(geofenceCenters.get(i).getLatLng());
+            myCircleOptions.radius(geofenceCenters.get(i).getSmallRadius());
+            myCircleOptions.fillColor(R.color.colorPrimarySemiTransparent);
+            myCircleOptions.strokeColor(R.color.yellowAccent);
+            myCircleOptions.strokeWidth(5);
+            mMap.addCircle(myCircleOptions);
+        }
     }
 
     private void setCamera(){
@@ -314,7 +296,7 @@ public class HistoryFragment extends Fragment {
         mainActivity.showAlertDialog(message);
     }
 
-    private boolean isConnectedToNetwork(){
+    public boolean isConnectedToNetwork(){
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) mainActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -326,9 +308,7 @@ public class HistoryFragment extends Fragment {
         super.onResume();
         if(isConnectedToNetwork()) {
             getLocationUpdates();
-
-
-            setUpMapIfNeeded(); // For setting up the MapFragment
+            setUpMapIfNeeded();
         } else {
             showAlertDialog(NO_NETWORK_ERROR);
         }

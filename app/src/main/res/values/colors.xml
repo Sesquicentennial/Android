@@ -8,6 +8,8 @@
     <color name="colorPrimary">#1D294B</color>
     <color name="colorPrimaryDark">#121831</color>
     <color name="colorAccent">#D3BB39</color>
+    <color name="colorPrimarySemiTransparent">#771D294B</color>
+    <color name="yellowAccent">#D3BB39</color>
 
 
     <color name = "colorSecondary">#F7E042</color>
