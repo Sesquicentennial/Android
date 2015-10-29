@@ -119,10 +119,20 @@ public class GeofencingTransitionsIntentService extends IntentService {
         for (Geofence geofence : triggeringGeofences) {
             triggeringGeofencesIdsList.add(geofence.getRequestId());
         }
-        String triggeringGeofencesIdsString = TextUtils.join(", ",  triggeringGeofencesIdsList);
+        String triggeringGeofencesIdsString = TextUtils.join(", ", triggeringGeofencesIdsList);
 
         return geofenceTransitionString + ": " + triggeringGeofencesIdsString;
     }
+
+    private String[] getGeofenceNames(List<Geofence> triggeringGeofences){
+        String[] geofenceNames = new String[triggeringGeofences.size()];
+        for(int i = 0; i<triggeringGeofences.size(); i++){
+            Geofence geofence = triggeringGeofences.get(i);
+            geofenceNames[i] = geofence.getRequestId();
+        }
+        return geofenceNames;
+    }
+
 
     /**
      * Posts a notification in the notification bar when a transition is detected.
@@ -180,9 +190,8 @@ public class GeofencingTransitionsIntentService extends IntentService {
     }
 
     private void sendGeofenceBroadcast(Intent intent, int geofenceTransition, List<Geofence> triggeringGeofences){
-        intent.putExtra("geofenceDetails", getGeofenceTransitionDetails(this,
-                geofenceTransition,
-                triggeringGeofences));
+        intent.putExtra("transitionType", geofenceTransition);
+        intent.putExtra("geofenceNames", getGeofenceNames(triggeringGeofences));
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
