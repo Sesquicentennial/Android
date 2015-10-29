@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
@@ -18,6 +19,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -33,7 +36,9 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.MyFragmentPagerAdapter;
 import carleton150.edu.carleton.carleton150.Models.DummyLocations;
 import carleton150.edu.carleton.carleton150.Models.GeofenceErrorMessages;
@@ -66,6 +71,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private boolean mGeofencesAdded = false;
     private PendingIntent mGeofencePendingIntent;
     private boolean removingAllGeofences = false;
+    private Fragment mCurrentFragment = null;
+    private MyFragmentPagerAdapter adapter;
+    private ArrayList<GeoPoint> curGeofences = new ArrayList<GeoPoint>();
+    private HashMap<String, GeoPoint> allGeopointsByName = new HashMap<String, GeoPoint>();
 
 
 
@@ -104,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         tabLayout.addTab(tabLayout.newTab().setText("Social"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        final MyFragmentPagerAdapter adapter = new MyFragmentPagerAdapter
+        adapter = new MyFragmentPagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -112,6 +121,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
+                handleGeofenceChange();
+                //displayGeofenceInfo();
+
             }
 
             @Override
@@ -135,13 +147,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            String geofenceInfo = intent.getStringExtra("geofenceDetails");
-
+            String[] geofenceNames = intent.getStringArrayExtra("geofenceNames");
+            int transitionType = intent.getIntExtra("transitionType", -1);
+            updateCurrentGeofences(geofenceNames, transitionType);
+            //displayGeofenceInfo();
+            handleGeofenceChange();
             Toast.makeText(getApplicationContext(),
-                    "GEOFENCE! " + geofenceInfo, Toast.LENGTH_LONG)
+                    "GEOFENCE stuff! ", Toast.LENGTH_LONG)
                     .show();
 
-            //  ... react to local broadcast message
         }
     };
 
@@ -300,14 +314,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
         alertDialog.setTitle("Alert");
         alertDialog.setMessage(message);
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,"OK",
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                 new DialogInterface.OnClickListener()
 
-        {
-            public void onClick (DialogInterface dialog,int which){
-            dialog.dismiss();
-        }
-        }
+                {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                }
 
         );
         alertDialog.show();
@@ -420,8 +434,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         DummyLocations dummyLocations = new DummyLocations();
         ArrayList<GeoPoint> centerPoints = dummyLocations.getCircleCenters();
 
-        for(int i = 0; i<centerPoints.size(); i++){
-
+        for(int i = 0; i<centerPoints.size(); i++) {
+            allGeopointsByName.put(centerPoints.get(i).getName(), centerPoints.get(i));
             mGeofenceList.add(new Geofence.Builder()
                     // Set the request ID of the geofence. This is a string to identify this
                     // geofence.
@@ -441,7 +455,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                             // Set the transition types of interest. Alerts are only generated for these
                             // transition. We track entry and exit transitions in this sample.
                     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-                            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_EXIT)
+                            //.setTransitionTypes(Geofence.GEOFENCE_TRANSITION_EXIT)
 
                             // Create the geofence.
                     .build());
@@ -461,5 +475,65 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 // This is the same pending intent that was used in addGeofences().
                 getGeofencePendingIntent()
         ).setResultCallback(this); // Result processed in onResult().
+    }
+
+    private void handleGeofenceChange(){
+        MainFragment curFragment = adapter.getCurFragment();
+        curFragment.handleGeofenceChange(curGeofences);
+    }
+
+    /*private void displayGeofenceInfo(){
+        Fragment curFragment = adapter.getCurFragment();
+        TextView locationView = (TextView) curFragment.getView().findViewById(R.id.txt_geopoint_info);
+        String displayString = "Currently in geofences for: ";
+        boolean showString = false;
+        for(int i = 0; i<curGeofences.size(); i++){
+            displayString += curGeofences.get(i).getName() + " ";
+            showString = true;
+        }
+        if(locationView != null && showString){
+            locationView.setText(displayString);
+        } else if (locationView != null){
+            locationView.setText("");
+        }
+    }
+*/
+
+    /**
+     * Maps geofence transition types to their human-readable equivalents.
+     *
+     * @param transitionType    A transition type constant defined in Geofence
+     * @return                  A String indicating the type of transition
+     */
+    private String getTransitionString(int transitionType) {
+        switch (transitionType) {
+            case Geofence.GEOFENCE_TRANSITION_ENTER:
+                return "entered geofence!";
+            case Geofence.GEOFENCE_TRANSITION_EXIT:
+                return "exited geofence!";
+
+            default:
+                return "unknown geofence transition";
+        }
+    }
+
+    private void updateCurrentGeofences(String[] geofenceNames, int transitionType){
+        if(transitionType == Geofence.GEOFENCE_TRANSITION_ENTER){
+            curGeofences.clear();
+        }
+        for(int i = 0; i<geofenceNames.length; i++){
+            if(allGeopointsByName.containsKey(geofenceNames[i])){
+                switch (transitionType) {
+                    case Geofence.GEOFENCE_TRANSITION_ENTER:
+                        curGeofences.add(allGeopointsByName.get(geofenceNames[i]));
+                    case Geofence.GEOFENCE_TRANSITION_EXIT:
+                        if(curGeofences.contains(allGeopointsByName.get(geofenceNames[i]))){
+                            curGeofences.remove(allGeopointsByName.get(geofenceNames[i]));
+                        }else{
+                            //Shouldn't ever happen...
+                        }
+                }
+            }
+        }
     }
 }

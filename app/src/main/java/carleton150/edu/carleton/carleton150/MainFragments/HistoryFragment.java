@@ -45,7 +45,7 @@ import carleton150.edu.carleton.carleton150.R;
  * Use the {@link HistoryFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HistoryFragment extends Fragment {
+public class HistoryFragment extends MainFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -62,6 +62,7 @@ public class HistoryFragment extends Fragment {
 
     private boolean gettingLocationUpdates = false;
 
+    private ArrayList<GeoPoint> curGeofences;
 
     private Handler mHandler;
 
@@ -143,6 +144,9 @@ public class HistoryFragment extends Fragment {
         } else {
             showAlertDialog(NO_NETWORK_ERROR);
         }
+
+        //TODO: remove this after testing
+        queryDatabase();
 
         return view;
     }
@@ -233,7 +237,7 @@ public class HistoryFragment extends Fragment {
                 txt_lat.setText("Latitude: " + currentLocation.getLatitude());
                 txt_long.setText("Longitude: " + currentLocation.getLongitude());
                 setUpMapIfNeeded();
-                //addCurLocationMarker();
+                addCurLocationMarker();
             }
             else{
                 Log.i("location info", "current location is null");
@@ -247,7 +251,7 @@ public class HistoryFragment extends Fragment {
         mHandler.removeCallbacks(mStatusChecker);
     }
 
-   /* private void addCurLocationMarker(){
+   private void addCurLocationMarker(){
         if (currentLocation != null){
             if(curLocationMarker!=null) {
                 curLocationMarker.remove();
@@ -257,7 +261,7 @@ public class HistoryFragment extends Fragment {
                     .title("Your Location");
             curLocationMarker = mMap.addMarker(curLocationMarkerOptions);
         }
-    }*/
+    }
 
     private void addCampusOverlays(){
         DummyLocations dummyLocations = new DummyLocations();
@@ -312,5 +316,36 @@ public class HistoryFragment extends Fragment {
         } else {
             showAlertDialog(NO_NETWORK_ERROR);
         }
+    }
+
+    @Override
+    public void handleGeofenceChange(ArrayList<GeoPoint> currentGeofences) {
+        super.handleGeofenceChange(currentGeofences);
+        curGeofences = currentGeofences;
+        displayGeofenceInfo();
+
+    }
+
+    private void displayGeofenceInfo(){
+
+        TextView locationView = (TextView) view.findViewById(R.id.txt_geopoint_info);
+        String displayString = "Currently in geofences for: ";
+        boolean showString = false;
+        for(int i = 0; i<curGeofences.size(); i++){
+            displayString += curGeofences.get(i).getName() + " ";
+            showString = true;
+        }
+        if(showString){
+            locationView.setText(displayString);
+        } else {
+            locationView.setText("");
+        }
+    }
+
+    @Override
+    public void handleResult(String result) {
+        super.handleResult(result);
+        TextView queryResult = (TextView) view.findViewById(R.id.txt_query_result);
+        queryResult.setText(result);
     }
 }

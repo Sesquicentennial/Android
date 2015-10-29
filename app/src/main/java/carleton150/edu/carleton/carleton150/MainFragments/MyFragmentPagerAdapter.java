@@ -3,12 +3,14 @@ package carleton150.edu.carleton.carleton150.MainFragments;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.view.ViewGroup;
 
 /**
  * Created by haleyhinze on 10/8/15.
  */
 public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs;
+    MainFragment curFragment = null;
 
     public MyFragmentPagerAdapter(FragmentManager fm, int NumOfTabs) {
         super(fm);
@@ -16,7 +18,7 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
     }
 
     @Override
-    public Fragment getItem(int position) {
+    public MainFragment getItem(int position) {
 
         switch (position) {
             case 0:
@@ -31,7 +33,21 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
     }
 
     @Override
+    public void setPrimaryItem(ViewGroup container, int position, Object object) {
+
+        if (curFragment != object) {
+            curFragment = (MainFragment) object;
+        }
+
+        super.setPrimaryItem(container, position, object);
+    }
+
+    @Override
     public int getCount() {
         return mNumOfTabs;
+    }
+
+    public MainFragment getCurFragment(){
+        return this.curFragment;
     }
 }
