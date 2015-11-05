@@ -4,6 +4,7 @@ package carleton150.edu.carleton.carleton150.MainFragments;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Point;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -13,11 +14,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,9 +37,15 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
+import carleton150.edu.carleton.carleton150.DialogFragments.HistoryPopupDialogFragment;
 import carleton150.edu.carleton.carleton150.GeoPoint;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.Models.DummyLocations;
@@ -67,6 +81,11 @@ public class HistoryFragment extends MainFragment {
     private Handler mHandler;
 
     private boolean zoomCamera = true;
+
+    private double mDeviceHeight;
+    private PopupWindow mPopupWindow;
+    private Button btnShowPopup;
+    private HistoryPopupDialogFragment historyPopupDialogFragment;
     /**
      * Note that this may be null if the Google Play services APK is not
      * available.
@@ -134,19 +153,27 @@ public class HistoryFragment extends MainFragment {
         view = (RelativeLayout) inflater.inflate(R.layout.fragment_history, container, false);
         txt_lat = (TextView) view.findViewById(R.id.txt_lat);
         txt_long = (TextView) view.findViewById(R.id.txt_long);
+        btnShowPopup = (Button) view.findViewById(R.id.btn_show_info);
+        btnShowPopup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onShowPopup(view);
+            }
+        });
 
         mainActivity = (MainActivity) getActivity();
         mHandler = new Handler();
 
         if(isConnectedToNetwork()) {
-            getLocationUpdates();
             setUpMapIfNeeded(); // For setting up the MapFragment
         } else {
-            showAlertDialog(NO_NETWORK_ERROR);
+            mainActivity.showNetworkNotConnectedDialog();
         }
 
         //TODO: remove this after testing
         queryDatabase();
+
+        onShowPopup(view);
 
         return view;
     }
@@ -220,36 +247,6 @@ public class HistoryFragment extends MainFragment {
         setUpMapIfNeeded();
     }
 
-    public void getLocationUpdates(){
-        gettingLocationUpdates = true;
-        mStatusChecker.run();
-    }
-
-
-    Runnable mStatusChecker = new Runnable() {
-        private int mInterval = 1000;
-
-        @Override
-        public void run() {
-            currentLocation = mainActivity.getMLastLocation();
-            if(currentLocation != null) {
-                setCamera();
-                txt_lat.setText("Latitude: " + currentLocation.getLatitude());
-                txt_long.setText("Longitude: " + currentLocation.getLongitude());
-                setUpMapIfNeeded();
-                addCurLocationMarker();
-            }
-            else{
-                Log.i("location info", "current location is null");
-            }
-            mHandler.postDelayed(mStatusChecker, mInterval);
-        }
-    };
-
-    void stopLocationUpdates() {
-        gettingLocationUpdates = false;
-        mHandler.removeCallbacks(mStatusChecker);
-    }
 
    private void addCurLocationMarker(){
         if (currentLocation != null){
@@ -292,12 +289,7 @@ public class HistoryFragment extends MainFragment {
 
     @Override
     public void onDestroyView() {
-        stopLocationUpdates();
         super.onDestroyView();
-    }
-
-    private void showAlertDialog(String message){
-        mainActivity.showAlertDialog(message);
     }
 
     public boolean isConnectedToNetwork(){
@@ -311,16 +303,16 @@ public class HistoryFragment extends MainFragment {
     public void onResume() {
         super.onResume();
         if(isConnectedToNetwork()) {
-            getLocationUpdates();
             setUpMapIfNeeded();
         } else {
-            showAlertDialog(NO_NETWORK_ERROR);
+            mainActivity.showNetworkNotConnectedDialog();
         }
     }
 
     @Override
     public void handleGeofenceChange(ArrayList<GeoPoint> currentGeofences) {
-        super.handleGeofenceChange(currentGeofences);
+        //TODO: add params here.
+        queryDatabase();
         curGeofences = currentGeofences;
         displayGeofenceInfo();
 
@@ -338,14 +330,85 @@ public class HistoryFragment extends MainFragment {
         if(showString){
             locationView.setText(displayString);
         } else {
-            locationView.setText("");
+            locationView.setText("No items");
         }
     }
 
+
+
     @Override
-    public void handleResult(String result) {
-        super.handleResult(result);
+    public void handleResult(JSONObject result) {
         TextView queryResult = (TextView) view.findViewById(R.id.txt_query_result);
-        queryResult.setText(result);
+        if (result == null) {
+            queryResult.setText("Error with volley");
+        } else {
+            queryResult.setText(result.toString());
+        }
+
     }
+
+    @Override
+    public void handleLocationChange(Location newLocation) {
+        setCamera();
+        currentLocation = newLocation;
+        txt_lat.setText("Latitude: " + currentLocation.getLatitude());
+        txt_long.setText("Longitude: " + currentLocation.getLongitude());
+        setUpMapIfNeeded();
+        addCurLocationMarker();
+    }
+
+    // call this method when required to show popup
+    public void onShowPopup(View v){
+        LayoutInflater layoutInflater = (LayoutInflater)mainActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        // inflate the custom popup layout
+        final View inflatedView = layoutInflater.inflate(R.layout.history_popup_layout, null,false);
+        // find the ListView in the popup layout
+        ListView listView = (ListView)inflatedView.findViewById(R.id.commentsListView);
+
+        // get device size
+        Display display = mainActivity.getWindowManager().getDefaultDisplay();
+        final Point size = new Point();
+        display.getSize(size);
+        mDeviceHeight = size.y;
+
+
+        // fill the data to the list items
+        setSimpleList(listView);
+
+
+        // set height depends on the device size
+        mPopupWindow = new PopupWindow(inflatedView, size.x - 50,size.y - 400, true );
+        // set a background drawable with rounders corners
+        mPopupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.history_popup_bg));
+        // make it focusable to show the keyboard to enter in `EditText`
+        mPopupWindow.setFocusable(true);
+        // make it outside touchable to dismiss the popup window
+        mPopupWindow.setOutsideTouchable(true);
+
+        // show the popup at bottom of the screen and set some margin at bottom ie,
+        mPopupWindow.showAtLocation(v, Gravity.BOTTOM, 0,100);
+
+        Button btnClose = (Button) inflatedView.findViewById(R.id.btn_close);
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPopupWindow.dismiss();
+            }
+        });
+    }
+
+
+    void setSimpleList(ListView listView){
+
+        ArrayList<String> contactsList = new ArrayList<String>();
+
+        for (int index = 0; index < 10; index++) {
+            contactsList.add("I am @ index " + index + " today " + Calendar.getInstance().getTime().toString());
+        }
+
+        listView.setAdapter(new ArrayAdapter<String>(mainActivity,
+                R.layout.popup_list_view, android.R.id.text1, contactsList));
+    }
+
 }

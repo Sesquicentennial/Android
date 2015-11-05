@@ -38,7 +38,8 @@ public class DummyLocations {
         GeoPoint cmc = new GeoPoint(new LatLng(44.46234939, -93.15400795), "CMC", 30, 40);
         GeoPoint goodhue = new GeoPoint(new LatLng(44.46260362, -93.14990513), "Goodhue", 40, 60);
         GeoPoint laird = new GeoPoint(new LatLng(44.46217483, -93.15392314), "Laird", 20, 30);
-        GeoPoint collier = new GeoPoint(new LatLng(44.459351, -93.158082), "Collier House", 15, 25);
+        GeoPoint collier = new GeoPoint(new LatLng(44.459351, -93.158082), "Collier House", 50, 75);
+        GeoPoint chapel = new GeoPoint(new LatLng(44.460174, -93.154726), "Skinner Memorial Chapel", 100, 60);
 
 
         ArrayList<GeoPoint> centerPoints = new ArrayList<>();
@@ -48,6 +49,7 @@ public class DummyLocations {
         centerPoints.add(goodhue);
         centerPoints.add(laird);
         centerPoints.add(collier);
+        centerPoints.add(chapel);
 
         return centerPoints;
     }
