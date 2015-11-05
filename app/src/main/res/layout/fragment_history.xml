@@ -8,6 +8,23 @@
         android:layout_height="match_parent"
         class="com.google.android.gms.maps.SupportMapFragment" />
 
+    <Button
+        android:id="@+id/btn_show_info"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Geofence Info"
+        />
+
+    <TextView
+        android:id="@+id/txt_new_geofences"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:paddingTop="10dp"
+        android:paddingLeft="10dp"
+        android:layout_above="@+id/txt_query_result" />
 
     <TextView
         android:id="@+id/txt_query_result"
