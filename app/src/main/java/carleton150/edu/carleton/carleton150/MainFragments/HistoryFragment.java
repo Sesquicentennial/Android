@@ -2,23 +2,16 @@ package carleton150.edu.carleton.carleton150.MainFragments;
 
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Point;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -28,7 +21,6 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -40,8 +32,9 @@ import org.json.JSONObject;
 
 
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.HashMap;
 
+import carleton150.edu.carleton.carleton150.Adapters.MyInfoWindowAdapter;
 import carleton150.edu.carleton.carleton150.ArrayAdapters.LandmarkListAdapter;
 import carleton150.edu.carleton.carleton150.DialogFragments.HistoryPopoverDialogFragment;
 import carleton150.edu.carleton.carleton150.GeoPoint;
@@ -69,12 +62,14 @@ public class HistoryFragment extends MainFragment{
     private String NO_NETWORK_ERROR = "No network connected. Please connect and try again";
 
     private OnFragmentInteractionListener mListener;
+    private MyInfoWindowAdapter myInfoWindowAdapter;
 
     private static View view;
 
     private boolean gettingLocationUpdates = false;
 
     private ArrayList<GeoPoint> curGeofences;
+    private HashMap<String, GeoPoint> curGeofencesMap = new HashMap<>();
 
     private Handler mHandler;
 
@@ -95,6 +90,8 @@ public class HistoryFragment extends MainFragment{
 
     private Location currentLocation = null;
 
+    private static LatLng CENTER_CAMPUS = new LatLng(44.460174, -93.154726);
+
     private TextView txt_lat;
     private TextView txt_long;
     private String TAG_NO_GPS = "noGPS";
@@ -102,8 +99,11 @@ public class HistoryFragment extends MainFragment{
 
     MarkerOptions curLocationMarkerOptions;
     Marker curLocationMarker = null;
+    ArrayList<Marker> currentGeofenceMarkers = new ArrayList<Marker>();
 
     private MainActivity mainActivity;
+
+    private LayoutInflater inflater;
 
 
     /**
@@ -144,6 +144,8 @@ public class HistoryFragment extends MainFragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        this.inflater = inflater;
+        myInfoWindowAdapter = new MyInfoWindowAdapter(inflater);
 
         if (container == null) {
             return null;
@@ -153,14 +155,14 @@ public class HistoryFragment extends MainFragment{
         txt_lat = (TextView) view.findViewById(R.id.txt_lat);
         txt_long = (TextView) view.findViewById(R.id.txt_long);
 
-        drawer = (SlidingDrawer) view.findViewById(R.id.slidingDrawer1);
+        /*drawer = (SlidingDrawer) view.findViewById(R.id.slidingDrawer1);
         drawer.setOnDrawerOpenListener(new SlidingDrawer.OnDrawerOpenListener() {
             @Override
             public void onDrawerOpened() {
                 showDrawer();
             }
-        });
-        btnShowDrawer = (Button) view.findViewById(R.id.handle);
+        });*/
+        //btnShowDrawer = (Button) view.findViewById(R.id.handle);
 
         mainActivity = (MainActivity) getActivity();
         mHandler = new Handler();
@@ -211,6 +213,16 @@ public class HistoryFragment extends MainFragment{
                     .findFragmentById(R.id.location_map)).getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
+                mMap.setInfoWindowAdapter(myInfoWindowAdapter);
+                if(curGeofences != null){
+                    myInfoWindowAdapter.setCurrentGeopoints(curGeofences);
+                }
+                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                    @Override
+                    public void onInfoWindowClick(Marker marker) {
+                        //TODO: Show popover box
+                    }
+                });
                 setUpMap();
                 return true;
             } else {
@@ -237,11 +249,12 @@ public class HistoryFragment extends MainFragment{
         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
-                if(cameraPosition.zoom <= 15){
+                setCamera();
+                if(cameraPosition.zoom <= 13){
                     if(cameraPosition.target==null){
                        setCamera();
                     }
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
                 }
             }
         });
@@ -298,6 +311,13 @@ public class HistoryFragment extends MainFragment{
                     .bearing(0)
                     .build();
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }if(currentLocation == null){
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(CENTER_CAMPUS.latitude, CENTER_CAMPUS.longitude))
+                    .zoom(15)
+                    .bearing(0)
+                    .build();
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
     }
 
@@ -328,9 +348,28 @@ public class HistoryFragment extends MainFragment{
         //TODO: add params here.
         queryDatabase();
         curGeofences = currentGeofences;
+
         displayGeofenceInfo();
 
     }
+
+    private void drawGeofenceMapMarker(ArrayList<GeoPoint> currentGeofences){
+        for(int i = 0; i<currentGeofenceMarkers.size(); i++){
+            currentGeofenceMarkers.get(i).remove();
+        }
+        currentGeofenceMarkers.clear();
+        curGeofencesMap.clear();
+        for(int i =0; i<currentGeofences.size(); i++){
+            GeoPoint curGeofence = currentGeofences.get(i);
+            MarkerOptions geofenceMarkerOptions = new MarkerOptions()
+                    .position(curGeofence.getLatLng())
+                    .title(curGeofence.getName());
+            Marker curGeofenceMarker = mMap.addMarker(geofenceMarkerOptions);
+            curGeofencesMap.put(currentGeofences.get(i).getName(), currentGeofences.get(i));
+            currentGeofenceMarkers.add(curGeofenceMarker);
+        }
+    }
+
 
     private void displayGeofenceInfo(){
 
@@ -341,7 +380,7 @@ public class HistoryFragment extends MainFragment{
             displayString += curGeofences.get(i).getName() + " ";
             showString = true;
         }
-        if(showString){
+        if(showString) {
             locationView.setText(displayString);
         } else {
             locationView.setText("No items");
@@ -356,6 +395,8 @@ public class HistoryFragment extends MainFragment{
         if (result == null) {
             queryResult.setText("Error with volley");
         } else {
+            drawGeofenceMapMarker(curGeofences);
+            //TODO: Parse object, also myInfoWindowAdapter.setCurrentGeopoints(The Result of the JsonParse)
             queryResult.setText(result.toString());
         }
 
@@ -378,7 +419,7 @@ public class HistoryFragment extends MainFragment{
 
     /**
      * Shows the menu drawer with active geofences
-     */
+     *//*
     private void showDrawer(){
         ListView lstView = (ListView) view.findViewById(R.id.lst_cur_landmarks);
         String[] geofenceNames = new String[6];
@@ -402,7 +443,7 @@ public class HistoryFragment extends MainFragment{
 
     public void closeDrawer(){
         drawer.animateClose();
-    }
+    }*/
 
 
 
