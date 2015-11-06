@@ -10,6 +10,8 @@
     <color name="colorAccent">#D3BB39</color>
     <color name="colorPrimarySemiTransparent">#771D294B</color>
     <color name="yellowAccent">#D3BB39</color>
+    <color name="blackSemiTransparent">#DD181823</color>
+    <color name = "transparent">#00000000</color>
 
 
     <color name = "colorSecondary">#F7E042</color>

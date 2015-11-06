@@ -1,19 +1,18 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.graphics.Canvas;
 import android.graphics.Point;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v4.app.FragmentManager;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,28 +23,27 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.SlidingDrawer;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolygonOptions;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
-import carleton150.edu.carleton.carleton150.DialogFragments.HistoryPopupDialogFragment;
+import carleton150.edu.carleton.carleton150.ArrayAdapters.LandmarkListAdapter;
+import carleton150.edu.carleton.carleton150.DialogFragments.HistoryPopoverDialogFragment;
 import carleton150.edu.carleton.carleton150.GeoPoint;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.Models.DummyLocations;
@@ -59,7 +57,7 @@ import carleton150.edu.carleton.carleton150.R;
  * Use the {@link HistoryFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HistoryFragment extends MainFragment {
+public class HistoryFragment extends MainFragment{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -85,7 +83,8 @@ public class HistoryFragment extends MainFragment {
     private double mDeviceHeight;
     private PopupWindow mPopupWindow;
     private Button btnShowPopup;
-    private HistoryPopupDialogFragment historyPopupDialogFragment;
+    private Button btnShowDrawer;
+    private SlidingDrawer drawer;
     /**
      * Note that this may be null if the Google Play services APK is not
      * available.
@@ -153,13 +152,15 @@ public class HistoryFragment extends MainFragment {
         view = (RelativeLayout) inflater.inflate(R.layout.fragment_history, container, false);
         txt_lat = (TextView) view.findViewById(R.id.txt_lat);
         txt_long = (TextView) view.findViewById(R.id.txt_long);
-        btnShowPopup = (Button) view.findViewById(R.id.btn_show_info);
-        btnShowPopup.setOnClickListener(new View.OnClickListener() {
+
+        drawer = (SlidingDrawer) view.findViewById(R.id.slidingDrawer1);
+        drawer.setOnDrawerOpenListener(new SlidingDrawer.OnDrawerOpenListener() {
             @Override
-            public void onClick(View v) {
-                onShowPopup(view);
+            public void onDrawerOpened() {
+                showDrawer();
             }
         });
+        btnShowDrawer = (Button) view.findViewById(R.id.handle);
 
         mainActivity = (MainActivity) getActivity();
         mHandler = new Handler();
@@ -172,8 +173,6 @@ public class HistoryFragment extends MainFragment {
 
         //TODO: remove this after testing
         queryDatabase();
-
-        onShowPopup(view);
 
         return view;
     }
@@ -230,9 +229,22 @@ public class HistoryFragment extends MainFragment {
      * is not null.
      */
     private void setUpMap() {
+
         // For showing a move to my location button
         mMap.setMyLocationEnabled(true);
 
+        //Makes it so user can't zoom out very far
+        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                if(cameraPosition.zoom <= 15){
+                    if(cameraPosition.target==null){
+                       setCamera();
+                    }
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                }
+            }
+        });
         //addCurLocationMarker();
         addCampusOverlays();
         setCamera();
@@ -246,6 +258,8 @@ public class HistoryFragment extends MainFragment {
 
         setUpMapIfNeeded();
     }
+
+
 
 
    private void addCurLocationMarker(){
@@ -280,7 +294,7 @@ public class HistoryFragment extends MainFragment {
             zoomCamera = false;
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
-                    .zoom(13)
+                    .zoom(15)
                     .bearing(0)
                     .build();
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
@@ -357,58 +371,43 @@ public class HistoryFragment extends MainFragment {
         addCurLocationMarker();
     }
 
-    // call this method when required to show popup
-    public void onShowPopup(View v){
-        LayoutInflater layoutInflater = (LayoutInflater)mainActivity.getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    public void showHistoryPopover(){
+        HistoryPopoverDialogFragment dialog = HistoryPopoverDialogFragment.newInstance();
+        dialog.show(getFragmentManager(), "historyDialog");
+    }
 
-        // inflate the custom popup layout
-        final View inflatedView = layoutInflater.inflate(R.layout.history_popup_layout, null,false);
-        // find the ListView in the popup layout
-        ListView listView = (ListView)inflatedView.findViewById(R.id.commentsListView);
+    /**
+     * Shows the menu drawer with active geofences
+     */
+    private void showDrawer(){
+        ListView lstView = (ListView) view.findViewById(R.id.lst_cur_landmarks);
+        String[] geofenceNames = new String[6];
+        int[] geofenceImages = new int[6];
+        geofenceNames[0] = "Geofence 1";
+        geofenceNames[1] = "Geofence 2";
+        geofenceNames[2] = "Geofence 3";
+        geofenceNames[3] = "Geofence 4";
+        geofenceNames[4] = "Geofence 5";
+        geofenceNames[5] = "Geofence 6";
+        geofenceImages[0] = R.drawable.carleton_logo;
+        geofenceImages[1] = R.drawable.carleton_logo;
+        geofenceImages[2] = R.drawable.carleton_logo;
+        geofenceImages[3] = R.drawable.carleton_logo;
+        geofenceImages[4] = R.drawable.carleton_logo;
+        geofenceImages[5] = R.drawable.carleton_logo;
 
-        // get device size
-        Display display = mainActivity.getWindowManager().getDefaultDisplay();
-        final Point size = new Point();
-        display.getSize(size);
-        mDeviceHeight = size.y;
+        lstView.setAdapter(new LandmarkListAdapter((MainActivity)getActivity(), this, geofenceNames, geofenceImages ));
 
+    }
 
-        // fill the data to the list items
-        setSimpleList(listView);
-
-
-        // set height depends on the device size
-        mPopupWindow = new PopupWindow(inflatedView, size.x - 50,size.y - 400, true );
-        // set a background drawable with rounders corners
-        mPopupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.history_popup_bg));
-        // make it focusable to show the keyboard to enter in `EditText`
-        mPopupWindow.setFocusable(true);
-        // make it outside touchable to dismiss the popup window
-        mPopupWindow.setOutsideTouchable(true);
-
-        // show the popup at bottom of the screen and set some margin at bottom ie,
-        mPopupWindow.showAtLocation(v, Gravity.BOTTOM, 0,100);
-
-        Button btnClose = (Button) inflatedView.findViewById(R.id.btn_close);
-        btnClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mPopupWindow.dismiss();
-            }
-        });
+    public void closeDrawer(){
+        drawer.animateClose();
     }
 
 
-    void setSimpleList(ListView listView){
 
-        ArrayList<String> contactsList = new ArrayList<String>();
 
-        for (int index = 0; index < 10; index++) {
-            contactsList.add("I am @ index " + index + " today " + Calendar.getInstance().getTime().toString());
-        }
 
-        listView.setAdapter(new ArrayAdapter<String>(mainActivity,
-                R.layout.popup_list_view, android.R.id.text1, contactsList));
-    }
+
 
 }

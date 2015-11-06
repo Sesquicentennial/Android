@@ -1,4 +1,6 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
@@ -8,14 +10,45 @@
         android:layout_height="match_parent"
         class="com.google.android.gms.maps.SupportMapFragment" />
 
-    <Button
-        android:id="@+id/btn_show_info"
+    <SlidingDrawer
+        android:id="@+id/slidingDrawer1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:layout_marginTop="?attr/actionBarSize"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Geofence Info"
-        />
+        android:content="@+id/content" android:allowSingleTap="true"
+        android:handle="@+id/handle" >
+
+        <Button
+            android:id="@+id/handle"
+            android:layout_alignParentTop="true"
+            android:background="@color/blackSemiTransparent"
+            android:textColor="@color/windowBackground"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Handle"
+            />
+
+        <LinearLayout
+            android:id="@+id/content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+           <ListView
+               android:id="@+id/lst_cur_landmarks"
+               android:background="@color/transparent"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+
+           </ListView>
+
+        </LinearLayout>
+
+        </SlidingDrawer>
+
 
     <TextView
         android:id="@+id/txt_new_geofences"
