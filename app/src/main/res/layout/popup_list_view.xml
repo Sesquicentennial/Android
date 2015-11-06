@@ -1,22 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:background="@color/transparent"
     android:padding="10dp"
-    android:paddingLeft="5dp"
-    android:paddingRight="5dp">
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp">
+
+    <LinearLayout
+        android:background="@drawable/history_popup_bg"
+        android:layout_width="wrap_content"
+        android:paddingBottom="15dp"
+        android:paddingTop="15dp"
+        android:paddingRight="15dp"
+        android:paddingLeft="15dp"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
 
     <ImageView
+        android:id="@+id/img_list_item"
+        android:layout_gravity="center_horizontal"
         android:src="@drawable/carleton_logo"
-        android:layout_width="30dp"
-        android:layout_height="30dp"/>
+        android:layout_width="50dp"
+        android:layout_height="50dp"/>
 
     <TextView
-        android:id="@android:id/text1"
-        android:layout_width="match_parent"
+        android:id="@+id/txt_list_item"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:textSize="20sp"
         android:layout_height="wrap_content"
         android:textAppearance="@android:style/TextAppearance.Small"
         android:gravity="center_vertical"
-        android:textColor="@color/black"/>
+        android:textColor="@color/windowBackground"/>
+
+    </LinearLayout>
 </LinearLayout>

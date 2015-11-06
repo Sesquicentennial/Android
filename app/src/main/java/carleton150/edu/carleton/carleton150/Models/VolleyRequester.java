@@ -43,12 +43,11 @@ public class VolleyRequester {
             //TODO: do something here.
         }
 
-        JsonObjectRequest request = new JsonObjectRequest("https://f37009fe.ngrok.io/landmarks", geofence,
+        JsonObjectRequest request = new JsonObjectRequest("http://81113888.ngrok.io/info", geofence,
                 new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
-
                         callerFragment.handleResult(response);
                     }
                 },
@@ -71,16 +70,17 @@ public class VolleyRequester {
             JSONObject object = new JSONObject();
             JSONObject latLong = new JSONObject();
 
-            latLong.put("x", latitude);
-            latLong.put("y", longitude);
+            latLong.put("lat", latitude);
+            latLong.put("lng", longitude);
             object.put("location", latLong);
-            object.put("radius", 0.01);
+            object.put("radius", 300);
+            geofence.put("geofence", object);
 
         }catch (Exception exception){
             //TODO: do something here.
         }
 
-        JsonObjectRequest request = new JsonObjectRequest(" https://serveraddress.ngrok.io/geofences", geofence,
+        JsonObjectRequest request = new JsonObjectRequest("http://811138a8.ngrok.io/geofences", geofence,
                 new Response.Listener<JSONObject>() {
 
                     @Override

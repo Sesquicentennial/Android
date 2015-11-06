@@ -296,14 +296,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onLocationChanged(Location location) {
+        getNewGeofences();
         // Assign the new location
         mLastLocation = location;
         tellFragmentLocationChanged();
 
-        //TODO:GET RID OF THIS! Just for testing.
-        getNewGeofences();
-
-        if(mLastLocation.distanceTo(lastGeofenceUpdateLocation) > 1000){
+        if(mLastLocation.distanceTo(lastGeofenceUpdateLocation) > 150){
             lastGeofenceUpdateLocation = mLastLocation;
             getNewGeofences();
         }
