@@ -69,7 +69,7 @@ public class LandmarkListAdapter extends BaseAdapter {
         listItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                curFragment.closeDrawer();
+                //curFragment.closeDrawer();
                 curFragment.showHistoryPopover();
                 Toast.makeText(context, "You Clicked " + result[position], Toast.LENGTH_LONG).show();
             }
