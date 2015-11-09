@@ -348,7 +348,8 @@ public class HistoryFragment extends MainFragment{
         //TODO: add params here.
         queryDatabase();
         curGeofences = currentGeofences;
-
+        //TODO: remove this once there is a reliable server and we are parsing JSONs
+        drawGeofenceMapMarker(curGeofences);
         displayGeofenceInfo();
 
     }
