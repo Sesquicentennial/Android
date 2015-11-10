@@ -4,14 +4,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.location.Geofence;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import carleton150.edu.carleton.carleton150.GeoPoint;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
@@ -19,7 +22,8 @@ import carleton150.edu.carleton.carleton150.R;
  */
 public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     LayoutInflater inflater;
-    ArrayList<GeoPoint> currentGeopoints = new ArrayList<>();
+    Content[] currentGeopoints;
+    HashMap<String, Content> currentGeopointsMap;
 
     public MyInfoWindowAdapter(){
 
@@ -29,8 +33,12 @@ public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
 
     //TODO: SET CURRENT GEOPOINTS WHEN WE HAVE THEM!!!!!
-    public void setCurrentGeopoints(ArrayList<GeoPoint> currentGeopoints){
+    public void setCurrentGeopoints(Content[] currentGeopoints){
         this.currentGeopoints = currentGeopoints;
+    }
+
+    public void setCurrentGeopointsMap(HashMap<String, Content> currentGeopointsMap){
+        this.currentGeopointsMap = currentGeopointsMap;
     }
 
     @Override
@@ -43,7 +51,10 @@ public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
         TextView title = (TextView) v.findViewById(R.id.title);
         TextView snippet = (TextView) v.findViewById(R.id.snippet);
-        snippet.setText("Latitude: " + clickMarkerLatLng.latitude + " Longitude: " + clickMarkerLatLng.longitude);
+        if(currentGeopointsMap.get(marker.getTitle()) != null) {
+            String summary = currentGeopointsMap.get(marker.getTitle()).getSummary();
+            snippet.setText(summary);
+        }
         title.setText(marker.getTitle());
         //TODO: SET IMAGE USING THE CURRENTGEOPOINTS
 
