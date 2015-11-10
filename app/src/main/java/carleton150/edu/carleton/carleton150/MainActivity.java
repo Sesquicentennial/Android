@@ -44,6 +44,8 @@ import carleton150.edu.carleton.carleton150.MainFragments.MyFragmentPagerAdapter
 import carleton150.edu.carleton.carleton150.Models.DummyLocations;
 import carleton150.edu.carleton.carleton150.Models.GeofenceErrorMessages;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Content;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObject;
 
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -75,8 +77,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private boolean mGeofencesAdded = false;
     private PendingIntent mGeofencePendingIntent;
     private MyFragmentPagerAdapter adapter;
-    private ArrayList<GeoPoint> curGeofences = new ArrayList<GeoPoint>();
-    private HashMap<String, GeoPoint> allGeopointsByName = new HashMap<String, GeoPoint>();
+    private ArrayList<Content> curGeofences = new ArrayList<Content>();
+    private HashMap<String, Content> allGeopointsByName = new HashMap<String, Content>();
     private VolleyRequester mVolleyRequester = new VolleyRequester();
 
     private static String ERROR_NO_INTERNET = "No network connection. Please connect and try again.";
@@ -108,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         mGeofenceList = new ArrayList<Geofence>();
         mGeofencePendingIntent = null;
-        populateGeofenceList();
+        //populateGeofenceList();
 
         //managing fragments and UI
         fragmentManager = getSupportFragmentManager();
@@ -235,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         //removeAllGeofences();
 
         //TODO: remove this when we are getting geofences from server
-        addGeofences();
+        //addGeofences();
 
         //gets new geofences from the server
         getNewGeofences();
@@ -296,12 +298,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onLocationChanged(Location location) {
-        getNewGeofences();
         // Assign the new location
         mLastLocation = location;
         tellFragmentLocationChanged();
 
-        if(mLastLocation.distanceTo(lastGeofenceUpdateLocation) > 150){
+        if(mLastLocation.distanceTo(lastGeofenceUpdateLocation) > 1000){
             lastGeofenceUpdateLocation = mLastLocation;
             getNewGeofences();
         }
@@ -468,7 +469,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /**
      * Gets hard-coded geofences from DummyLocations
      * TODO: This method should be deleted or re-adapted when we get geofences from server
-     */
+     *//*
     public void populateGeofenceList() {
         DummyLocations dummyLocations = new DummyLocations();
         ArrayList<GeoPoint> centerPoints = dummyLocations.getCircleCenters();
@@ -499,7 +500,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                             // Create the geofence.
                     .build());
         }
-    }
+    }*/
 
     /**
      * Tells google play services api that we don't want to listen for the geofences anymore.
@@ -520,6 +521,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     private void handleGeofenceChange(){
         MainFragment curFragment = adapter.getCurFragment();
+        Log.i("geofence debugging: ", "handleGeofenceChange mainActivity: " + curGeofences.size());
         curFragment.handleGeofenceChange(curGeofences);
     }
 
@@ -552,7 +554,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * @param transitionType type of transition (enter, exit, or dwell)
      */
     private void updateCurrentGeofences(String[] geofenceNames, int transitionType){
+        Log.i("geofence debugging: ", "updatecurrentgeofences mainactivity: " + geofenceNames.length);
+        Log.i("geofence debugging: ", "updatecurrentgeofences mainactivity: transition type" + transitionType);
         if(transitionType == Geofence.GEOFENCE_TRANSITION_ENTER){
+            Log.i("geofence debugging: ", "updatecurrentgeofences mainactivity: transition type enter");
             curGeofences.clear();
             Toast.makeText(getApplicationContext(),
                     "entered! Geofence size is: " + geofenceNames.length, Toast.LENGTH_SHORT)
@@ -563,7 +568,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             if(allGeopointsByName.containsKey(geofenceNames[i])){
                 if(transitionType == Geofence.GEOFENCE_TRANSITION_ENTER){
                     curGeofences.add(allGeopointsByName.get(geofenceNames[i]));
-                }if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT){
+                }else if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT){
                     if(curGeofences.contains(allGeopointsByName.get(geofenceNames[i]))){
                         curGeofences.remove(allGeopointsByName.get(geofenceNames[i]));
                     }else{
@@ -572,6 +577,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
             }
         }
+        Log.i("geofence debugging: ", "updatecurrentgeofences mainactivity curGeofencesLength: " + curGeofences.size());
     }
 
     /**
@@ -579,13 +585,49 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * when we requested new geofences from the server
      * @param geofences
      */
-    public void handleNewGeofences(JSONObject geofences){
+    public void handleNewGeofences(GeofenceObject geofences){
         if(geofences != null) {
             Log.i("VolleyInfo", "Handling new geofences: " + geofences.toString());
-            //removeAllGeofences();
+            Content[] geofencesContent = geofences.getContent();
+            for(int i = 0; i<geofencesContent.length; i++){
+                carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Geofence geofence =
+                        geofencesContent[i].getGeofence();
+                carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Location geofenceLocation = geofence.getLocation();
+                double latitude = geofenceLocation.getLat();
+                double longitude = geofenceLocation.getLng();
+                int radius = geofence.getRadius();
+                String name = geofencesContent[i].getName();
+                allGeopointsByName.put(name, geofencesContent[i]);
+                mGeofenceList.add(new Geofence.Builder()
+                        // Set the request ID of the geofence. This is a string to identify this
+                        // geofence.
+                        .setRequestId(name)
+
+                                // Set the circular region of this geofence.
+                        .setCircularRegion(
+                                latitude,
+                                longitude,
+                                radius
+                        )
+
+                                // Set the expiration duration of the geofence. This geofence gets automatically
+                                // removed after this period of time.
+                        .setExpirationDuration(Geofence.NEVER_EXPIRE)
+
+                                // Set the transition types of interest. Alerts are only generated for these
+                                // transition. We track entry and exit transitions in this sample.
+                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                                //.setTransitionTypes(Geofence.GEOFENCE_TRANSITION_EXIT)
+
+                                // Create the geofence.
+                        .build());
+
+            }
+            removeAllGeofences();
             //TODO: Parse and add all new fences
             //TODO: mGeofenceList = parsed list of geofences
-            //addGeofences();
+
+            addGeofences();
         } else {
             Log.i("VolleyInfo", "new geofences are null ");
         }
