@@ -7,20 +7,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
-import android.widget.SlidingDrawer;
 import android.widget.TextView;
-
-import com.google.android.gms.location.Geofence;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -29,19 +21,11 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import org.json.JSONObject;
-
-
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import carleton150.edu.carleton.carleton150.Adapters.MyInfoWindowAdapter;
-import carleton150.edu.carleton.carleton150.ArrayAdapters.LandmarkListAdapter;
 import carleton150.edu.carleton.carleton150.DialogFragments.HistoryPopoverDialogFragment;
-import carleton150.edu.carleton.carleton150.GeoPoint;
 import carleton150.edu.carleton.carleton150.MainActivity;
-import carleton150.edu.carleton.carleton150.Models.DummyLocations;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Content;
 import carleton150.edu.carleton.carleton150.R;
@@ -55,83 +39,22 @@ import carleton150.edu.carleton.carleton150.R;
  * create an instance of this fragment.
  */
 public class HistoryFragment extends MainFragment{
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-    private String NO_NETWORK_ERROR = "No network connected. Please connect and try again";
-
-    private OnFragmentInteractionListener mListener;
     private MyInfoWindowAdapter myInfoWindowAdapter;
-
     private static View view;
-
-    private boolean gettingLocationUpdates = false;
-
     private ArrayList<Content> curGeofences;
     private HashMap<String, Content> curGeofencesMap = new HashMap<>();
     private carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content[] curGeofenceInfo;
     private HashMap<String, carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content>
             curGeofencesInfoMap = new HashMap<>();
-
-    private Handler mHandler;
-
     private boolean zoomCamera = true;
-
-
-
-    private double mDeviceHeight;
-    private PopupWindow mPopupWindow;
-    private Button btnShowPopup;
-    private Button btnShowDrawer;
-    private SlidingDrawer drawer;
-    /**
-     * Note that this may be null if the Google Play services APK is not
-     * available.
-     */
-
-
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-
     private Location currentLocation = null;
-
     private static LatLng CENTER_CAMPUS = new LatLng(44.460174, -93.154726);
-
     private TextView txt_lat;
     private TextView txt_long;
-    private String TAG_NO_GPS = "noGPS";
-    private String TAG_NO_NETWORK = "noNetwork";
-
-    MarkerOptions curLocationMarkerOptions;
-    Marker curLocationMarker = null;
     ArrayList<Marker> currentGeofenceMarkers = new ArrayList<Marker>();
-
     private MainActivity mainActivity;
-
-    private LayoutInflater inflater;
-
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HistoryFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static HistoryFragment newInstance(String param1, String param2) {
-        HistoryFragment fragment = new HistoryFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     public HistoryFragment() {
         // Required empty public constructor
@@ -141,29 +64,22 @@ public class HistoryFragment extends MainFragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mainActivity= (MainActivity) getActivity();
-
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        this.inflater = inflater;
         myInfoWindowAdapter = new MyInfoWindowAdapter(inflater);
 
         if (container == null) {
             return null;
         }
 
-        view = (RelativeLayout) inflater.inflate(R.layout.fragment_history, container, false);
+        view = inflater.inflate(R.layout.fragment_history, container, false);
         txt_lat = (TextView) view.findViewById(R.id.txt_lat);
         txt_long = (TextView) view.findViewById(R.id.txt_long);
 
+        //TODO: probably won't end up using this. Figure out if we need it
         /*drawer = (SlidingDrawer) view.findViewById(R.id.slidingDrawer1);
         drawer.setOnDrawerOpenListener(new SlidingDrawer.OnDrawerOpenListener() {
             @Override
@@ -174,7 +90,6 @@ public class HistoryFragment extends MainFragment{
         //btnShowDrawer = (Button) view.findViewById(R.id.handle);
 
         mainActivity = (MainActivity) getActivity();
-        mHandler = new Handler();
 
         if(isConnectedToNetwork()) {
             setUpMapIfNeeded(); // For setting up the MapFragment
@@ -186,15 +101,6 @@ public class HistoryFragment extends MainFragment{
 
         return view;
     }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-
 
     /**
      * This interface must be implemented by activities that contain this
@@ -243,15 +149,14 @@ public class HistoryFragment extends MainFragment{
     }
 
     /**
-     * This is where we can add markers or lines, add listeners or move the
-     * camera.
-     * <p>
-     * This should only be called once and when we are sure that {@link #mMap}
-     * is not null.
+     * Sets up the map (should only be called if mMap is null)
+     * Monitors the zoom and target of the camera and changes them
+     * if the user zooms out too much or scrolls map too far off campus.
      */
     private void setUpMap() {
 
-        // For showing a move to my location button
+        // For showing a move to my location button and a blue
+        // dot to show user's location
         mMap.setMyLocationEnabled(true);
 
         //Makes it so user can't zoom out very far
@@ -265,6 +170,8 @@ public class HistoryFragment extends MainFragment{
                     }
                     mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
                 }
+
+                //makes it so user can't scroll too far off campus
                 double latitude = cameraPosition.target.latitude;
                 double longitude = cameraPosition.target.longitude;
                 if (cameraPosition.target.longitude > -93.141134) {
@@ -291,53 +198,31 @@ public class HistoryFragment extends MainFragment{
 
         }
     });
-        //addCurLocationMarker();
         //addCampusOverlays();
         setCamera();
     }
 
+    /**
+     * Sets up the map
+     *
+     * @param view
+     * @param savedInstanceState
+     */
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-
         if (mMap != null)
             setUpMap();
-
         setUpMapIfNeeded();
     }
 
 
-
-
-   private void addCurLocationMarker(){
-        if (currentLocation != null){
-            if(curLocationMarker!=null) {
-                curLocationMarker.remove();
-            }
-            curLocationMarkerOptions = new MarkerOptions()
-                    .position(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
-                    .title("Your Location");
-            curLocationMarker = mMap.addMarker(curLocationMarkerOptions);
-        }
-    }
-
-    /*private void addCampusOverlays(){
-        DummyLocations dummyLocations = new DummyLocations();
-
-        ArrayList<GeoPoint> geofenceCenters = dummyLocations.getCircleCenters();
-        for(int i = 0; i<geofenceCenters.size(); i++){
-            CircleOptions myCircleOptions = new CircleOptions();
-            myCircleOptions.center(geofenceCenters.get(i).getLatLng());
-            myCircleOptions.radius(geofenceCenters.get(i).getSmallRadius());
-            myCircleOptions.fillColor(R.color.colorPrimarySemiTransparent);
-            myCircleOptions.strokeColor(R.color.yellowAccent);
-            myCircleOptions.strokeWidth(5);
-            mMap.addCircle(myCircleOptions);
-        }
-    }*/
-
+    /**
+     * Testing method to make sure I am getting the geofences to monitor from the server.
+     * Draws a circle for each geofence at the location of that geofence on the map
+     * @param geofences
+     */
     private void drawGeofenceCircles(Content[] geofences){
         mMap.clear();
-        addCurLocationMarker();
         for(int i = 0; i<geofences.length; i++){
             carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Geofence geofence = geofences[i].getGeofence();
             CircleOptions circleOptions = new CircleOptions();
@@ -352,6 +237,11 @@ public class HistoryFragment extends MainFragment{
         }
     }
 
+    /**
+     * Sets the camera for the map. If we have user location, sets the camera to that location.
+     * Otherwise, the camera target is the center of campus.
+     */
+    //TODO: figure out what to do if user is off campus and handle that appropriately
     private void setCamera(){
         if(currentLocation != null && zoomCamera) {
             zoomCamera = false;
@@ -371,11 +261,10 @@ public class HistoryFragment extends MainFragment{
         }
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-    }
-
+    /**
+     * Checks for internet connectivity
+     * @return true if connected, false otherwise
+     */
     public boolean isConnectedToNetwork(){
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) mainActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -383,6 +272,10 @@ public class HistoryFragment extends MainFragment{
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
+    /**
+     * Lifecycle method overridden to set up the map and check for internet connectivity
+     * when the fragment comes into focus
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -393,6 +286,13 @@ public class HistoryFragment extends MainFragment{
         }
     }
 
+    /**
+     * Called when the geofences currently triggered by the user change.
+     * Sets curGeofences and curGeofencesMap to contain the current geofences
+     * and then queries the database for information about those geofences.
+     *
+     * @param currentGeofences
+     */
     @Override
     public void handleGeofenceChange(ArrayList<Content> currentGeofences) {
         //TODO: add params here.
@@ -404,9 +304,15 @@ public class HistoryFragment extends MainFragment{
             curGeofencesMap.put(curGeofences.get(i).getName(), curGeofences.get(i));
         }
         queryDatabase(currentGeofences);
-
     }
 
+    /**
+     * Deletes all entries in the curGeofencesInfoMap, then adds each current geofence
+     * to the map where the key is the name of the geofence and the value is the info Content
+     * of that geofence
+     *
+     * @param currentGeofences
+     */
     private void makeGeofenceInfoMap
             (carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content[] currentGeofences){
         curGeofencesInfoMap.clear();
@@ -414,12 +320,18 @@ public class HistoryFragment extends MainFragment{
             Log.i("Geofence info: ", "length is 0");
         }
         for(int i = 0; i < currentGeofences.length; i++){
-            carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content curGeofence = currentGeofences[i];
             String curGeofenceName = currentGeofences[i].getGeofences()[0];
             curGeofencesInfoMap.put(curGeofenceName, currentGeofences[i]);
         }
     }
 
+    /**
+     * Adds a marker to the map at the center of each geofence for all geofences
+     * the user is currently in
+     *
+     * @param currentGeofences a GeofenceInfoObject Content[] of information about
+     *                         each geofence user is currently in
+     */
     private void drawGeofenceMapMarker
             (carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content[] currentGeofences){
         for(int i = 0; i<currentGeofenceMarkers.size(); i++){
@@ -432,7 +344,6 @@ public class HistoryFragment extends MainFragment{
         for(int i = 0; i < currentGeofences.length; i++){
             carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content curGeofence = currentGeofences[i];
             String curGeofenceName = currentGeofences[i].getGeofences()[0];
-            String summary = curGeofence.getSummary();
             Content geofence = curGeofencesMap.get(curGeofenceName);
             double lat = geofence.getGeofence().getLocation().getLat();
             double lon = geofence.getGeofence().getLocation().getLng();
@@ -445,7 +356,9 @@ public class HistoryFragment extends MainFragment{
         }
     }
 
-
+    /**
+     * Displays text stating which geofences the user is currently in
+     */
     private void displayGeofenceInfo(){
 
         TextView locationView = (TextView) view.findViewById(R.id.txt_geopoint_info);
@@ -466,28 +379,42 @@ public class HistoryFragment extends MainFragment{
     }
 
 
-
+    /**
+     * Handles the result of a query for information about a geofence.
+     * @param result is a GeofenceInfoObject that contains information
+     *               about all geofences the user is currently in
+     */
     @Override
     public void handleResult(GeofenceInfoObject result) {
-        TextView queryResult = (TextView) view.findViewById(R.id.txt_query_result);
-        if (result == null) {
-            queryResult.setText("Error with volley");
-        } else {
 
+        //TODO:TextView for testing that I'm recieving correct query. Remove for final version
+       // TextView queryResult = (TextView) view.findViewById(R.id.txt_query_result);
+       if (result == null) {
+           //TODO: Do something here if there is an error (check error message, check internet, maybe make new query, etc..)
+           //   queryResult.setText("Error with volley");
+        } else {
             curGeofenceInfo = result.getContent();
             makeGeofenceInfoMap(curGeofenceInfo);
+
+           //Gives information to the infoWindowAdapter for displaying info windows
             myInfoWindowAdapter.setCurrentGeopoints(curGeofenceInfo);
             myInfoWindowAdapter.setCurrentGeopointsMap(curGeofencesInfoMap);
+
+           //sets text to display current geofences
             displayGeofenceInfo();
             drawGeofenceMapMarker(curGeofenceInfo);
 
-
-            //TODO: Parse object, also myInfoWindowAdapter.setCurrentGeopoints(The Result of the JsonParse)
-            queryResult.setText(result.toString());
+           //TODO: this call is for testing
+           // queryResult.setText(result.toString());
         }
 
     }
 
+    /**
+     * Updates map view to reflect user's new location
+     *
+     * @param newLocation
+     */
     @Override
     public void handleLocationChange(Location newLocation) {
         setCamera();
@@ -495,14 +422,14 @@ public class HistoryFragment extends MainFragment{
         txt_lat.setText("Latitude: " + currentLocation.getLatitude());
         txt_long.setText("Longitude: " + currentLocation.getLongitude());
         setUpMapIfNeeded();
-        addCurLocationMarker();
+       // addCurLocationMarker();
     }
 
-    /*public void showHistoryPopover(){
-        HistoryPopoverDialogFragment dialog = HistoryPopoverDialogFragment.newInstance();
-        dialog.show(getFragmentManager(), "historyDialog");
-    }*/
-
+    /**
+     * Shows the history popover for a given marker on the map
+     *
+     * @param marker
+     */
     private void showPopup(Marker marker){
 
         carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content geofenceInfoObject
@@ -511,12 +438,8 @@ public class HistoryFragment extends MainFragment{
         dialog.show(getFragmentManager(), marker.getTitle());
     }
 
-    private void dismissTooltips(){
-
-    }
-
     /**
-     * Shows the menu drawer with active geofences
+     * Shows the menu drawer with active geofences.
      *//*
     private void showDrawer(){
         ListView lstView = (ListView) view.findViewById(R.id.lst_cur_landmarks);
@@ -544,8 +467,16 @@ public class HistoryFragment extends MainFragment{
     }*/
 
 
+    /**
+     * Testing function to draw circles on maps to show the geofences we are
+     * currently monitoring. Helps to ensure that we are getting geofences from
+     * server
+     *
+     * @param newGeofences
+     */
     @Override
     public void handleNewGeofences(Content[] newGeofences) {
-        drawGeofenceCircles(newGeofences);
+
+        //drawGeofenceCircles(newGeofences);
     }
 }
