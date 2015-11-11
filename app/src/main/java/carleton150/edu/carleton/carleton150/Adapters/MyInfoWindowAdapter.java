@@ -19,6 +19,11 @@ import carleton150.edu.carleton.carleton150.R;
 
 /**
  * Created by haleyhinze on 11/5/15.
+ *
+ * Class to override methods in GoogleMap.InfoWindowAdapter so that we can
+ * make custom views for InfoWindows (windows that pop up when a google map
+ * marker is clicked)
+ *
  */
 public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     LayoutInflater inflater;
@@ -27,7 +32,9 @@ public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     public MyInfoWindowAdapter(){
 
-    } public MyInfoWindowAdapter(LayoutInflater inflater){
+    }
+
+    public MyInfoWindowAdapter(LayoutInflater inflater){
         this.inflater = inflater;
     }
 
@@ -41,6 +48,11 @@ public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         this.currentGeopointsMap = currentGeopointsMap;
     }
 
+    /**
+     * returns a custom view for the InfoWindow
+     * @param marker
+     * @return
+     */
     @Override
     public View getInfoWindow(Marker marker) {
         // Getting view from the layout file info_window_layout
@@ -62,6 +74,12 @@ public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         return v;
     }
 
+    /**
+     * This would be used to set window contents to the default view. We are
+     * using a custom view so it's isn't necessary to return anything here
+     * @param marker
+     * @return
+     */
     @Override
     public View getInfoContents(Marker marker) {
         return null;
