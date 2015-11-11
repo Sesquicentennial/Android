@@ -1,12 +1,13 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.ViewGroup;
 
 /**
  * Created by haleyhinze on 10/8/15.
+ *
+ * Adapter to manage the tabs for the main tab view and set the appropriate Fragment for each
  */
 public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs;

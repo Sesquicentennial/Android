@@ -16,6 +16,9 @@ import carleton150.edu.carleton.carleton150.R;
 
 /**
  * Created by haleyhinze on 11/4/15.
+ *
+ * This class makes a custom adapter for the sliding toolbar in the History class. It probably won't be used.
+ * I'm just leaving it for now in case we decide to use it.
  */
 public class LandmarkListAdapter extends BaseAdapter {
     String [] result;

@@ -33,6 +33,12 @@ public class VolleyRequester {
     public VolleyRequester(){
     }
 
+    /**
+     * Requests information about the current geofences. When information is received, calls
+     * a method in the callerFragment to handle this new information.
+     * @param callerFragment the fragment that called request()
+     * @param mGeofenceList the list of geofences that we are requesting information for
+     */
     public void request(final MainFragment callerFragment, ArrayList<Content> mGeofenceList) {
         if(mGeofenceList == null){
             return;
@@ -45,18 +51,16 @@ public class VolleyRequester {
         }
         geofenceInfoRequestObject.setGeofences(geofenceStrings);
 
+        //Turns the geofenceInfoRequestObject into a JsonObject to send to server
         final Gson gson = new Gson();
         String jsonString = gson.toJson(geofenceInfoRequestObject);
         JSONObject jsonObjectrequest = null;
         try {
             jsonObjectrequest = new JSONObject(jsonString);
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
         Log.i("Request info: ", jsonObjectrequest.toString());
-
         JsonObjectRequest request = new JsonObjectRequest("https://true.localtunnel.me/info", jsonObjectrequest,
                 new Response.Listener<JSONObject>() {
 
@@ -82,6 +86,14 @@ public class VolleyRequester {
         MyApplication.getInstance().getRequestQueue().add(request);
     }
 
+    /**
+     * Method to request new geofences to monitor. When it receives the new geofences,
+     * calls a method in the mainActivity to handle the new geofences
+     *
+     * @param latitude user's latitude
+     * @param longitude user's longitude
+     * @param mainActivity
+     */
     public void requestGeofences(double latitude, double longitude, final MainActivity mainActivity) {
         Location location = new Location();
         location.setLat(latitude);
@@ -98,7 +110,6 @@ public class VolleyRequester {
         try {
             jsonObjectrequest = new JSONObject(jsonString);
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
