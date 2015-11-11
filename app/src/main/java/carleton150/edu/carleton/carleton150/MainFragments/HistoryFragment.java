@@ -82,6 +82,8 @@ public class HistoryFragment extends MainFragment{
 
     private boolean zoomCamera = true;
 
+
+
     private double mDeviceHeight;
     private PopupWindow mPopupWindow;
     private Button btnShowPopup;
@@ -226,7 +228,8 @@ public class HistoryFragment extends MainFragment{
                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
                     public void onInfoWindowClick(Marker marker) {
-                        //TODO: Show popover box
+                        marker.hideInfoWindow();
+                        showPopup(marker);
                     }
                 });
                 setUpMap();
@@ -256,14 +259,38 @@ public class HistoryFragment extends MainFragment{
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
                 setCamera();
-                if(cameraPosition.zoom <= 13){
-                    if(cameraPosition.target==null){
-                       setCamera();
+                if (cameraPosition.zoom <= 13) {
+                    if (cameraPosition.target == null) {
+                        setCamera();
                     }
                     mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
                 }
-            }
-        });
+                double latitude = cameraPosition.target.latitude;
+                double longitude = cameraPosition.target.longitude;
+                if (cameraPosition.target.longitude > -93.141134) {
+                    longitude = -93.141134;
+                }
+                if (cameraPosition.target.longitude < -93.161333) {
+                    longitude = -93.161333;
+                }
+                if (cameraPosition.target.latitude > 44.488045) {
+                    latitude = 44.488045;
+                }
+                if (cameraPosition.target.latitude < 44.458869) {
+                    latitude = 44.458869;
+                }
+
+
+                CameraPosition newCameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(latitude, longitude))
+                        .zoom(cameraPosition.zoom)
+                        .bearing(cameraPosition.bearing)
+                        .build();
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(newCameraPosition));
+                //setCamera();
+
+        }
+    });
         //addCurLocationMarker();
         //addCampusOverlays();
         setCamera();
@@ -307,6 +334,23 @@ public class HistoryFragment extends MainFragment{
             mMap.addCircle(myCircleOptions);
         }
     }*/
+
+    private void drawGeofenceCircles(Content[] geofences){
+        mMap.clear();
+        addCurLocationMarker();
+        for(int i = 0; i<geofences.length; i++){
+            carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Geofence geofence = geofences[i].getGeofence();
+            CircleOptions circleOptions = new CircleOptions();
+            carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Location location = geofence.getLocation();
+            double lat = location.getLat();
+            double lon = location.getLng();
+            circleOptions.center(new LatLng(lat, lon));
+            circleOptions.radius(geofence.getRadius());
+            circleOptions.strokeColor(R.color.colorPrimary);
+            circleOptions.strokeWidth(5);
+            mMap.addCircle(circleOptions);
+        }
+    }
 
     private void setCamera(){
         if(currentLocation != null && zoomCamera) {
@@ -360,9 +404,6 @@ public class HistoryFragment extends MainFragment{
             curGeofencesMap.put(curGeofences.get(i).getName(), curGeofences.get(i));
         }
         queryDatabase(currentGeofences);
-        //TODO: remove this once there is a reliable server and we are parsing JSONs
-        //drawGeofenceMapMarker(curGeofences);
-        //displayGeofenceInfo();
 
     }
 
@@ -457,9 +498,21 @@ public class HistoryFragment extends MainFragment{
         addCurLocationMarker();
     }
 
-    public void showHistoryPopover(){
+    /*public void showHistoryPopover(){
         HistoryPopoverDialogFragment dialog = HistoryPopoverDialogFragment.newInstance();
         dialog.show(getFragmentManager(), "historyDialog");
+    }*/
+
+    private void showPopup(Marker marker){
+
+        carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content geofenceInfoObject
+                = curGeofencesInfoMap.get(marker.getTitle());
+        HistoryPopoverDialogFragment dialog = HistoryPopoverDialogFragment.newInstance(geofenceInfoObject);
+        dialog.show(getFragmentManager(), marker.getTitle());
+    }
+
+    private void dismissTooltips(){
+
     }
 
     /**
@@ -491,9 +544,8 @@ public class HistoryFragment extends MainFragment{
     }*/
 
 
-
-
-
-
-
+    @Override
+    public void handleNewGeofences(Content[] newGeofences) {
+        drawGeofenceCircles(newGeofences);
+    }
 }

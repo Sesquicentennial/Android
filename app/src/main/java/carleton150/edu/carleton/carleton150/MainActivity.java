@@ -624,10 +624,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             }
             removeAllGeofences();
-            //TODO: Parse and add all new fences
-            //TODO: mGeofenceList = parsed list of geofences
-
             addGeofences();
+            MainFragment curFragment = adapter.getCurFragment();
+            curFragment.handleNewGeofences(geofencesContent);
+
         } else {
             Log.i("VolleyInfo", "new geofences are null ");
         }

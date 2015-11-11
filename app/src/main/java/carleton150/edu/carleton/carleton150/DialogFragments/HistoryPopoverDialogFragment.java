@@ -20,18 +20,22 @@ import android.widget.TextView;
 
 import carleton150.edu.carleton.carleton150.ArrayAdapters.LandmarkListAdapter;
 import carleton150.edu.carleton.carleton150.MainActivity;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
 import carleton150.edu.carleton.carleton150.R;
 
 
 public class HistoryPopoverDialogFragment extends DialogFragment {
 
     private View view;
+    private static Content geofenceInfoObject;
     public HistoryPopoverDialogFragment()
     {
     }
 
-    public static HistoryPopoverDialogFragment newInstance() {
+    public static HistoryPopoverDialogFragment newInstance(Content object) {
         HistoryPopoverDialogFragment f = new HistoryPopoverDialogFragment();
+        geofenceInfoObject = object;
         return f;
     }
 
@@ -40,6 +44,10 @@ public class HistoryPopoverDialogFragment extends DialogFragment {
     {
         view = getActivity().getLayoutInflater().
                 inflate(R.layout.fragment_history_popover_dialog, new LinearLayout(getActivity()), false);
+        TextView txtTitle = (TextView) view.findViewById(R.id.txt_title);
+        TextView txtInfo = (TextView) view.findViewById(R.id.txt_info);
+        txtTitle.setText(geofenceInfoObject.getGeofences()[0]);
+        txtInfo.setText(geofenceInfoObject.getData());
 
         // Build dialog
         Dialog builder = new Dialog(getActivity());
