@@ -9,7 +9,7 @@ import carleton150.edu.carleton.carleton150.GeoPoint;
 
 /**
  * Created by haleyhinze on 10/4/15.
- *
+ * Dummy locations class for testing app without server
  */
 public class DummyLocations {
 
