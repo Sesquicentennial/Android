@@ -70,7 +70,7 @@ public class LandmarkListAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 //curFragment.closeDrawer();
-                curFragment.showHistoryPopover();
+                //curFragment.showHistoryPopover();
                 Toast.makeText(context, "You Clicked " + result[position], Toast.LENGTH_LONG).show();
             }
         });

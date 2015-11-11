@@ -46,6 +46,10 @@ public class MainFragment extends Fragment{
 
     }
 
+    public void handleNewGeofences(Content[] newGeofences){
+
+    }
+
 }
 
 
