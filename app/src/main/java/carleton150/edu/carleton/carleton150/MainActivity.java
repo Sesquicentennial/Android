@@ -87,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     AlertDialog networkAlertDialog;
     AlertDialog playServicesConnectivityAlertDialog;
 
+    boolean DEBUG_MODE = true;
+
 
 
     @Override
@@ -120,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         }
+
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_action_history));
         tabLayout.addTab(tabLayout.newTab().setText("Social"));
@@ -431,13 +434,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             // Update state and save in shared preferences.
             mGeofencesAdded = !mGeofencesAdded;
 
-            //TODO: This is just for testing. Remove it later
-            Toast.makeText(
-                    this,
-                    getString(mGeofencesAdded ? R.string.geofences_added :
-                            R.string.geofences_removed),
-                    Toast.LENGTH_SHORT
-            ).show();
+            if(DEBUG_MODE) {
+                //TODO: This is just for testing. Remove it later
+                Toast.makeText(
+                        this,
+                        getString(mGeofencesAdded ? R.string.geofences_added :
+                                R.string.geofences_removed),
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
         } else {
             // Get the status code and log it.
             String errorMessage = GeofenceErrorMessages.getErrorString(this,
@@ -558,10 +563,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Log.i("geofence debugging: ", "updatecurrentgeofences mainactivity: transition type" + transitionType);
         if(transitionType == Geofence.GEOFENCE_TRANSITION_ENTER){
             Log.i("geofence debugging: ", "updatecurrentgeofences mainactivity: transition type enter");
-            curGeofences.clear();
-            Toast.makeText(getApplicationContext(),
-                    "entered! Geofence size is: " + geofenceNames.length, Toast.LENGTH_SHORT)
-                    .show();
+            //curGeofences.clear();
 
         }
         for(int i = 0; i<geofenceNames.length; i++){
@@ -616,7 +618,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                                 // Set the transition types of interest. Alerts are only generated for these
                                 // transition. We track entry and exit transitions in this sample.
-                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
                                 //.setTransitionTypes(Geofence.GEOFENCE_TRANSITION_EXIT)
 
                                 // Create the geofence.
@@ -625,8 +627,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
             removeAllGeofences();
             addGeofences();
+
+
             MainFragment curFragment = adapter.getCurFragment();
             curFragment.handleNewGeofences(geofencesContent);
+
 
         } else {
             Log.i("VolleyInfo", "new geofences are null ");
@@ -688,7 +693,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             dialog.show();
         }
     }
-
 
     /**
      * TODO : 1. Make sure we are getting geofences when server is running
