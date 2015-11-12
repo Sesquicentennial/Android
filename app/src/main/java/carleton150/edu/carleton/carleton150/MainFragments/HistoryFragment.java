@@ -55,6 +55,7 @@ public class HistoryFragment extends MainFragment{
     private TextView txt_long;
     ArrayList<Marker> currentGeofenceMarkers = new ArrayList<Marker>();
     private MainActivity mainActivity;
+    private boolean DEBUG_MODE = true;
 
     public HistoryFragment() {
         // Required empty public constructor
@@ -388,7 +389,7 @@ public class HistoryFragment extends MainFragment{
     public void handleResult(GeofenceInfoObject result) {
 
         //TODO:TextView for testing that I'm recieving correct query. Remove for final version
-       // TextView queryResult = (TextView) view.findViewById(R.id.txt_query_result);
+       TextView queryResult = (TextView) view.findViewById(R.id.txt_query_result);
        if (result == null) {
            //TODO: Do something here if there is an error (check error message, check internet, maybe make new query, etc..)
            //   queryResult.setText("Error with volley");
@@ -405,7 +406,9 @@ public class HistoryFragment extends MainFragment{
             drawGeofenceMapMarker(curGeofenceInfo);
 
            //TODO: this call is for testing
-           // queryResult.setText(result.toString());
+           if(DEBUG_MODE) {
+               queryResult.setText(result.toString());
+           }
         }
 
     }
@@ -476,7 +479,8 @@ public class HistoryFragment extends MainFragment{
      */
     @Override
     public void handleNewGeofences(Content[] newGeofences) {
-
-        //drawGeofenceCircles(newGeofences);
+        if(DEBUG_MODE) {
+            drawGeofenceCircles(newGeofences);
+        }
     }
 }
