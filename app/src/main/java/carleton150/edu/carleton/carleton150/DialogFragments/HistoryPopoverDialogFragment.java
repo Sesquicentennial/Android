@@ -12,7 +12,8 @@ import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
- * Class to manage a HistoryPopoverDialogFragment.
+ * Class to manage a HistoryPopoverDialogFragment. Currently fills in a text view
+ * and a title from the geofenceInfoObject
  */
 public class HistoryPopoverDialogFragment extends DialogFragment {
 

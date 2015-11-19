@@ -34,7 +34,7 @@ public class VolleyRequester {
     }
 
     /**
-     * Requests information about the current geofences. When information is received, calls
+     * Requests information about the current active geofences. When information is received, calls
      * a method in the callerFragment to handle this new information.
      * @param callerFragment the fragment that called request()
      * @param mGeofenceList the list of geofences that we are requesting information for
@@ -68,12 +68,9 @@ public class VolleyRequester {
                     public void onResponse(JSONObject response) {
                         String responseString = response.toString();
                         GeofenceInfoObject geofenceInfoResponseObject = gson.fromJson(responseString, GeofenceInfoObject.class);
-
-
                         callerFragment.handleResult(geofenceInfoResponseObject);
                     }
                 },
-
                 new Response.ErrorListener() {
 
                     @Override

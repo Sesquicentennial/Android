@@ -11,6 +11,11 @@ import android.view.ViewGroup;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
+ * The main fragment for the Social portion of the app. Most
+ * of the code was automatically generated and won't be used
+ * for the final version, but it's helpful for figuring out how
+ * to use fragments
+ *
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * {@link SocialFragment.OnFragmentInteractionListener} interface
