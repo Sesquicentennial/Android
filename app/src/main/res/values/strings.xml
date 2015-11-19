@@ -11,4 +11,6 @@
     <string name = "geofences_added">Geofences added</string>
     <string name = "geofences_removed">Geofences removed</string>
     <string name = "not_connected">Not connected to google api client</string>
+    <string name = "no_network_connection">No network connection. Please connect and try again.</string>
+    <string name = "no_google_services">Google Play Services is unavailable</string>
 </resources>

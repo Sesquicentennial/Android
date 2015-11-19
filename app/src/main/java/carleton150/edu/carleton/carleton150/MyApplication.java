@@ -7,6 +7,10 @@ import com.android.volley.toolbox.Volley;
 
 /**
  * Created by haleyhinze on 10/28/15.
+ *
+ * Overrides the Application superclass. This makes it possible to use Volley (a
+ * library to handle server requests)
+ * to communicate with the server
  */
 public class MyApplication extends Application{
 
@@ -17,9 +21,7 @@ public class MyApplication extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
-
         mRequestQueue = Volley.newRequestQueue(this);
-
         sInstance = this;
     }
 

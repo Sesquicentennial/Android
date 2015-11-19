@@ -4,16 +4,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.gms.location.Geofence;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.HashMap;
 
-import carleton150.edu.carleton.carleton150.GeoPoint;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content;
 import carleton150.edu.carleton.carleton150.R;
 
@@ -38,8 +33,6 @@ public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         this.inflater = inflater;
     }
 
-
-    //TODO: SET CURRENT GEOPOINTS WHEN WE HAVE THEM!!!!!
     public void setCurrentGeopoints(Content[] currentGeopoints){
         this.currentGeopoints = currentGeopoints;
     }
@@ -58,9 +51,6 @@ public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         // Getting view from the layout file info_window_layout
         View v = inflater.inflate(R.layout.custom_info_window, null);
 
-        // Getting the position from the marker
-        LatLng clickMarkerLatLng = marker.getPosition();
-
         TextView title = (TextView) v.findViewById(R.id.title);
         TextView snippet = (TextView) v.findViewById(R.id.snippet);
         if(currentGeopointsMap.get(marker.getTitle()) != null) {
@@ -75,7 +65,7 @@ public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     }
 
     /**
-     * This would be used to set window contents to the default view. We are
+     * This would be used to set window contents in the default info window view. We are
      * using a custom view so it's isn't necessary to return anything here
      * @param marker
      * @return

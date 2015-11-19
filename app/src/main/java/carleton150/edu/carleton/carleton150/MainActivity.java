@@ -34,20 +34,20 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.MyFragmentPagerAdapter;
-import carleton150.edu.carleton.carleton150.Models.DummyLocations;
 import carleton150.edu.carleton.carleton150.Models.GeofenceErrorMessages;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Content;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObject;
 
-
+/**
+ * Monitors location and geofence information and calls methods in the main view fragments
+ * to handle geofence and location changes. Also controls which fragment is in view.
+ */
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status> {
 
@@ -68,9 +68,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private boolean mRequestingLocationUpdates = true;
     private LocationRequest mLocationRequest;
     // Location updates intervals in milliseconds
-    private static int UPDATE_INTERVAL = 3000; // 3 sec
-    private static int FASTEST_INTERVAL = 1000; // 1 sec
-    private static int DISPLACEMENT = 0; // 0 meters
+    private static int UPDATE_INTERVAL = 30000; // 30 sec
+    private static int FASTEST_INTERVAL = 10000; // 10 sec
+    private static int DISPLACEMENT = 10; // 10 meters
 
     //things for detecting geofence entry
     protected ArrayList<Geofence> mGeofenceList;
@@ -81,13 +81,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private HashMap<String, Content> allGeopointsByName = new HashMap<String, Content>();
     private VolleyRequester mVolleyRequester = new VolleyRequester();
 
-    private static String ERROR_NO_INTERNET = "No network connection. Please connect and try again.";
-    private static String ERROR_NO_PLAY_SERVICES = "Google Play Services is unavailable";
-
     AlertDialog networkAlertDialog;
     AlertDialog playServicesConnectivityAlertDialog;
 
-    boolean DEBUG_MODE = true;
+    boolean DEBUG_MODE = false;
 
 
 
@@ -601,33 +598,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 String name = geofencesContent[i].getName();
                 allGeopointsByName.put(name, geofencesContent[i]);
                 mGeofenceList.add(new Geofence.Builder()
-                        // Set the request ID of the geofence. This is a string to identify this
-                        // geofence.
+                        // Set the request ID of the geofence to identify the geofence
                         .setRequestId(name)
-
-                                // Set the circular region of this geofence.
+                        // Set the circular region of this geofence.
                         .setCircularRegion(
                                 latitude,
                                 longitude,
                                 radius
                         )
-
-                                // Set the expiration duration of the geofence. This geofence gets automatically
-                                // removed after this period of time.
+                        // Set the expiration duration of the geofence to never expire
                         .setExpirationDuration(Geofence.NEVER_EXPIRE)
-
-                                // Set the transition types of interest. Alerts are only generated for these
-                                // transition. We track entry and exit transitions in this sample.
+                        // Set the transition types of interest to track entry and exit transitions in this sample.
                         .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
-                                //.setTransitionTypes(Geofence.GEOFENCE_TRANSITION_EXIT)
-
-                                // Create the geofence.
                         .build());
 
             }
             removeAllGeofences();
             addGeofences();
-
 
             MainFragment curFragment = adapter.getCurFragment();
             curFragment.handleNewGeofences(geofencesContent);
@@ -665,12 +652,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * displays a dialog requesting that the user connect to a network
      */
     public void showNetworkNotConnectedDialog() {
-        showAlertDialog(ERROR_NO_INTERNET,
+        showAlertDialog(getResources().getString(R.string.no_network_connection),
                 networkAlertDialog);
     }
 
     private void showGooglePlayServicesUnavailableDialog(){
-        showAlertDialog(ERROR_NO_PLAY_SERVICES, playServicesConnectivityAlertDialog);
+        showAlertDialog(getResources().getString(R.string.no_google_services), playServicesConnectivityAlertDialog);
     }
 
     /**
@@ -695,11 +682,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     /**
-     * TODO : 1. Make sure we are getting geofences when server is running
-     * TODO : 2. Parse those geofences in handleNewGeofences in this class, and also in HistoryFragment handleResult
-     * TODO: 3. Get rid of all references to dummy geofences
-     * TODO: 4. Figure out how to show error messages and repeat requests when Volley isn't working
-     * TODO: 5. Add in network checks everywhere and make good error message to display
-     * TODO: 6. Popover box
+     * TODO: Figure out how to show error messages and repeat requests when Volley isn't working
      */
 }
