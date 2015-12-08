@@ -20,6 +20,6 @@ public class GeofenceRequestObject
     @Override
     public String toString()
     {
-        return "ClassPojo [geofence = "+geofence+"]";
+        return "GeofenceRequestObject [geofence = "+geofence+"]";
     }
 }

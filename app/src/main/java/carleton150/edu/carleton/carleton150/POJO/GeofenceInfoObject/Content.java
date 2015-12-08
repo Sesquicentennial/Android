@@ -68,6 +68,11 @@ public class Content
     @Override
     public String toString()
     {
-        return "ClassPojo [summary = "+summary+", _id = "+_id+", data = "+data+", geofences = "+geofences+", type = "+type+"]";
+        try {
+            return "Content [summary = " + summary + ", _id = " + _id + ", data = " + data + ", geofences = " + geofences.toString() + ", type = " + type + "]";
+        } catch(NullPointerException e){
+            e.printStackTrace();
+            return "null content";
+        }
     }
 }

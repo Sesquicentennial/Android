@@ -32,6 +32,6 @@ public class Geofence
     @Override
     public String toString()
     {
-        return "ClassPojo [location = "+location+", radius = "+radius+"]";
+        return "Geofence [location = "+location.toString()+", radius = "+radius+"]";
     }
 }

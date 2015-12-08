@@ -61,7 +61,7 @@ public class VolleyRequester {
             e.printStackTrace();
         }
         Log.i("Request info: ", jsonObjectrequest.toString());
-        JsonObjectRequest request = new JsonObjectRequest("https://carl.localtunnel.me/info", jsonObjectrequest,
+        JsonObjectRequest request = new JsonObjectRequest("http://carl150.carleton.edu/info", jsonObjectrequest,
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -110,7 +110,7 @@ public class VolleyRequester {
             e.printStackTrace();
         }
 
-        JsonObjectRequest request = new JsonObjectRequest("https://carl.localtunnel.me/geofences", jsonObjectrequest,
+        JsonObjectRequest request = new JsonObjectRequest("http://carl150.carleton.edu/geofences", jsonObjectrequest,
                 new Response.Listener<JSONObject>() {
 
                     @Override

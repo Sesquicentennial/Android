@@ -20,7 +20,11 @@ public class GeofenceInfoObject
     @Override
     public String toString()
     {
-        return "ClassPojo [content = "+content+"]";
+        String contentString = "";
+        for(int i = 0; i<content.length; i++){
+            contentString += content[i].toString();
+        }
+        return "GeofenceInfoObject [content = "+contentString+"]";
     }
 }
 
