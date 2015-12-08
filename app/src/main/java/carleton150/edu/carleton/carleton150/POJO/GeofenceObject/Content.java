@@ -44,7 +44,7 @@ public class Content
     @Override
     public String toString()
     {
-        return "ClassPojo [geofence = "+geofence+", _id = "+_id+", name = "+name+"]";
+        return "Content [geofence = "+geofence+", _id = "+_id+", name = "+name+"]";
     }
 }
 

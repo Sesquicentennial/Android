@@ -218,8 +218,14 @@ public class HistoryFragment extends MainFragment{
                         .build();
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(newCameraPosition));
 
-        }
-    });
+            }
+        });
+
+        //TODO:Fake query for testing
+        ArrayList<Content> query = new ArrayList<>();
+        Content collierContent = new Content();
+        collierContent.setName("Collier House");
+        //queryDatabase(query);
         setCamera();
     }
 
@@ -415,26 +421,33 @@ public class HistoryFragment extends MainFragment{
     public void handleResult(GeofenceInfoObject result) {
 
        if (result == null) {
+           Log.i("result is: ", "NULL");
            //TODO: Do something here if there is an error (check error message, check internet, maybe make new query, etc..)
            //   queryResult.setText("Error with volley");
         } else {
-            curGeofenceInfo = result.getContent();
-            makeGeofenceInfoMap(curGeofenceInfo);
+           Log.i("result is: ",  result.toString());
+           try {
+               curGeofenceInfo = result.getContent();
+               makeGeofenceInfoMap(curGeofenceInfo);
 
-           //Gives information to the infoWindowAdapter for displaying info windows
-            myInfoWindowAdapter.setCurrentGeopoints(curGeofenceInfo);
-            myInfoWindowAdapter.setCurrentGeopointsMap(curGeofencesInfoMap);
+               //Gives information to the infoWindowAdapter for displaying info windows
+               myInfoWindowAdapter.setCurrentGeopoints(curGeofenceInfo);
+               myInfoWindowAdapter.setCurrentGeopointsMap(curGeofencesInfoMap);
 
-           //sets text to display current geofences
-            displayGeofenceInfo();
-            drawGeofenceMapMarker(curGeofenceInfo);
+               //sets text to display current geofences
+               displayGeofenceInfo();
+               drawGeofenceMapMarker(curGeofenceInfo);
 
-           if(!DEBUG_MODE){
-               queryResult.setVisibility(View.GONE);
-           }
+               if (!DEBUG_MODE) {
+                   queryResult.setVisibility(View.GONE);
+               }
                queryResult.setText(result.toString());
 
-        }
+           }catch (NullPointerException e){
+               e.printStackTrace();
+               queryResult.setText("the geofence request returned a null content array");
+           }
+       }
 
     }
 
