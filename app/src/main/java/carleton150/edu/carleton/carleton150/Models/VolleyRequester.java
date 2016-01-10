@@ -61,7 +61,7 @@ public class VolleyRequester {
             e.printStackTrace();
         }
         Log.i("Request info: ", jsonObjectrequest.toString());
-        JsonObjectRequest request = new JsonObjectRequest("http://carl150.carleton.edu/info", jsonObjectrequest,
+        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/info", jsonObjectrequest,
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -110,12 +110,13 @@ public class VolleyRequester {
             e.printStackTrace();
         }
 
-        JsonObjectRequest request = new JsonObjectRequest("http://carl150.carleton.edu/geofences", jsonObjectrequest,
+        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/geofences", jsonObjectrequest,
                 new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
                         String responseString = response.toString();
+                        Log.i("VolleyStuff", "response string = : " + responseString);
                         GeofenceObject responseObject = gson.fromJson(responseString, GeofenceObject.class);
                         mainActivity.handleNewGeofences(responseObject);
                     }
