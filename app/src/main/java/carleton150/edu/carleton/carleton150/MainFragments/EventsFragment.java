@@ -1,13 +1,23 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
 import android.app.Activity;
+import android.app.ListFragment;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import carleton150.edu.carleton.carleton150.Adapters.EventsListAdapter;
+import carleton150.edu.carleton.carleton150.POJO.Event;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
@@ -18,12 +28,12 @@ import carleton150.edu.carleton.carleton150.R;
  *
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link SocialFragment.OnFragmentInteractionListener} interface
+ * {@link EventsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link SocialFragment#newInstance} factory method to
+ * Use the {@link EventsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SocialFragment extends MainFragment {
+public class EventsFragment extends MainFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -34,6 +44,9 @@ public class SocialFragment extends MainFragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private ListView eventsListView;
+    private ArrayList<Event> events = new ArrayList<>();
+    private EventsListAdapter eventsListAdapter;
 
     /**
      * Use this factory method to create a new instance of
@@ -44,8 +57,8 @@ public class SocialFragment extends MainFragment {
      * @return A new instance of fragment SocialFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SocialFragment newInstance(String param1, String param2) {
-        SocialFragment fragment = new SocialFragment();
+    public static EventsFragment newInstance(String param1, String param2) {
+        EventsFragment fragment = new EventsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -53,7 +66,7 @@ public class SocialFragment extends MainFragment {
         return fragment;
     }
 
-    public SocialFragment() {
+    public EventsFragment() {
         // Required empty public constructor
     }
 
@@ -70,7 +83,14 @@ public class SocialFragment extends MainFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_social, container, false);
+        View v = inflater.inflate(R.layout.fragment_events, container, false);
+        eventsListView = (ListView) v.findViewById(R.id.lst_events);
+
+        makeDummyEvents();
+        eventsListAdapter = new EventsListAdapter(events, getActivity().getApplicationContext());
+        eventsListView.setAdapter(eventsListAdapter);
+
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -105,6 +125,25 @@ public class SocialFragment extends MainFragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+    }
+
+    /**
+     * makes a dummy event list for use before we are loading events
+     * from server
+     */
+    private void makeDummyEvents(){
+        for (int i = 0; i<5; i++) {
+            Event event1 = new Event();
+            event1.setTitle("Event " + i);
+            event1.setDescription("Dummy event description " + i);
+            Date d = null;
+            Calendar cal = GregorianCalendar.getInstance();
+            cal.set(2016, i, 22, 4, 30);
+            d = cal.getTime();
+            event1.setDate(d);
+            event1.setLocation("Dummy location " + i);
+            events.add(event1);
+        }
     }
 
 }
