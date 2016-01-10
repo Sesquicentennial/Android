@@ -26,7 +26,7 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
                 HistoryFragment tab1 = new HistoryFragment();
                 return tab1;
             case 1:
-                SocialFragment tab2 = new SocialFragment();
+                EventsFragment tab2 = new EventsFragment();
                 return tab2;
             default:
                 return null;
