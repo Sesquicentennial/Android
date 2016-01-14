@@ -118,6 +118,10 @@ public class MainFragment extends Fragment{
         }
     }
 
+    public void googlePlayServicesConnected(){
+
+    }
+
 }
 
 

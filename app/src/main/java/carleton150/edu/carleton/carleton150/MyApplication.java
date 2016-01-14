@@ -23,6 +23,7 @@ public class MyApplication extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
+
         InputStream keyStore = getResources().openRawResource(R.raw.my);
         mRequestQueue = Volley.newRequestQueue(this,
                 new ExtHttpClientStack(new SslHttpClient(keyStore, "mysecret", 80)));
