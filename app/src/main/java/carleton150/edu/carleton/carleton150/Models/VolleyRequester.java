@@ -43,7 +43,7 @@ public class VolleyRequester {
         if(mGeofenceList == null){
             return;
         }
-        GeofenceInfoRequestObject geofenceInfoRequestObject = new GeofenceInfoRequestObject();
+        final GeofenceInfoRequestObject geofenceInfoRequestObject = new GeofenceInfoRequestObject();
         String[] geofenceStrings = new String[mGeofenceList.size()];
 
         for(int i = 0 ; i<mGeofenceList.size(); i++){
@@ -68,6 +68,7 @@ public class VolleyRequester {
                     public void onResponse(JSONObject response) {
                         String responseString = response.toString();
                         GeofenceInfoObject geofenceInfoResponseObject = gson.fromJson(responseString, GeofenceInfoObject.class);
+                        Log.i("Volley info", "length of response: " + geofenceInfoResponseObject.getContent().length);
                         callerFragment.handleResult(geofenceInfoResponseObject);
                     }
                 },
@@ -76,7 +77,6 @@ public class VolleyRequester {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         callerFragment.handleResult(null);
-
                     }
                 }
         );

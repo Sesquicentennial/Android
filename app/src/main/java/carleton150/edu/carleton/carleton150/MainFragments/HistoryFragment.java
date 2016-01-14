@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import carleton150.edu.carleton.carleton150.Adapters.MyInfoWindowAdapter;
 import carleton150.edu.carleton.carleton150.DialogFragments.HistoryPopoverDialogFragment;
-import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Content;
 import carleton150.edu.carleton.carleton150.R;
@@ -57,7 +56,6 @@ public class HistoryFragment extends MainFragment{
     private TextView txt_lat;
     private TextView txt_long;
     ArrayList<Marker> currentGeofenceMarkers = new ArrayList<Marker>();
-    private MainActivity mainActivity;
     private boolean DEBUG_MODE = false;
     private TextView queryResult;
     private Content[] geofencesBeingMonitored;
@@ -74,7 +72,6 @@ public class HistoryFragment extends MainFragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mainActivity= (MainActivity) getActivity();
     }
 
     @Override
@@ -104,18 +101,22 @@ public class HistoryFragment extends MainFragment{
                         queryResult.setVisibility(View.GONE);
                     }
                 } else {
-                    drawGeofenceCircles(geofencesBeingMonitored);
-                    drawGeofenceMapMarker(curGeofenceInfo);
-                    queryResult.setVisibility(View.VISIBLE);
+                    try {
+                        drawGeofenceCircles(geofencesBeingMonitored);
+                        drawGeofenceMapMarker(curGeofenceInfo);
+                        queryResult.setVisibility(View.VISIBLE);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
             }
         });
-        mainActivity = (MainActivity) getActivity();
+        //mainActivity = (MainActivity) getActivity();
 
         if(isConnectedToNetwork()) {
             setUpMapIfNeeded(); // For setting up the MapFragment
         } else {
-            mainActivity.showNetworkNotConnectedDialog();
+            super.mainActivity.showNetworkNotConnectedDialog();
         }
 
 
@@ -298,7 +299,7 @@ public class HistoryFragment extends MainFragment{
      */
     public boolean isConnectedToNetwork(){
         ConnectivityManager connectivityManager
-                = (ConnectivityManager) mainActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
+                = (ConnectivityManager) super.mainActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
@@ -313,7 +314,7 @@ public class HistoryFragment extends MainFragment{
         if(isConnectedToNetwork()) {
             setUpMapIfNeeded();
         } else {
-            mainActivity.showNetworkNotConnectedDialog();
+            super.mainActivity.showNetworkNotConnectedDialog();
         }
     }
 
@@ -421,6 +422,7 @@ public class HistoryFragment extends MainFragment{
      */
     @Override
     public void handleResult(GeofenceInfoObject result) {
+        super.handleResult(result);
        if (result == null) {
            Log.i("result is: ", "NULL");
            //TODO: Do something here if there is an error (check error message, check internet, maybe make new query, etc..)
