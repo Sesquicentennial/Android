@@ -11,7 +11,7 @@ public class Content
 
     private String data;
 
-    private String[] geofences;
+    private String name;
 
     private String type;
 
@@ -45,14 +45,14 @@ public class Content
         this.data = data;
     }
 
-    public String[] getGeofences ()
+    public String getName ()
     {
-        return geofences;
+        return name;
     }
 
-    public void setGeofences (String[] geofences)
+    public void setName (String name)
     {
-        this.geofences = geofences;
+        this.name = name;
     }
 
     public String getType ()
@@ -69,7 +69,7 @@ public class Content
     public String toString()
     {
         try {
-            return "Content [summary = " + summary + ", _id = " + _id + ", data = " + data + ", geofences = " + geofences.toString() + ", type = " + type + "]";
+            return "Content [summary = " + summary + ", _id = " + _id + ", data = " + data + ", geofences = " + name + ", type = " + type + "]";
         } catch(NullPointerException e){
             e.printStackTrace();
             return "null content";

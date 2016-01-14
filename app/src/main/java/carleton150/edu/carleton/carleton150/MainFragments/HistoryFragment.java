@@ -351,7 +351,7 @@ public class HistoryFragment extends MainFragment{
             Log.i("Geofence info: ", "length is 0");
         }
         for(int i = 0; i < currentGeofences.length; i++){
-            String curGeofenceName = currentGeofences[i].getGeofences()[0];
+            String curGeofenceName = currentGeofences[i].getName();
             curGeofencesInfoMap.put(curGeofenceName, currentGeofences[i]);
         }
     }
@@ -375,7 +375,9 @@ public class HistoryFragment extends MainFragment{
             }
             for (int i = 0; i < currentGeofences.length; i++) {
                 carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content curGeofence = currentGeofences[i];
-                String curGeofenceName = currentGeofences[i].getGeofences()[0];
+                Log.i("Debug Mode", "i = " + i + "summary: " + curGeofence.getSummary());
+                Log.i("Debug Mode", curGeofence.toString());
+                String curGeofenceName = currentGeofences[i].getName();
                 Content geofence = curGeofencesMap.get(curGeofenceName);
                 double lat = geofence.getGeofence().getLocation().getLat();
                 double lon = geofence.getGeofence().getLocation().getLng();
@@ -419,7 +421,6 @@ public class HistoryFragment extends MainFragment{
      */
     @Override
     public void handleResult(GeofenceInfoObject result) {
-
        if (result == null) {
            Log.i("result is: ", "NULL");
            //TODO: Do something here if there is an error (check error message, check internet, maybe make new query, etc..)

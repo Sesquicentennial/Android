@@ -36,7 +36,7 @@ public class HistoryPopoverDialogFragment extends DialogFragment {
                 inflate(R.layout.fragment_history_popover_dialog, new LinearLayout(getActivity()), false);
         TextView txtTitle = (TextView) view.findViewById(R.id.txt_title);
         TextView txtInfo = (TextView) view.findViewById(R.id.txt_info);
-        txtTitle.setText(geofenceInfoObject.getGeofences()[0]);
+        txtTitle.setText(geofenceInfoObject.getName());
         txtInfo.setText(geofenceInfoObject.getData());
 
         // Build dialog
