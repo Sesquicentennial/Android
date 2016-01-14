@@ -89,10 +89,10 @@ public class VolleyRequester {
      *
      * @param latitude user's latitude
      * @param longitude user's longitude
-     * @param mainActivity
+     * @param callerFragment
      */
-    public void requestGeofences(double latitude, double longitude, final MainActivity mainActivity) {
-        Log.i("Volley info", "about to request geofences");
+    public void requestGeofences(double latitude, double longitude, final MainFragment callerFragment) {
+        Log.i("Volley info", "about to request geofences. Lat: " + latitude + " Long: " + longitude);
         Location location = new Location();
         location.setLat(latitude);
         location.setLng(longitude);
@@ -119,7 +119,7 @@ public class VolleyRequester {
                         String responseString = response.toString();
                         Log.i("VolleyStuff", "response string = : " + responseString);
                         GeofenceObject responseObject = gson.fromJson(responseString, GeofenceObject.class);
-                        mainActivity.handleNewGeofences(responseObject);
+                        callerFragment.handleNewGeofences(responseObject.getContent());
                     }
                 },
 
@@ -127,9 +127,11 @@ public class VolleyRequester {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        if(mainActivity!=null) {
+                        if(callerFragment!=null) {
                             Log.i("VolleyStuff", "MainActivity is not null");
-                            mainActivity.handleNewGeofences(null);
+                            Log.i("Volley error", error.toString());
+                            error.printStackTrace();
+                            callerFragment.handleNewGeofences(null);
                         }else{
                             Log.i("VolleyStuff", "MainActivity is null");
                         }
