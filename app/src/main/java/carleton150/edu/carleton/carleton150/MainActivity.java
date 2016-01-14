@@ -622,6 +622,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         } else {
             Log.i("VolleyInfo", "new geofences are null ");
+            if(isConnectedToNetwork()){
+                //TODO: for testing only
+                Toast toast = Toast.makeText(this, "Null info result, network connected", Toast.LENGTH_SHORT);
+                toast.show();
+            }else{
+                showNetworkNotConnectedDialog();
+            }
         }
     }
 
