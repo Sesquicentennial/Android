@@ -129,6 +129,7 @@ public class VolleyRequester {
                     public void onErrorResponse(VolleyError error) {
                         if(mainActivity!=null) {
                             Log.i("VolleyStuff", "MainActivity is not null");
+                            Log.i("Volley error", error.toString());
                             mainActivity.handleNewGeofences(null);
                         }else{
                             Log.i("VolleyStuff", "MainActivity is null");
