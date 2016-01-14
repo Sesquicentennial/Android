@@ -92,6 +92,7 @@ public class VolleyRequester {
      * @param mainActivity
      */
     public void requestGeofences(double latitude, double longitude, final MainActivity mainActivity) {
+        Log.i("Volley info", "about to request geofences");
         Location location = new Location();
         location.setLat(latitude);
         location.setLng(longitude);

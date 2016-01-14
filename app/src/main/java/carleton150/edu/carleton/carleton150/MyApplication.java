@@ -1,9 +1,11 @@
 package carleton150.edu.carleton.carleton150;
 
 import android.app.Application;
-
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import java.io.InputStream;
+import carleton150.edu.carleton.carleton150.CertificateManagement.ExtHttpClientStack;
+import carleton150.edu.carleton.carleton150.CertificateManagement.SslHttpClient;
 
 /**
  * Created by haleyhinze on 10/28/15.
@@ -21,7 +23,9 @@ public class MyApplication extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
-        mRequestQueue = Volley.newRequestQueue(this);
+        InputStream keyStore = getResources().openRawResource(R.raw.my);
+        mRequestQueue = Volley.newRequestQueue(this,
+                new ExtHttpClientStack(new SslHttpClient(keyStore, "mysecret", 80)));
         sInstance = this;
     }
 
