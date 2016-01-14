@@ -139,4 +139,45 @@ public class VolleyRequester {
         );
         MyApplication.getInstance().getRequestQueue().add(request);
     }
+
+    public void requestEvents(String startTime, int limit){
+
+        //Creates request object
+        JSONObject eventRequest = new JSONObject();
+        try {
+            eventRequest.put("startTime", startTime);
+            eventRequest.put("limit", limit);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/events", eventRequest,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String responseString = response.toString();
+                        Log.i("VolleyStuff", "response string = : " + responseString);
+                       // GeofenceObject responseObject = gson.fromJson(responseString, GeofenceObject.class);
+                       // mainActivity.handleNewGeofences(responseObject);
+                    }
+                },
+
+                new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        /*if(mainActivity!=null) {
+                            Log.i("VolleyStuff", "MainActivity is not null");
+                            mainActivity.handleNewGeofences(null);
+                        }else{
+                            Log.i("VolleyStuff", "MainActivity is null");
+                        }*/
+                    }
+                }
+        );
+        MyApplication.getInstance().getRequestQueue().add(request);
+
+    }
 }
