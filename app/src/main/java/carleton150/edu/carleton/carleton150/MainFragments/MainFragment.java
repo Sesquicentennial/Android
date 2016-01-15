@@ -29,6 +29,7 @@ public class MainFragment extends Fragment{
 
     //communicates with server
     VolleyRequester volleyRequester = new VolleyRequester();
+    protected boolean connected = true;
 
 
 
@@ -55,14 +56,7 @@ public class MainFragment extends Fragment{
 
     }
 
-    /**
-     * queries database for information about geofences
-     * @param geofence
-     */
-    public void queryDatabase(ArrayList<Content> geofence){
-        Log.i("about to query database", geofence.toString());
-        volleyRequester.request(this, geofence);
-    }
+
 
     /**
      * Handles results of query for information about geofences
@@ -70,15 +64,12 @@ public class MainFragment extends Fragment{
      */
     public void handleResult(GeofenceInfoObject result){
         if(result == null){
-            if(isConnectedToNetwork()){
-                //TODO: for testing only
-                Toast toast = Toast.makeText(mainActivity, "Null info result, network connected", Toast.LENGTH_SHORT);
+
+                Toast toast = Toast.makeText(mainActivity, "Null info result", Toast.LENGTH_SHORT);
                 toast.show();
-            }else{
-                mainActivity.showNetworkNotConnectedDialog();
             }
         }
-    }
+
 
     /**
      * handles when the user's location changes
@@ -96,29 +87,15 @@ public class MainFragment extends Fragment{
 
     }
 
-    /**
-     * checks whether phone has network connection. If not, displays a dialog
-     * requesting that the user connects to a network.
-     * @return
-     */
-    public boolean isConnectedToNetwork(){
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        if(activeNetworkInfo != null){
-            if(activeNetworkInfo.isConnected()) {
-                return true;
-            } else {
-                mainActivity.showNetworkNotConnectedDialog();
-                return false;
-            }
-        }else {
-            mainActivity.showNetworkNotConnectedDialog();
-            return false;
-        }
+    public void googlePlayServicesConnected(){
+
     }
 
-    public void googlePlayServicesConnected(){
+    public void stopProcesses(){
+
+    }
+
+    public void resumeProcesses(){
 
     }
 
