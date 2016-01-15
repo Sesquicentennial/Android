@@ -1,10 +1,13 @@
 package carleton150.edu.carleton.carleton150.Adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
@@ -29,6 +32,7 @@ public class EventsListAdapter extends BaseAdapter {
         TextView txtLocation;
         TextView txtDate;
         TextView txtDescription;
+        View view;
     }
 
     public EventsListAdapter(List<EventContent> events, Context context){
@@ -64,6 +68,7 @@ public class EventsListAdapter extends BaseAdapter {
             holder.txtLocation = (TextView) v.findViewById(R.id.txt_location);
             holder.txtDate = (TextView) v.findViewById(R.id.txt_date);
             holder.txtDescription = (TextView) v.findViewById(R.id.txt_description);
+            holder.view = v;
             v.setTag(holder);
         }
 
@@ -80,8 +85,10 @@ public class EventsListAdapter extends BaseAdapter {
             public void onClick(View v) {
                 if(activeHolder != null) {
                     activeHolder.txtDescription.setVisibility(View.GONE);
+                    activeHolder.view.setBackgroundColor(Color.parseColor("#e4decf"));
                 }
                 holder.txtDescription.setVisibility(View.VISIBLE);
+                holder.view.setBackgroundColor(Color.parseColor("#CFC4C0"));
                 activeHolder = holder;
             }
         });
