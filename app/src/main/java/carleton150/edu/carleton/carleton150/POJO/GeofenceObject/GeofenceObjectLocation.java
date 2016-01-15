@@ -3,7 +3,7 @@ package carleton150.edu.carleton.carleton150.POJO.GeofenceObject;
 /**
  * Created by haleyhinze on 11/9/15.
  */
-public class Location
+public class GeofenceObjectLocation
 {
     private double lng;
 

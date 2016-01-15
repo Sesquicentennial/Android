@@ -5,16 +5,16 @@ package carleton150.edu.carleton.carleton150.POJO.GeofenceObject;
  */
 public class Geofence
 {
-    private Location location;
+    private GeofenceObjectLocation location;
 
     private int radius;
 
-    public Location getLocation ()
+    public GeofenceObjectLocation getLocation ()
     {
         return location;
     }
 
-    public void setLocation (Location location)
+    public void setLocation (GeofenceObjectLocation location)
     {
         this.location = location;
     }

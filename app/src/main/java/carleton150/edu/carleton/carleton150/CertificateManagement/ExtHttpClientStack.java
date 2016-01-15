@@ -92,7 +92,7 @@ public class ExtHttpClientStack implements HttpStack {
         int timeoutMs = request.getTimeoutMs();
         // TODO: Reevaluate this connection timeout based on more wide-scale
         // data collection and possibly different for wifi vs. 3G.
-        HttpConnectionParams.setConnectionTimeout(httpParams, 5000);
+        HttpConnectionParams.setConnectionTimeout(httpParams, 10000);
         HttpConnectionParams.setSoTimeout(httpParams, timeoutMs);
 
         HttpResponse resp = mClient.execute(httpRequest);
