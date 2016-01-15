@@ -5,6 +5,7 @@ import android.app.ListFragment;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,8 @@ import java.util.GregorianCalendar;
 
 import carleton150.edu.carleton.carleton150.Adapters.EventsListAdapter;
 import carleton150.edu.carleton.carleton150.POJO.Event;
+import carleton150.edu.carleton.carleton150.POJO.EventObject.EventContent;
+import carleton150.edu.carleton.carleton150.POJO.EventObject.Events;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
@@ -45,7 +48,7 @@ public class EventsFragment extends MainFragment {
 
     private OnFragmentInteractionListener mListener;
     private ListView eventsListView;
-    private ArrayList<Event> events = new ArrayList<>();
+    private ArrayList<EventContent> events = new ArrayList<>();
     private EventsListAdapter eventsListAdapter;
 
     /**
@@ -86,7 +89,8 @@ public class EventsFragment extends MainFragment {
         View v = inflater.inflate(R.layout.fragment_events, container, false);
         eventsListView = (ListView) v.findViewById(R.id.lst_events);
 
-        makeDummyEvents();
+        requestEvents();
+
         eventsListAdapter = new EventsListAdapter(events, getActivity().getApplicationContext());
         eventsListView.setAdapter(eventsListAdapter);
 
@@ -127,23 +131,24 @@ public class EventsFragment extends MainFragment {
         public void onFragmentInteraction(Uri uri);
     }
 
-    /**
-     * makes a dummy event list for use before we are loading events
-     * from server
-     */
-    private void makeDummyEvents(){
-        for (int i = 0; i<5; i++) {
-            Event event1 = new Event();
-            event1.setTitle("Event " + i);
-            event1.setDescription("Dummy event description " + i);
-            Date d = null;
-            Calendar cal = GregorianCalendar.getInstance();
-            cal.set(2016, i, 22, 4, 30);
-            d = cal.getTime();
-            event1.setDate(d);
-            event1.setLocation("Dummy location " + i);
-            events.add(event1);
-        }
+    private void requestEvents(){
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH) + 1;
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        String monthString = String.format("%02d", month);
+        String dayString = String.format("%02d", day);
+        String startTime = year + "-" + monthString + "-" + dayString;
+        Log.i(logMessages.VOLLEY, "requestEvents : start time is : " + startTime);
+        volleyRequester.requestEvents(startTime, 20, this);
     }
 
+    @Override
+    public void handleNewEvents(Events events) {
+        EventContent[] eventContents = events.getContent();
+        for(int i = 0; i<eventContents.length; i++){
+            this.events.add(eventContents[i]);
+        }
+        eventsListAdapter.notifyDataSetChanged();
+    }
 }
