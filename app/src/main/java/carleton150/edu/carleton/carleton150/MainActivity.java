@@ -27,6 +27,7 @@ import com.google.android.gms.location.LocationServices;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.MyFragmentPagerAdapter;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
+import carleton150.edu.carleton.carleton150.POJO.EventObject.Events;
 
 /**
  * Monitors location and geofence information and calls methods in the main view fragments
@@ -371,6 +372,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             dialog.show();
         }
     }
+
+
 
 
     /**

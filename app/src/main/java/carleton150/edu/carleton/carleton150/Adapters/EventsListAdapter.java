@@ -11,6 +11,8 @@ import android.widget.TextView;
 import java.util.List;
 
 import carleton150.edu.carleton.carleton150.POJO.Event;
+import carleton150.edu.carleton.carleton150.POJO.EventObject.EventContent;
+import carleton150.edu.carleton.carleton150.POJO.EventObject.Events;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
@@ -18,7 +20,7 @@ import carleton150.edu.carleton.carleton150.R;
  */
 public class EventsListAdapter extends BaseAdapter {
 
-    private List<Event> events;
+    private List<EventContent> events;
     private Context context;
     private ViewHolder activeHolder = null;
 
@@ -29,7 +31,7 @@ public class EventsListAdapter extends BaseAdapter {
         TextView txtDescription;
     }
 
-    public EventsListAdapter(List<Event> events, Context context){
+    public EventsListAdapter(List<EventContent> events, Context context){
         this.events = events;
         this.context = context;
     }
@@ -65,11 +67,11 @@ public class EventsListAdapter extends BaseAdapter {
             v.setTag(holder);
         }
 
-        final Event event = events.get(position);
+        final EventContent event = events.get(position);
         final ViewHolder holder = (ViewHolder) v.getTag();
         if(event != null){
             holder.txtTitle.setText(event.getTitle());
-            holder.txtDate.setText(event.getFormattedDate());
+            holder.txtDate.setText(event.getStartTime());
             holder.txtLocation.setText(event.getLocation());
             holder.txtDescription.setText(event.getDescription());
         }

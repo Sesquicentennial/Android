@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import carleton150.edu.carleton.carleton150.LogMessages;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
 import carleton150.edu.carleton.carleton150.MyApplication;
+import carleton150.edu.carleton.carleton150.POJO.EventObject.Events;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoRequestObject.GeofenceInfoRequestObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
@@ -144,8 +145,9 @@ public class VolleyRequester {
         MyApplication.getInstance().getRequestQueue().add(request);
     }
 
-    public void requestEvents(String startTime, int limit){
+    public void requestEvents(String startTime, int limit, final MainFragment mainFragment){
 
+        final Gson gson = new Gson();
         //Creates request object
         JSONObject eventRequest = new JSONObject();
         try {
@@ -163,8 +165,8 @@ public class VolleyRequester {
                     public void onResponse(JSONObject response) {
                         String responseString = response.toString();
                         Log.i(logMessages.VOLLEY, "requestEvents : response string = : " + responseString);
-                       // GeofenceObject responseObject = gson.fromJson(responseString, GeofenceObject.class);
-                       // mainActivity.handleNewGeofences(responseObject);
+                        Events responseObject = gson.fromJson(responseString, Events.class);
+                        mainFragment.handleNewEvents(responseObject);
                     }
                 },
 
@@ -172,13 +174,10 @@ public class VolleyRequester {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        /*if(mainActivity!=null) {
-                            Log.i("VolleyStuff", "MainActivity is not null");
-                            Log.i("Volley error", error.toString());
-                            mainActivity.handleNewGeofences(null);
-                        }else{
-                            Log.i("VolleyStuff", "MainActivity is null");
-                        }*/
+                        Log.i(logMessages.VOLLEY, "requestEvents : error : " + error.toString());
+                        if(mainFragment!=null) {
+                            mainFragment.handleNewEvents(null);
+                        }
                     }
                 }
         );
