@@ -295,12 +295,10 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
             }
             currentGeofenceMarkers.clear();
             if (currentGeofences.length == 0) {
-                Log.i("Geofence info: ", "length is 0");
+                Log.i(logMessages.GEOFENCE_MONITORING, "drawGeofenceMapMarker : length of currentGeofences is 0");
             }
             for (int i = 0; i < currentGeofences.length; i++) {
                 carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content curGeofence = currentGeofences[i];
-                Log.i("Debug Mode", "i = " + i + "summary: " + curGeofence.getSummary());
-                Log.i("Debug Mode", curGeofence.toString());
                 String curGeofenceName = currentGeofences[i].getName();
                 Content geofence = curGeofencesMap.get(curGeofenceName);
                 double lat = geofence.getGeofence().getLocation().getLat();
@@ -448,7 +446,7 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
     public void handleGeofenceChange(ArrayList<Content> currentGeofences) {
         super.handleGeofenceChange(currentGeofences);
         if(mainActivity.isConnectedToNetwork()) {
-            Log.i("about to query database", currentGeofences.toString());
+            Log.i(logMessages.VOLLEY, "handleGeofenceChange : about to query database : " + currentGeofences.toString());
             volleyRequester.request(this, currentGeofences);
         }
     }

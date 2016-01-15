@@ -38,8 +38,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     //things for managing fragments
     public static FragmentManager fragmentManager;
 
-    // LogCat tag
-    private static final String TAG = MainActivity.class.getSimpleName();
 
     //things for location
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
@@ -56,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static int FASTEST_INTERVAL = 10000; // 10 sec
     private static int DISPLACEMENT = 100; // 100 meters
 
-    private int currentPosition = 0;
+    private LogMessages logMessages = new LogMessages();
 
     //things for detecting geofence entry
 
@@ -108,20 +106,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         adapter = new MyFragmentPagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout){
-
-            /**Calls a method to stop processes if fragment goes out of view and start processes of new fragment
-             * Helpful because now geofences can be unregistered and reregistered for the appropriate fragments
-             * @param position
-             */
-            @Override
-            public void onPageSelected(int position) {
-                //adapter.getItem(currentPosition).stopProcesses();
-                currentPosition = position;
-                super.onPageSelected(position);
-                //adapter.getItem(position).resumeProcesses();
-            }
-        });
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -325,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     protected void stopLocationUpdates() {
         if(mGoogleApiClient.isConnected()) {
-            Log.i("Location info g:", "location updates stopped");
+            Log.i(logMessages.LOCATION, "stopLocationUpdates : location updates stopped");
             LocationServices.FusedLocationApi.removeLocationUpdates(
                     mGoogleApiClient, this);
         }
