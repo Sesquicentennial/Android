@@ -12,12 +12,12 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import carleton150.edu.carleton.carleton150.MainActivity;
+import carleton150.edu.carleton.carleton150.LogMessages;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
 import carleton150.edu.carleton.carleton150.MyApplication;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoRequestObject.GeofenceInfoRequestObject;
-import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Content;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceRequestObject.Geofence;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceRequestObject.GeofenceRequestObject;
@@ -30,6 +30,8 @@ import carleton150.edu.carleton.carleton150.POJO.GeofenceRequestObject.Location;
  */
 public class VolleyRequester {
 
+    private LogMessages logMessages = new LogMessages();
+
     public VolleyRequester(){
     }
 
@@ -39,7 +41,7 @@ public class VolleyRequester {
      * @param callerFragment the fragment that called request()
      * @param mGeofenceList the list of geofences that we are requesting information for
      */
-    public void request(final MainFragment callerFragment, ArrayList<Content> mGeofenceList) {
+    public void request(final MainFragment callerFragment, ArrayList<GeofenceObjectContent> mGeofenceList) {
         if(mGeofenceList == null){
             return;
         }
@@ -60,7 +62,7 @@ public class VolleyRequester {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.i("Request info: ", jsonObjectrequest.toString());
+        Log.i(logMessages.VOLLEY, "request : requestObject: " + jsonObjectrequest.toString());
         JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/info", jsonObjectrequest,
                 new Response.Listener<JSONObject>() {
 
@@ -68,7 +70,7 @@ public class VolleyRequester {
                     public void onResponse(JSONObject response) {
                         String responseString = response.toString();
                         GeofenceInfoObject geofenceInfoResponseObject = gson.fromJson(responseString, GeofenceInfoObject.class);
-                        Log.i("Volley info", "length of response: " + geofenceInfoResponseObject.getContent().length);
+                        Log.i(logMessages.VOLLEY, "request : length of response: " + geofenceInfoResponseObject.getContent().length);
                         callerFragment.handleResult(geofenceInfoResponseObject);
                     }
                 },
@@ -89,10 +91,10 @@ public class VolleyRequester {
      *
      * @param latitude user's latitude
      * @param longitude user's longitude
-     * @param mainActivity
+     * @param callerFragment
      */
-    public void requestGeofences(double latitude, double longitude, final MainActivity mainActivity) {
-        Log.i("Volley info", "about to request geofences");
+    public void requestGeofences(double latitude, double longitude, final MainFragment callerFragment) {
+        Log.i(logMessages.VOLLEY, "requestGeofences : about to request geofences. Lat: " + latitude + " Long: " + longitude);
         Location location = new Location();
         location.setLat(latitude);
         location.setLng(longitude);
@@ -117,9 +119,9 @@ public class VolleyRequester {
                     @Override
                     public void onResponse(JSONObject response) {
                         String responseString = response.toString();
-                        Log.i("VolleyStuff", "response string = : " + responseString);
+                        Log.i(logMessages.VOLLEY, "requestGeofences : response string = : " + responseString);
                         GeofenceObject responseObject = gson.fromJson(responseString, GeofenceObject.class);
-                        mainActivity.handleNewGeofences(responseObject);
+                        callerFragment.handleNewGeofences(responseObject.getContent());
                     }
                 },
 
@@ -127,17 +129,60 @@ public class VolleyRequester {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        if(mainActivity!=null) {
-                            Log.i("VolleyStuff", "MainActivity is not null");
-                            Log.i("Volley error", error.toString());
-                            mainActivity.handleNewGeofences(null);
+                        if(callerFragment!=null) {
+                            Log.i(logMessages.VOLLEY, "requestGeofences : MainActivity is not null");
+                            Log.i(logMessages.VOLLEY, "requestGeofences : error : " + error.toString());
+                            error.printStackTrace();
+                            callerFragment.handleNewGeofences(null);
                         }else{
-                            Log.i("VolleyStuff", "MainActivity is null");
+                            Log.i(logMessages.VOLLEY, "requestGeofences : MainActivity is null");
                         }
 
                     }
                 }
         );
         MyApplication.getInstance().getRequestQueue().add(request);
+    }
+
+    public void requestEvents(String startTime, int limit){
+
+        //Creates request object
+        JSONObject eventRequest = new JSONObject();
+        try {
+            eventRequest.put("startTime", startTime);
+            eventRequest.put("limit", limit);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/events", eventRequest,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String responseString = response.toString();
+                        Log.i(logMessages.VOLLEY, "requestEvents : response string = : " + responseString);
+                       // GeofenceObject responseObject = gson.fromJson(responseString, GeofenceObject.class);
+                       // mainActivity.handleNewGeofences(responseObject);
+                    }
+                },
+
+                new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        /*if(mainActivity!=null) {
+                            Log.i("VolleyStuff", "MainActivity is not null");
+                            Log.i("Volley error", error.toString());
+                            mainActivity.handleNewGeofences(null);
+                        }else{
+                            Log.i("VolleyStuff", "MainActivity is null");
+                        }*/
+                    }
+                }
+        );
+        MyApplication.getInstance().getRequestQueue().add(request);
+
     }
 }
