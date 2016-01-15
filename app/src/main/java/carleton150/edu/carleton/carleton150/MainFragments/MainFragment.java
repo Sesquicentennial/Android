@@ -1,14 +1,8 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -17,8 +11,7 @@ import carleton150.edu.carleton.carleton150.LogMessages;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
-import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Content;
-import carleton150.edu.carleton.carleton150.R;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
 
 /**
  * Created on 10/28/15.
@@ -51,7 +44,7 @@ public class MainFragment extends Fragment{
      * handles when the geofences that the user is currently in change
      * @param currentGeofences
      */
-    public void handleGeofenceChange(ArrayList<Content> currentGeofences) {
+    public void handleGeofenceChange(ArrayList<GeofenceObjectContent> currentGeofences) {
 
     }
 
@@ -82,7 +75,7 @@ public class MainFragment extends Fragment{
      * handles when new geofences are set to be monitored
      * @param newGeofences
      */
-    public void handleNewGeofences(Content[] newGeofences){
+    public void handleNewGeofences(GeofenceObjectContent[] newGeofences){
 
     }
 

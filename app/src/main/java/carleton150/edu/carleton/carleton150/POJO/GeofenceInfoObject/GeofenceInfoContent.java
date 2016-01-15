@@ -3,7 +3,7 @@ package carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject;
 /**
  * Created by haleyhinze on 11/9/15.
  */
-public class Content
+public class GeofenceInfoContent
 {
     private String summary;
 

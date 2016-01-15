@@ -26,8 +26,10 @@ import java.util.ArrayList;
 import carleton150.edu.carleton.carleton150.Adapters.MyInfoWindowAdapter;
 import carleton150.edu.carleton.carleton150.DialogFragments.HistoryPopoverDialogFragment;
 import carleton150.edu.carleton.carleton150.MainActivity;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
-import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Content;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectLocation;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
@@ -288,7 +290,7 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
      *                         each geofence user is currently in
      */
     private void drawGeofenceMapMarker
-            (carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content[] currentGeofences){
+            (GeofenceInfoContent[] currentGeofences){
         if(currentGeofences != null) {
             for (int i = 0; i < currentGeofenceMarkers.size(); i++) {
                 currentGeofenceMarkers.get(i).remove();
@@ -298,9 +300,9 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
                 Log.i(logMessages.GEOFENCE_MONITORING, "drawGeofenceMapMarker : length of currentGeofences is 0");
             }
             for (int i = 0; i < currentGeofences.length; i++) {
-                carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content curGeofence = currentGeofences[i];
+                GeofenceInfoContent curGeofence = currentGeofences[i];
                 String curGeofenceName = currentGeofences[i].getName();
-                Content geofence = curGeofencesMap.get(curGeofenceName);
+                GeofenceObjectContent geofence = curGeofencesMap.get(curGeofenceName);
                 double lat = geofence.getGeofence().getLocation().getLat();
                 double lon = geofence.getGeofence().getLocation().getLng();
                 LatLng latLng = new LatLng(lat, lon);
@@ -386,7 +388,7 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
      */
     private void showPopup(Marker marker){
 
-        carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content geofenceInfoObject
+        GeofenceInfoContent geofenceInfoObject
                 = curGeofencesInfoMap.get(marker.getTitle());
         HistoryPopoverDialogFragment dialog = HistoryPopoverDialogFragment.newInstance(geofenceInfoObject);
         dialog.show(getFragmentManager(), marker.getTitle());
@@ -400,7 +402,7 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
      * @param geofences
      */
 
-    public void drawGeofences(Content[] geofences) {
+    public void drawGeofences(GeofenceObjectContent[] geofences) {
         geofencesBeingMonitored = geofences;
         if(debugMode) {
             if(geofences != null) {
@@ -409,7 +411,7 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
                     carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Geofence geofence =
                             geofences[i].getGeofence();
                     CircleOptions circleOptions = new CircleOptions();
-                    carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Location location =
+                    GeofenceObjectLocation location =
                             geofence.getLocation();
                     double lat = location.getLat();
                     double lon = location.getLng();
@@ -430,7 +432,7 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
      * @param geofencesContent
      */
     @Override
-    public void handleNewGeofences(Content[] geofencesContent){
+    public void handleNewGeofences(GeofenceObjectContent[] geofencesContent){
         super.handleNewGeofences(geofencesContent);
         if(geofencesContent != null) {
             drawGeofences(geofencesContent);
@@ -443,7 +445,7 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
      * @param currentGeofences
      */
     @Override
-    public void handleGeofenceChange(ArrayList<Content> currentGeofences) {
+    public void handleGeofenceChange(ArrayList<GeofenceObjectContent> currentGeofences) {
         super.handleGeofenceChange(currentGeofences);
         if(mainActivity.isConnectedToNetwork()) {
             Log.i(logMessages.VOLLEY, "handleGeofenceChange : about to query database : " + currentGeofences.toString());
