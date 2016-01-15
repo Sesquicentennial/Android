@@ -54,11 +54,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     // Location updates intervals in milliseconds
     private static int UPDATE_INTERVAL = 30000; // 30 sec
     private static int FASTEST_INTERVAL = 10000; // 10 sec
-    private static int DISPLACEMENT = 100; // 10 meters
+    private static int DISPLACEMENT = 100; // 100 meters
 
     private int currentPosition = 0;
-
-    private boolean connected = true;
 
     //things for detecting geofence entry
 
@@ -83,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             if (checkPlayServices()) {
                 buildGoogleApiClient();
                 createLocationRequest();
-                if(connected) {
+                if(isConnectedToNetwork()) {
                     mGoogleApiClient.connect();
                 }
             } else {
@@ -175,14 +173,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onResume() {
         super.onResume();
+
         // Resuming the periodic location updates
         if (mGoogleApiClient.isConnected()) {
+            isConnectedToNetwork();
             if(mRequestingLocationUpdates) {
                 startLocationUpdates();
             }
         }
         else{
-            if(connected){
+            if(isConnectedToNetwork()){
                 // check availability of play services for location data and geofencing
                 if (checkPlayServices()) {
                     mGoogleApiClient.connect();
@@ -210,14 +210,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
         }
-
         tellFragmentGoogleServicesConnected();
-
-        //TODO:remove after testing
-        //removeAllGeofences();
-
-        //TODO: remove this when we are getting geofences from server
-        //addGeofences();
 
         //gets new geofences from the server
         //Sets the last geofence update location since we just retrieved geofences
@@ -343,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * checks whether phone has network connection. If not, displays a dialog
      * requesting that the user connects to a network.
      * @return
-     *//*
+     */
     public boolean isConnectedToNetwork(){
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -359,9 +352,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             showNetworkNotConnectedDialog();
             return false;
         }
-    }*/
+    }
 
-   /* /**
+   /**
      * displays a dialog requesting that the user connect to a network
      */
     public void showNetworkNotConnectedDialog() {
@@ -396,6 +389,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
     /**
-     * TODO: Figure out how to show error messages and repeat requests when Volley isn't working
+     * TODO: Fix bug where if you start app when not connected to internet then come back you have to restart app
      */
 }

@@ -6,18 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.ResultCallback;
@@ -25,26 +15,14 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 import java.util.HashMap;
-import carleton150.edu.carleton.carleton150.Adapters.MyInfoWindowAdapter;
-import carleton150.edu.carleton.carleton150.DialogFragments.HistoryPopoverDialogFragment;
 import carleton150.edu.carleton.carleton150.GeofencingTransitionsIntentService;
-import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.Models.GeofenceErrorMessages;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Content;
 import carleton150.edu.carleton.carleton150.R;
 
-import com.google.android.gms.common.api.ResultCallback;
 
 /**
  * Created by haleyhinze on 1/14/16.
@@ -195,8 +173,10 @@ public class GeofenceMonitorFragment extends MainFragment implements ResultCallb
      * Requests geofences from server using VolleyRequester
      */
     protected void getNewGeofences(){
-        mainActivity.mVolleyRequester.requestGeofences(currentLocation.getLatitude(),
-                currentLocation.getLongitude(), this);
+        if(mainActivity.isConnectedToNetwork()) {
+            mainActivity.mVolleyRequester.requestGeofences(currentLocation.getLatitude(),
+                    currentLocation.getLongitude(), this);
+        }
     }
 
     /**

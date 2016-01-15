@@ -29,9 +29,6 @@ public class MainFragment extends Fragment{
 
     //communicates with server
     VolleyRequester volleyRequester = new VolleyRequester();
-    protected boolean connected = true;
-
-
 
     protected MainActivity mainActivity;
 
@@ -88,14 +85,6 @@ public class MainFragment extends Fragment{
     }
 
     public void googlePlayServicesConnected(){
-
-    }
-
-    public void stopProcesses(){
-
-    }
-
-    public void resumeProcesses(){
 
     }
 

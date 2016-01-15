@@ -98,8 +98,8 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
             @Override
             public void onClick(View v) {
                 debugMode = !debugMode;
-                if(!debugMode){
-                    if(mMap != null) {
+                if (!debugMode) {
+                    if (mMap != null) {
                         mMap.clear();
                         drawGeofenceMapMarker(curGeofenceInfo);
                         //queryResult.setVisibility(View.GONE);
@@ -109,17 +109,15 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
                         drawGeofences(geofencesBeingMonitored);
                         drawGeofenceMapMarker(curGeofenceInfo);
                         //queryResult.setVisibility(View.VISIBLE);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             }
         });
 
-        if(connected) {
+        if(mainActivity.isConnectedToNetwork()) {
             setUpMapIfNeeded(); // For setting up the MapFragment
-        } else {
-            super.mainActivity.showNetworkNotConnectedDialog();
         }
         return view;
     }
@@ -276,10 +274,8 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
     @Override
     public void onResume() {
         super.onResume();
-        if(connected) {
+        if(mainActivity.isConnectedToNetwork()) {
             setUpMapIfNeeded();
-        } else {
-            super.mainActivity.showNetworkNotConnectedDialog();
         }
     }
 
@@ -323,7 +319,6 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
      * Displays text stating which geofences the user is currently in
      */
     private void displayGeofenceInfo(){
-
         TextView locationView = (TextView) view.findViewById(R.id.txt_geopoint_info);
         String displayString = "Currently in geofences for: ";
         boolean showString = false;
@@ -351,9 +346,7 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
     public void handleResult(GeofenceInfoObject result) {
         super.handleResult(result);
         if (result != null){
-
            try {
-
                //Gives information to the infoWindowAdapter for displaying info windows
                myInfoWindowAdapter.setCurrentGeopoints(curGeofenceInfo);
                myInfoWindowAdapter.setCurrentGeopointsMap(curGeofencesInfoMap);
@@ -366,13 +359,11 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
                    queryResult.setVisibility(View.GONE);
                }
                queryResult.setText(result.toString());
-
            }catch (NullPointerException e){
                e.printStackTrace();
                queryResult.setText("the geofence request returned a null content array");
            }
        }
-
     }
 
     /**
@@ -448,29 +439,17 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
         }
     }
 
-    /**
-     * queries database for information about geofences
-     * @param geofence
-     */
-    public void queryDatabase(ArrayList<Content> geofence){
-        Log.i("about to query database", geofence.toString());
-        volleyRequester.request(this, geofence);
-    }
 
+    /**
+     * When geofences change, queries database for information about geofences
+     * @param currentGeofences
+     */
     @Override
     public void handleGeofenceChange(ArrayList<Content> currentGeofences) {
         super.handleGeofenceChange(currentGeofences);
-        queryDatabase(currentGeofences);
-    }
-
-
-    @Override
-    public void stopProcesses() {
-        removeAllGeofences();
-    }
-
-    @Override
-    public void resumeProcesses() {
-        getNewGeofences();
+        if(mainActivity.isConnectedToNetwork()) {
+            Log.i("about to query database", currentGeofences.toString());
+            volleyRequester.request(this, currentGeofences);
+        }
     }
 }
