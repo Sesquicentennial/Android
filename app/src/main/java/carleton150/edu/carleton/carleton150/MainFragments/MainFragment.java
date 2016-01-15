@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import carleton150.edu.carleton.carleton150.LogMessages;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
@@ -29,6 +30,7 @@ public class MainFragment extends Fragment{
 
     //communicates with server
     VolleyRequester volleyRequester = new VolleyRequester();
+    public LogMessages logMessages = new LogMessages();
 
     protected MainActivity mainActivity;
 

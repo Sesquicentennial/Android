@@ -18,6 +18,7 @@ import com.google.android.gms.location.LocationServices;
 import java.util.ArrayList;
 import java.util.HashMap;
 import carleton150.edu.carleton.carleton150.GeofencingTransitionsIntentService;
+import carleton150.edu.carleton.carleton150.LogMessages;
 import carleton150.edu.carleton.carleton150.Models.GeofenceErrorMessages;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Content;
@@ -28,6 +29,7 @@ import carleton150.edu.carleton.carleton150.R;
  * Created by haleyhinze on 1/14/16.
  */
 public class GeofenceMonitorFragment extends MainFragment implements ResultCallback<Status> {
+
 
 
     protected Location currentLocation = null;
@@ -93,9 +95,7 @@ public class GeofenceMonitorFragment extends MainFragment implements ResultCallb
      */
     @Override
     public void handleGeofenceChange(ArrayList<Content> currentGeofences) {
-        //TODO: add params here.
-        Log.i("geofences changed", "content length: " + currentGeofences.size());
-
+        Log.i(logMessages.GEOFENCE_MONITORING, "handleGeofenceChange Content length: " + currentGeofences.size());
         curGeofences = currentGeofences;
         curGeofencesMap.clear();
         for(int i = 0; i< curGeofences.size(); i++){
@@ -114,7 +114,7 @@ public class GeofenceMonitorFragment extends MainFragment implements ResultCallb
     (carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content[] currentGeofences){
         curGeofencesInfoMap.clear();
         if(currentGeofences.length == 0){
-            Log.i("Geofence info: ", "length is 0");
+            Log.i(logMessages.GEOFENCE_MONITORING, "makeGeofenceInfoMap: length is 0");
         }
         for(int i = 0; i < currentGeofences.length; i++){
             String curGeofenceName = currentGeofences[i].getName();
@@ -131,16 +131,14 @@ public class GeofenceMonitorFragment extends MainFragment implements ResultCallb
     public void handleResult(GeofenceInfoObject result) {
         super.handleResult(result);
         if (result == null) {
-            Log.i("result is: ", "NULL");
+            Log.i(logMessages.VOLLEY, "handleResult : result is NULL");
             //TODO: Do something here if there is an error (check error message, check internet, maybe make new query, etc..)
             //   queryResult.setText("Error with volley");
         } else {
-            Log.i("result is: ", result.toString());
+            Log.i(logMessages.VOLLEY, "handleResult: result is: " + result.toString());
             try {
                 curGeofenceInfo = result.getContent();
                 makeGeofenceInfoMap(curGeofenceInfo);
-
-
             }catch (NullPointerException e){
                 e.printStackTrace();
             }
@@ -165,9 +163,6 @@ public class GeofenceMonitorFragment extends MainFragment implements ResultCallb
             getNewGeofences();
         }
     }
-
-
-
 
     /**
      * Requests geofences from server using VolleyRequester
@@ -219,7 +214,7 @@ public class GeofenceMonitorFragment extends MainFragment implements ResultCallb
     }
 
     private void logSecurityException(SecurityException securityException) {
-        Log.e("Security Exception", "Invalid location permission. " +
+        Log.e(logMessages.PERMISSIONS_INCORRECT, "Invalid location permission. " +
                 "You need to use ACCESS_FINE_LOCATION with geofences", securityException);
     }
 
@@ -239,7 +234,7 @@ public class GeofenceMonitorFragment extends MainFragment implements ResultCallb
             // Get the status code and log it.
             String errorMessage = GeofenceErrorMessages.getErrorString(mainActivity,
                     status.getStatusCode());
-            Log.e("Geofence error", errorMessage);
+            Log.e(logMessages.GEOFENCE_MONITORING, "onResult error: " + errorMessage);
         }
     }
 
@@ -285,12 +280,10 @@ public class GeofenceMonitorFragment extends MainFragment implements ResultCallb
      * @param transitionType type of transition (enter, exit, or dwell)
      */
     private void updateCurrentGeofences(String[] geofenceNames, int transitionType){
-        Log.i("geofence debugging: ", "updatecurrentgeofences mainactivity: " + geofenceNames.length);
-        Log.i("geofence debugging: ", "updatecurrentgeofences mainactivity: transition type" + transitionType);
+        Log.i(logMessages.GEOFENCE_MONITORING, "updateCurrentGeofences : length of geofenceNames: " + geofenceNames.length);
+        Log.i(logMessages.GEOFENCE_MONITORING, "updateCurrentGeofences : transition type: " + transitionType);
         if(transitionType == Geofence.GEOFENCE_TRANSITION_ENTER){
-            Log.i("geofence debugging: ", "updatecurrentgeofences mainactivity: transition type enter");
-            //curGeofences.clear();
-
+            Log.i(logMessages.GEOFENCE_MONITORING, "updateCurrentGeofences : transition type enter");
         }
         for(int i = 0; i<geofenceNames.length; i++){
             if(allGeopointsByName.containsKey(geofenceNames[i])){
@@ -305,7 +298,7 @@ public class GeofenceMonitorFragment extends MainFragment implements ResultCallb
                 }
             }
         }
-        Log.i("geofence debugging: ", "updatecurrentgeofences mainactivity curGeofencesLength: " + curGeofences.size());
+        Log.i(logMessages.GEOFENCE_MONITORING, "updateCurrentGeofences curGeofences length: " + curGeofences.size());
     }
 
     /**
@@ -316,7 +309,7 @@ public class GeofenceMonitorFragment extends MainFragment implements ResultCallb
     @Override
     public void handleNewGeofences(Content[] geofencesContent){
         if(geofencesContent != null) {
-            Log.i("VolleyInfo", "Handling new geofences: " + geofencesContent.toString());
+            Log.i(logMessages.VOLLEY, "handleNewGeofences : content is: " + geofencesContent.toString());
             lastGeofenceUpdateLocation = currentGeofenceUpdateRequestLocation;
             for(int i = 0; i<geofencesContent.length; i++){
                 carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Geofence geofence =
@@ -346,7 +339,7 @@ public class GeofenceMonitorFragment extends MainFragment implements ResultCallb
             removeAllGeofences();
             addGeofences();
         } else {
-            Log.i("VolleyInfo", "new geofences are null ");
+            Log.i(logMessages.VOLLEY, "handleNewGeofences : new geofences are null ");
 
             Toast toast = Toast.makeText(mainActivity, "Null info result", Toast.LENGTH_SHORT);
             toast.show();
