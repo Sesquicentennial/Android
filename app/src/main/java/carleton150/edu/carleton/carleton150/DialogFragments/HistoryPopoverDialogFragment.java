@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
@@ -18,12 +18,12 @@ import carleton150.edu.carleton.carleton150.R;
 public class HistoryPopoverDialogFragment extends DialogFragment {
 
     private View view;
-    private static Content geofenceInfoObject;
+    private static GeofenceInfoContent geofenceInfoObject;
     public HistoryPopoverDialogFragment()
     {
     }
 
-    public static HistoryPopoverDialogFragment newInstance(Content object) {
+    public static HistoryPopoverDialogFragment newInstance(GeofenceInfoContent object) {
         HistoryPopoverDialogFragment f = new HistoryPopoverDialogFragment();
         geofenceInfoObject = object;
         return f;

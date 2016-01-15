@@ -9,7 +9,7 @@ import com.google.android.gms.maps.model.Marker;
 
 import java.util.HashMap;
 
-import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
@@ -22,8 +22,8 @@ import carleton150.edu.carleton.carleton150.R;
  */
 public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     LayoutInflater inflater;
-    Content[] currentGeopoints;
-    HashMap<String, Content> currentGeopointsMap;
+    GeofenceInfoContent[] currentGeopoints;
+    HashMap<String, GeofenceInfoContent> currentGeopointsMap;
 
     public MyInfoWindowAdapter(){
 
@@ -33,11 +33,11 @@ public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         this.inflater = inflater;
     }
 
-    public void setCurrentGeopoints(Content[] currentGeopoints){
+    public void setCurrentGeopoints(GeofenceInfoContent[] currentGeopoints){
         this.currentGeopoints = currentGeopoints;
     }
 
-    public void setCurrentGeopointsMap(HashMap<String, Content> currentGeopointsMap){
+    public void setCurrentGeopointsMap(HashMap<String, GeofenceInfoContent> currentGeopointsMap){
         this.currentGeopointsMap = currentGeopointsMap;
     }
 

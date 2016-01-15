@@ -17,7 +17,7 @@ import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
 import carleton150.edu.carleton.carleton150.MyApplication;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoRequestObject.GeofenceInfoRequestObject;
-import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Content;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceRequestObject.Geofence;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceRequestObject.GeofenceRequestObject;
@@ -41,7 +41,7 @@ public class VolleyRequester {
      * @param callerFragment the fragment that called request()
      * @param mGeofenceList the list of geofences that we are requesting information for
      */
-    public void request(final MainFragment callerFragment, ArrayList<Content> mGeofenceList) {
+    public void request(final MainFragment callerFragment, ArrayList<GeofenceObjectContent> mGeofenceList) {
         if(mGeofenceList == null){
             return;
         }

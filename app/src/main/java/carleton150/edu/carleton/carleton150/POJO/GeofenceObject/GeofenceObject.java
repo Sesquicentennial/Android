@@ -5,14 +5,14 @@ package carleton150.edu.carleton.carleton150.POJO.GeofenceObject;
  */
 public class GeofenceObject
 {
-    private Content[] content;
+    private GeofenceObjectContent[] content;
 
-    public Content[] getContent ()
+    public GeofenceObjectContent[] getContent ()
     {
         return content;
     }
 
-    public void setContent (Content[] content)
+    public void setContent (GeofenceObjectContent[] content)
     {
         this.content = content;
     }

@@ -18,10 +18,11 @@ import com.google.android.gms.location.LocationServices;
 import java.util.ArrayList;
 import java.util.HashMap;
 import carleton150.edu.carleton.carleton150.GeofencingTransitionsIntentService;
-import carleton150.edu.carleton.carleton150.LogMessages;
 import carleton150.edu.carleton.carleton150.Models.GeofenceErrorMessages;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
-import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Content;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectLocation;
 import carleton150.edu.carleton.carleton150.R;
 
 
@@ -37,15 +38,15 @@ public class GeofenceMonitorFragment extends MainFragment implements ResultCallb
     protected Location lastGeofenceUpdateLocation = null;
 
 
-    protected HashMap<String, Content> curGeofencesMap = new HashMap<>();
-    protected carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content[] curGeofenceInfo;
-    protected HashMap<String, carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content>
+    protected HashMap<String, GeofenceObjectContent> curGeofencesMap = new HashMap<>();
+    protected GeofenceInfoContent[] curGeofenceInfo;
+    protected HashMap<String, GeofenceInfoContent>
             curGeofencesInfoMap = new HashMap<>();
 
-    protected Content[] geofencesBeingMonitored;
+    protected GeofenceObjectContent[] geofencesBeingMonitored;
     protected PendingIntent mGeofencePendingIntent;
-    protected ArrayList<Content> curGeofences = new ArrayList<Content>();
-    protected HashMap<String, Content> allGeopointsByName = new HashMap<String, Content>();
+    protected ArrayList<GeofenceObjectContent> curGeofences = new ArrayList<GeofenceObjectContent>();
+    protected HashMap<String, GeofenceObjectContent> allGeopointsByName = new HashMap<String, GeofenceObjectContent>();
     protected boolean mGeofencesAdded = false;
     protected ArrayList<Geofence> mGeofenceList;
 
@@ -94,7 +95,7 @@ public class GeofenceMonitorFragment extends MainFragment implements ResultCallb
      * @param currentGeofences
      */
     @Override
-    public void handleGeofenceChange(ArrayList<Content> currentGeofences) {
+    public void handleGeofenceChange(ArrayList<GeofenceObjectContent> currentGeofences) {
         Log.i(logMessages.GEOFENCE_MONITORING, "handleGeofenceChange Content length: " + currentGeofences.size());
         curGeofences = currentGeofences;
         curGeofencesMap.clear();
@@ -111,7 +112,7 @@ public class GeofenceMonitorFragment extends MainFragment implements ResultCallb
      * @param currentGeofences
      */
     private void makeGeofenceInfoMap
-    (carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.Content[] currentGeofences){
+    (GeofenceInfoContent[] currentGeofences){
         curGeofencesInfoMap.clear();
         if(currentGeofences.length == 0){
             Log.i(logMessages.GEOFENCE_MONITORING, "makeGeofenceInfoMap: length is 0");
@@ -307,14 +308,14 @@ public class GeofenceMonitorFragment extends MainFragment implements ResultCallb
      * @param geofencesContent
      */
     @Override
-    public void handleNewGeofences(Content[] geofencesContent){
+    public void handleNewGeofences(GeofenceObjectContent[] geofencesContent){
         if(geofencesContent != null) {
             Log.i(logMessages.VOLLEY, "handleNewGeofences : content is: " + geofencesContent.toString());
             lastGeofenceUpdateLocation = currentGeofenceUpdateRequestLocation;
             for(int i = 0; i<geofencesContent.length; i++){
                 carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Geofence geofence =
                         geofencesContent[i].getGeofence();
-                carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Location geofenceLocation = geofence.getLocation();
+                GeofenceObjectLocation geofenceLocation = geofence.getLocation();
                 double latitude = geofenceLocation.getLat();
                 double longitude = geofenceLocation.getLng();
                 int radius = geofence.getRadius();
