@@ -1,12 +1,16 @@
 package carleton150.edu.carleton.carleton150;
 
 import android.app.AlertDialog;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import android.os.Bundle;
+import android.service.carrier.CarrierMessagingService;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
@@ -19,22 +23,29 @@ import android.view.MenuItem;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 
+import java.util.ArrayList;
+
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.MyFragmentPagerAdapter;
+import carleton150.edu.carleton.carleton150.Models.GeofenceErrorMessages;
+import carleton150.edu.carleton.carleton150.Models.GeofenceMonitor;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.EventObject.Events;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
 
 /**
  * Monitors location and geofence information and calls methods in the main view fragments
  * to handle geofence and location changes. Also controls which fragment is in view.
  */
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status>{
 
     //things for managing fragments
     public static FragmentManager fragmentManager;
@@ -57,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private LogMessages logMessages = new LogMessages();
 
+    MainFragment curFragment = null;
+
     //things for detecting geofence entry
 
 
@@ -66,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public VolleyRequester mVolleyRequester = new VolleyRequester();
     AlertDialog networkAlertDialog;
     AlertDialog playServicesConnectivityAlertDialog;
+
+    public GeofenceMonitor geofenceMonitor = new GeofenceMonitor(this);
 
 
 
@@ -89,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
 
+
         //populateGeofenceList();
 
         //managing fragments and UI
@@ -102,16 +118,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_action_history));
         tabLayout.addTab(tabLayout.newTab().setText("Events"));
+        tabLayout.addTab(tabLayout.newTab().setText("Quests"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         adapter = new MyFragmentPagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
+        curFragment = adapter.getCurFragment();
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
+                if (curFragment != null) {
+                    curFragment.fragmentOutOfView();
+                }
+                curFragment = adapter.getCurFragment();
+                curFragment.fragmentInView();
             }
 
             @Override
@@ -124,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             }
         });
-
 
     }
 
@@ -196,6 +218,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
         }
+        geofenceMonitor.googlePlayServicesConnected();
         tellFragmentGoogleServicesConnected();
 
         //gets new geofences from the server
@@ -204,6 +227,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     private void tellFragmentGoogleServicesConnected(){
+        Log.i(logMessages.GEOFENCE_MONITORING, "MainActivity: google services connected");
         MainFragment curFragment = adapter.getCurFragment();
         if(curFragment != null) {
             curFragment.googlePlayServicesConnected();
@@ -276,6 +300,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         MainFragment curFragment = adapter.getCurFragment();
         if(curFragment != null) {
             curFragment.handleLocationChange(mLastLocation);
+        }
+    }
+
+    public void handleGeofenceChange(ArrayList<GeofenceObjectContent> content){
+        MainFragment curFragment = adapter.getCurFragment();
+        if(curFragment != null) {
+            curFragment.handleGeofenceChange(content);
         }
     }
 
@@ -370,6 +401,39 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     }
             );
             dialog.show();
+        }
+    }
+
+    public void handleNewGeofences(GeofenceObjectContent[] content){
+        if(curFragment == null){
+            curFragment = adapter.getCurFragment();
+        }
+        if(content != null) {
+            curFragment.handleNewGeofences(content);
+        }
+    }
+
+    public GeofenceMonitor getGeofenceMonitor(){
+        return this.geofenceMonitor;
+    }
+
+    /**
+     * Runs when the result of calling addGeofences() and removeGeofences() becomes available.
+     * Either method can complete successfully or with an error.
+     *
+     * The activity implements ResultCallback, so this is a required method
+     *
+     * @param status The Status returned through a PendingIntent when addGeofences() or
+     *               removeGeofences() get called.
+     */
+    public void onResult(Status status) {
+        if (status.isSuccess()) {
+            geofenceMonitor.mGeofencesAdded = !geofenceMonitor.mGeofencesAdded;
+        } else {
+            // Get the status code and log it.
+            String errorMessage = GeofenceErrorMessages.getErrorString(this,
+                    status.getStatusCode());
+            Log.e(logMessages.GEOFENCE_MONITORING, "onResult error: " + errorMessage);
         }
     }
 

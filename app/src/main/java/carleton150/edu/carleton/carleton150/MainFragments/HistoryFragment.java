@@ -12,8 +12,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -23,6 +21,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import carleton150.edu.carleton.carleton150.Adapters.MyInfoWindowAdapter;
 import carleton150.edu.carleton.carleton150.DialogFragments.HistoryPopoverDialogFragment;
 import carleton150.edu.carleton.carleton150.MainActivity;
@@ -39,10 +39,9 @@ import carleton150.edu.carleton.carleton150.R;
  * Activities that contain this fragment must implement the
  * {@link HistoryFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link HistoryFragment#newInstance} factory method to
- * create an instance of this fragment.
+ *
  */
-public class HistoryFragment extends GeofenceMonitorFragment implements ResultCallback<Status> {
+public class HistoryFragment extends MainFragment {
 
     private double MAX_LONGITUDE = -93.141134;
     private double MIN_LONGITUDE = -93.161333;
@@ -62,9 +61,17 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
     private TextView txt_long;
     private TextView queryResult;
 
-
     ArrayList<Marker> currentGeofenceMarkers = new ArrayList<Marker>();
     private boolean debugMode = false;
+
+
+    public HashMap<String, GeofenceObjectContent> curGeofencesMapStorage = new HashMap<>();
+    public GeofenceInfoContent[] curGeofenceInfoStorage;
+    public HashMap<String, GeofenceInfoContent>
+            curGeofencesInfoMapStorage = new HashMap<>();
+    public GeofenceObjectContent[] geofencesBeingMonitoredStorage;
+    public ArrayList<GeofenceObjectContent> curGeofencesStorage = new ArrayList<GeofenceObjectContent>();
+
 
 
     public HistoryFragment() {
@@ -90,7 +97,7 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
         txt_lat = (TextView) view.findViewById(R.id.txt_lat);
         txt_long = (TextView) view.findViewById(R.id.txt_long);
         queryResult = (TextView) view.findViewById(R.id.txt_query_result);
-        startGeofenceMonitoring();
+        mainActivity.getGeofenceMonitor().startGeofenceMonitoring();
 
 
         //TODO: refactor section
@@ -103,13 +110,13 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
                 if (!debugMode) {
                     if (mMap != null) {
                         mMap.clear();
-                        drawGeofenceMapMarker(curGeofenceInfo);
+                        drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfo);
                         //queryResult.setVisibility(View.GONE);
                     }
                 } else {
                     try {
-                        drawGeofences(geofencesBeingMonitored);
-                        drawGeofenceMapMarker(curGeofenceInfo);
+                        drawGeofences(mainActivity.getGeofenceMonitor().geofencesBeingMonitored);
+                        drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfo);
                         //queryResult.setVisibility(View.VISIBLE);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -152,8 +159,8 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
                 mMap.setInfoWindowAdapter(myInfoWindowAdapter);
-                if(curGeofenceInfo != null){
-                    myInfoWindowAdapter.setCurrentGeopoints(curGeofenceInfo);
+                if(mainActivity.getGeofenceMonitor().curGeofenceInfo != null){
+                    myInfoWindowAdapter.setCurrentGeopoints(mainActivity.getGeofenceMonitor().curGeofenceInfo);
                 }
                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
@@ -249,15 +256,15 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
      */
     //TODO: figure out what to do if user is off campus and handle that appropriately
     private void setCamera(){
-        if(currentLocation != null && zoomCamera) {
+        if(mainActivity.getGeofenceMonitor().currentLocation != null && zoomCamera) {
             zoomCamera = false;
             CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
+                    .target(new LatLng(mainActivity.getGeofenceMonitor().currentLocation.getLatitude(), mainActivity.getGeofenceMonitor().currentLocation.getLongitude()))
                     .zoom(15)
                     .bearing(0)
                     .build();
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        }if(currentLocation == null){
+        }if(mainActivity.getGeofenceMonitor().currentLocation == null){
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(CENTER_CAMPUS.latitude, CENTER_CAMPUS.longitude))
                     .zoom(15)
@@ -298,11 +305,12 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
             currentGeofenceMarkers.clear();
             if (currentGeofences.length == 0) {
                 Log.i(logMessages.GEOFENCE_MONITORING, "drawGeofenceMapMarker : length of currentGeofences is 0");
+            }else{
+                Log.i(logMessages.GEOFENCE_MONITORING, "drawGeofenceMapMarker : length of currentGeofences is not 0");
             }
             for (int i = 0; i < currentGeofences.length; i++) {
-                GeofenceInfoContent curGeofence = currentGeofences[i];
                 String curGeofenceName = currentGeofences[i].getName();
-                GeofenceObjectContent geofence = curGeofencesMap.get(curGeofenceName);
+                GeofenceObjectContent geofence = mainActivity.getGeofenceMonitor().curGeofencesMap.get(curGeofenceName);
                 double lat = geofence.getGeofence().getLocation().getLat();
                 double lon = geofence.getGeofence().getLocation().getLng();
                 LatLng latLng = new LatLng(lat, lon);
@@ -322,11 +330,11 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
         TextView locationView = (TextView) view.findViewById(R.id.txt_geopoint_info);
         String displayString = "Currently in geofences for: ";
         boolean showString = false;
-        if(curGeofences == null){
+        if(mainActivity.getGeofenceMonitor().curGeofences == null){
             return;
         }
-        for(int i = 0; i<curGeofences.size(); i++){
-            displayString += curGeofences.get(i).getName() + " ";
+        for(int i = 0; i<mainActivity.getGeofenceMonitor().curGeofences.size(); i++){
+            displayString += mainActivity.getGeofenceMonitor().curGeofences.get(i).getName() + " ";
             showString = true;
         }
         if(showString) {
@@ -345,15 +353,16 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
     @Override
     public void handleResult(GeofenceInfoObject result) {
         super.handleResult(result);
+        mainActivity.getGeofenceMonitor().handleResult(result);
         if (result != null){
            try {
                //Gives information to the infoWindowAdapter for displaying info windows
-               myInfoWindowAdapter.setCurrentGeopoints(curGeofenceInfo);
-               myInfoWindowAdapter.setCurrentGeopointsMap(curGeofencesInfoMap);
+               myInfoWindowAdapter.setCurrentGeopoints(mainActivity.getGeofenceMonitor().curGeofenceInfo);
+               myInfoWindowAdapter.setCurrentGeopointsMap(mainActivity.getGeofenceMonitor().curGeofencesInfoMap);
 
                //sets text to display current geofences
                displayGeofenceInfo();
-               drawGeofenceMapMarker(curGeofenceInfo);
+               drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfo);
 
                if (!debugMode) {
                    queryResult.setVisibility(View.GONE);
@@ -374,11 +383,14 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
     @Override
     public void handleLocationChange(Location newLocation) {
         super.handleLocationChange(newLocation);
+        mainActivity.getGeofenceMonitor().handleLocationChange(newLocation);
         setCamera();
 
-        txt_lat.setText("Latitude: " + currentLocation.getLatitude());
-        txt_long.setText("Longitude: " + currentLocation.getLongitude());
-        setUpMapIfNeeded();
+        if(mainActivity.getGeofenceMonitor().currentLocation != null) {
+            txt_lat.setText("Latitude: " + mainActivity.getGeofenceMonitor().currentLocation.getLatitude());
+            txt_long.setText("Longitude: " + mainActivity.getGeofenceMonitor().currentLocation.getLongitude());
+            setUpMapIfNeeded();
+        }
     }
 
     /**
@@ -389,7 +401,7 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
     private void showPopup(Marker marker){
 
         GeofenceInfoContent geofenceInfoObject
-                = curGeofencesInfoMap.get(marker.getTitle());
+                = mainActivity.getGeofenceMonitor().curGeofencesInfoMap.get(marker.getTitle());
         HistoryPopoverDialogFragment dialog = HistoryPopoverDialogFragment.newInstance(geofenceInfoObject);
         dialog.show(getFragmentManager(), marker.getTitle());
     }
@@ -403,7 +415,7 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
      */
 
     public void drawGeofences(GeofenceObjectContent[] geofences) {
-        geofencesBeingMonitored = geofences;
+        mainActivity.getGeofenceMonitor().geofencesBeingMonitored = geofences;
         if(debugMode) {
             if(geofences != null) {
                 mMap.clear();
@@ -434,6 +446,7 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
     @Override
     public void handleNewGeofences(GeofenceObjectContent[] geofencesContent){
         super.handleNewGeofences(geofencesContent);
+        mainActivity.getGeofenceMonitor().handleNewGeofences(geofencesContent);
         if(geofencesContent != null) {
             drawGeofences(geofencesContent);
         }
@@ -447,9 +460,23 @@ public class HistoryFragment extends GeofenceMonitorFragment implements ResultCa
     @Override
     public void handleGeofenceChange(ArrayList<GeofenceObjectContent> currentGeofences) {
         super.handleGeofenceChange(currentGeofences);
+        //mainActivity.getGeofenceMonitor().handleGeofenceChange(currentGeofences);
         if(mainActivity.isConnectedToNetwork()) {
             Log.i(logMessages.VOLLEY, "handleGeofenceChange : about to query database : " + currentGeofences.toString());
             volleyRequester.request(this, currentGeofences);
         }
+    }
+
+    @Override
+    public void fragmentOutOfView() {
+        super.fragmentOutOfView();
+
+    }
+
+    @Override
+    public void fragmentInView() {
+        super.fragmentInView();
+        mainActivity.getGeofenceMonitor().getNewGeofences();
+        drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfo);
     }
 }

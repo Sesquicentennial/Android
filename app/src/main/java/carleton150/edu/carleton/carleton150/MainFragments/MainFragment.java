@@ -88,6 +88,14 @@ public class MainFragment extends Fragment{
 
     }
 
+    public void fragmentOutOfView(){
+
+    }
+
+    public void fragmentInView(){
+
+    }
+
 }
 
 
