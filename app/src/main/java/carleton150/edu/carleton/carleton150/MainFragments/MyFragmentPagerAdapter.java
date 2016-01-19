@@ -28,6 +28,9 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
             case 1:
                 EventsFragment tab2 = new EventsFragment();
                 return tab2;
+            case 2:
+                QuestFragment tab3 = new QuestFragment();
+                return tab3;
             default:
                 return null;
         }

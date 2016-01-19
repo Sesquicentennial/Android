@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import carleton150.edu.carleton.carleton150.LogMessages;
+import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
 import carleton150.edu.carleton.carleton150.MyApplication;
 import carleton150.edu.carleton.carleton150.POJO.EventObject.Events;
@@ -93,9 +94,9 @@ public class VolleyRequester {
      *
      * @param latitude user's latitude
      * @param longitude user's longitude
-     * @param callerFragment
+     * @param callerActivity
      */
-    public void requestGeofences(double latitude, double longitude, final MainFragment callerFragment) {
+    public void requestGeofences(double latitude, double longitude, final MainActivity callerActivity) {
         Log.i(logMessages.VOLLEY, "requestGeofences : about to request geofences. Lat: " + latitude + " Long: " + longitude);
         Location location = new Location();
         location.setLat(latitude);
@@ -123,7 +124,7 @@ public class VolleyRequester {
                         String responseString = response.toString();
                         Log.i(logMessages.VOLLEY, "requestGeofences : response string = : " + responseString);
                         GeofenceObject responseObject = gson.fromJson(responseString, GeofenceObject.class);
-                        callerFragment.handleNewGeofences(responseObject.getContent());
+                        callerActivity.handleNewGeofences(responseObject.getContent());
                     }
                 },
 
@@ -131,11 +132,11 @@ public class VolleyRequester {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        if(callerFragment!=null) {
+                        if(callerActivity!=null) {
                             Log.i(logMessages.VOLLEY, "requestGeofences : MainActivity is not null");
                             Log.i(logMessages.VOLLEY, "requestGeofences : error : " + error.toString());
                             error.printStackTrace();
-                            callerFragment.handleNewGeofences(null);
+                            callerActivity.handleNewGeofences(null);
                         }else{
                             Log.i(logMessages.VOLLEY, "requestGeofences : MainActivity is null");
                         }
