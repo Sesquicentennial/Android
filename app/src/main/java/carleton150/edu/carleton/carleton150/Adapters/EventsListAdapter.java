@@ -80,6 +80,7 @@ public class EventsListAdapter extends BaseAdapter {
             holder.txtLocation.setText(event.getLocation());
             holder.txtDescription.setText(event.getDescription());
         }
+
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,9 +88,13 @@ public class EventsListAdapter extends BaseAdapter {
                     activeHolder.txtDescription.setVisibility(View.GONE);
                     activeHolder.view.setBackgroundColor(Color.parseColor("#e4decf"));
                 }
-                holder.txtDescription.setVisibility(View.VISIBLE);
-                holder.view.setBackgroundColor(Color.parseColor("#CFC4C0"));
-                activeHolder = holder;
+                if(activeHolder != holder) {
+                    holder.txtDescription.setVisibility(View.VISIBLE);
+                    holder.view.setBackgroundColor(Color.parseColor("#c8bc9d"));
+                    activeHolder = holder;
+                }else{
+                    activeHolder = null;
+                }
             }
         });
 

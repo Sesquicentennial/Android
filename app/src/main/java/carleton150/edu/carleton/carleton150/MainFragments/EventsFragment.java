@@ -145,10 +145,14 @@ public class EventsFragment extends MainFragment {
 
     @Override
     public void handleNewEvents(Events events) {
-        EventContent[] eventContents = events.getContent();
-        for(int i = 0; i<eventContents.length; i++){
-            this.events.add(eventContents[i]);
+        try {
+            EventContent[] eventContents = events.getContent();
+            for (int i = 0; i < eventContents.length; i++) {
+                this.events.add(eventContents[i]);
+            }
+            eventsListAdapter.notifyDataSetChanged();
+        }catch(NullPointerException e){
+            e.printStackTrace();
         }
-        eventsListAdapter.notifyDataSetChanged();
     }
 }
