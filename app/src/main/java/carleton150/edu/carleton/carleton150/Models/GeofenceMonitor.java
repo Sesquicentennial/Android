@@ -26,6 +26,7 @@ import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfo
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectLocation;
+import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.R;
 
 
@@ -54,6 +55,8 @@ public class GeofenceMonitor{
     private MainActivity activity;
     private LogMessages logMessages = new LogMessages();
 
+    private int curFragment = 0;
+
 
     public GeofenceMonitor(MainActivity activity) {
         this.activity = activity;
@@ -81,15 +84,23 @@ public class GeofenceMonitor{
             String action = intent.getAction();
             String[] geofenceNames = intent.getStringArrayExtra("geofenceNames");
             int transitionType = intent.getIntExtra("transitionType", -1);
-            Log.i(logMessages.GEOFENCE_MONITORING, " GeofenceMonitor: about to update current geofences");
-            //updates curGeofences by deleting geofences that were exited and adding geofences
-            //that were entered
-            updateCurrentGeofences(geofenceNames, transitionType);
-            Log.i(logMessages.GEOFENCE_MONITORING, " GeofenceMonitor: about to handle geofence changes");
-            //calls a method in the current fragment that handles the change in geofences
-           handleGeofenceChange(curGeofences);
+            if(curFragment == 0) {
+                Log.i(logMessages.GEOFENCE_MONITORING, " GeofenceMonitor: about to update current geofences");
+                //updates curGeofences by deleting geofences that were exited and adding geofences
+                //that were entered
+                updateCurrentGeofences(geofenceNames, transitionType);
+                Log.i(logMessages.GEOFENCE_MONITORING, " GeofenceMonitor: about to handle geofence changes");
+                //calls a method in the current fragment that handles the change in geofences
+                handleGeofenceChange(curGeofences);
+            } else {
+                notifyQuestFragmentClueCompleted();
+            }
         }
     };
+
+    private void notifyQuestFragmentClueCompleted(){
+        activity.notifyQuestFragmentClueCompleted();
+    }
 
 
 
@@ -268,19 +279,20 @@ public class GeofenceMonitor{
     private void updateCurrentGeofences(String[] geofenceNames, int transitionType){
         Log.i(logMessages.GEOFENCE_MONITORING, "updateCurrentGeofences : length of geofenceNames: " + geofenceNames.length);
         Log.i(logMessages.GEOFENCE_MONITORING, "updateCurrentGeofences : transition type: " + transitionType);
+
         if(transitionType == Geofence.GEOFENCE_TRANSITION_ENTER){
             Log.i(logMessages.GEOFENCE_MONITORING, "updateCurrentGeofences : transition type enter");
         }
         for(int i = 0; i<geofenceNames.length; i++){
-            if(allGeopointsByName.containsKey(geofenceNames[i])){
-                if(transitionType == Geofence.GEOFENCE_TRANSITION_ENTER){
-                    if(!curGeofencesMap.containsKey(geofenceNames[i])){
+            if(allGeopointsByName.containsKey(geofenceNames[i])) {
+                if (transitionType == Geofence.GEOFENCE_TRANSITION_ENTER) {
+                    if (!curGeofencesMap.containsKey(geofenceNames[i])) {
                         curGeofences.add(allGeopointsByName.get(geofenceNames[i]));
                     }
-                }else if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT){
-                    if(curGeofences.contains(allGeopointsByName.get(geofenceNames[i]))){
+                } else if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) {
+                    if (curGeofences.contains(allGeopointsByName.get(geofenceNames[i]))) {
                         curGeofences.remove(allGeopointsByName.get(geofenceNames[i]));
-                    }else{
+                    } else {
                         //Shouldn't ever happen...
                     }
                 }
@@ -333,9 +345,44 @@ public class GeofenceMonitor{
         }
     }
 
+    public void addQuestGeofence(carleton150.edu.carleton.carleton150.POJO.Quests.Geofence geofence){
+        if(geofence != null) {
+            removeAllGeofences();
+            Log.i(logMessages.VOLLEY, "addQuestGeofences : geofence is: " + geofence.toString());
+            String lat = geofence.getLat();
+            String lng = geofence.getLng();
+            String rad = geofence.getRad();
+            double latitude = Double.parseDouble(lat);
+            double longitude = Double.parseDouble(lng);
+            int radius = Integer.parseInt(rad);
+            String name = "Geofence";
+            mGeofenceList.add(new Geofence.Builder()
+                    // Set the request ID of the geofence to identify the geofence
+                    .setRequestId(name)
+                            // Set the circular region of this geofence.
+                    .setCircularRegion(
+                            latitude,
+                            longitude,
+                            radius
+                    )
+                            // Set the expiration duration of the geofence to never expire
+                    .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                            // Set the transition types of interest to track entry and exit transitions in this sample.
+                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                    .build());
+        }
+
+
+
+    }
+
     public void googlePlayServicesConnected() {
         if(currentLocation!=null) {
             getNewGeofences();
         }
+    }
+
+    public void setCurFragment(int num){
+        this.curFragment = num;
     }
 }

@@ -5,9 +5,13 @@
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
     card_view:cardBackgroundColor="@color/colorPrimarySemiTransparent"
-    card_view:cardElevation="0dp"
-    card_view:cardCornerRadius="2dp"
+    card_view:backgroundTintMode="src_over"
+    card_view:backgroundTint="@color/colorAccent"
+    card_view:cardElevation="3dp"
+    card_view:cardCornerRadius="4dp"
     card_view:cardUseCompatPadding="true"
     android:layout_margin="2dp">
     <RelativeLayout
@@ -16,25 +20,16 @@
 
         <TextView
             android:id="@+id/txtTitle"
+            android:padding="5dp"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:background="@color/colorPrimary"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimarySemiTransparent"
             android:text="Title"
             android:gravity="center"
-            android:textColor="@color/colorAccent"
-            android:textSize="14sp"/>
-
-        <TextView
-            android:id="@+id/txtCreator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Creator"
-            android:gravity="center_vertical"
+            android:textSize="@dimen/abc_text_size_medium_material"
             android:textColor="@color/windowBackground"
-            android:textSize="10dp"
-            android:layout_below="@id/txtTitle"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="5dp"/>
+            />
+
 
         <TextView
             android:id="@+id/txtDescription"
@@ -43,8 +38,8 @@
             android:text="Description"
             android:gravity="center_vertical"
             android:textColor="@color/windowBackground"
-            android:textSize="10dp"
-            android:layout_below="@id/txtCreator"
+            android:textSize="@dimen/abc_text_size_small_material"
+            android:layout_below="@id/txtTitle"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="5dp"/>
 

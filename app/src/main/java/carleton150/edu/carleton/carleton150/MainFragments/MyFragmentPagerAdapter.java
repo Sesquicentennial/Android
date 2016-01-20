@@ -1,7 +1,9 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
+import android.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.view.ViewGroup;
 
 /**
@@ -12,10 +14,13 @@ import android.view.ViewGroup;
 public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs;
     MainFragment curFragment = null;
+    FragmentManager fragmentManager;
+    MainFragment tab3 = null;
 
     public MyFragmentPagerAdapter(FragmentManager fm, int NumOfTabs) {
         super(fm);
         this.mNumOfTabs = NumOfTabs;
+        fragmentManager = fm;
     }
 
     @Override
@@ -29,7 +34,9 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
                 EventsFragment tab2 = new EventsFragment();
                 return tab2;
             case 2:
-                QuestFragment tab3 = new QuestFragment();
+                if(tab3 == null) {
+                    tab3 = new QuestFragment();
+                }
                 return tab3;
             default:
                 return null;
@@ -39,7 +46,7 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
 
-        if (curFragment != object) {
+       if (curFragment != object) {
             curFragment = (MainFragment) object;
         }
 
@@ -53,5 +60,34 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
     public MainFragment getCurFragment(){
         return this.curFragment;
+    }
+
+    public void replaceFragment(MainFragment fragment) {
+        if(tab3 != null){
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+            ft.remove(tab3).commit();
+            tab3 = fragment;
+            notifyDataSetChanged();
+        }
+    }
+
+    public void replaceFragment(){
+        if(tab3 != null){
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+            ft.remove(tab3).commit();
+            tab3 = new QuestFragment();
+            tab3.fragmentInView();
+            notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        if(object instanceof QuestFragment && tab3 instanceof QuestInProgressFragment){
+            return POSITION_NONE;
+        } if(object instanceof QuestInProgressFragment && tab3 instanceof QuestFragment){
+            return POSITION_NONE;
+        }
+        return POSITION_UNCHANGED;
     }
 }

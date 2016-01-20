@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -120,17 +121,23 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
     public void recyclerViewListClicked(View v, final int position) {
         Log.i("View", "QuestFragment : recyclerViewListClicked");
         btnStartQuest.setClickable(true);
+        btnStartQuest.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         btnStartQuest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // beginQuest(questInfo.get(position));
+                beginQuest(questAdapter.getQuestList().get(position));
             }
         });
 
        txtInfo.setText(questAdapter.getQuestList().get(position).getDesc());
     }
 
-    private void beginQuest(QuestInfo questInfo){
+    private void beginQuest(Quest quest){
+        QuestInProgressFragment fr=new QuestInProgressFragment();
+        fr.initialize(quest);
+        FragmentChangeListener fc=(FragmentChangeListener)getActivity();
+        fc.replaceFragment(fr);
+
         //TODO: start questing fragment
     }
 
@@ -204,6 +211,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
     @Override
     public void fragmentInView() {
         super.fragmentInView();
+        mainActivity.getGeofenceMonitor().setCurFragment(3);
         volleyRequester.requestQuests(this);
     }
 }
