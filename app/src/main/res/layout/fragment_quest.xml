@@ -1,10 +1,58 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop="?attr/actionBarSize"
     tools:context="carleton150.edu.carleton.carleton150.MainFragments.QuestFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:orientation="vertical"
+        android:weightSum="3"
+        android:layout_height="fill_parent">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:orientation="vertical"
+        android:layout_weight="2"
+        android:layout_height="0dp">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/lst_quests"
+            android:layout_weight="2"
+            android:padding="16dp"
+            android:scrollbars="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+        </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:weightSum="5"
+        android:layout_height="0dp">
+
+        <TextView
+            android:id="@+id/txt_quest_description"
+            android:layout_gravity="center_horizontal"
+            android:padding="16dp"
+            android:layout_weight="4"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:text="Please select a quest to view its discription or to begin the quest"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btn_start_quest"
+            android:layout_weight="1"
+            android:textColor="@color/windowBackground"
+            android:background="@color/colorPrimarySemiTransparent"
+            android:text="Begin Quest"
+            android:layout_width="match_parent"
+            android:clickable="false"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+    </LinearLayout>
 
 </FrameLayout>
