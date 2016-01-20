@@ -1,6 +1,7 @@
 package carleton150.edu.carleton.carleton150.Adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,9 +9,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import carleton150.edu.carleton.carleton150.MainFragments.QuestFragment;
+import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.R;
 
 
@@ -19,12 +22,14 @@ import carleton150.edu.carleton.carleton150.R;
  */
 public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHolder> {
 
-    private List<QuestInfo> questList = null;
+    private ArrayList<Quest> questList = null;
     public static RecyclerViewClickListener clickListener;
+    private int screenWidth;
 
-    public QuestAdapter(List<QuestInfo> questList, RecyclerViewClickListener clickListener) {
+    public QuestAdapter(ArrayList<Quest> questList, RecyclerViewClickListener clickListener, int screenWidth) {
         this.questList = questList;
         this.clickListener = clickListener;
+        this.screenWidth = screenWidth;
     }
 
     @Override
@@ -37,11 +42,12 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
 
     @Override
     public void onBindViewHolder(QuestViewHolder holder, int position) {
-        QuestInfo qi = questList.get(position);
-        holder.setTitle(qi.getTitle());
-        holder.setCreator(qi.getCreator());
-        holder.setDescription(qi.getDescription());
-        holder.setWidth(qi.getWidth());
+        Quest qi = questList.get(position);
+        holder.setTitle(qi.getName());
+        holder.setDescription(qi.getDesc());
+
+        //TODO: get a good width...
+        holder.setWidth((int) (screenWidth/1.5));
     }
 
     @Override
@@ -51,6 +57,15 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
         }else{
             return 0;
         }
+    }
+
+    public void updateQuests(ArrayList<Quest> newQuests){
+        this.questList = newQuests;
+        notifyDataSetChanged();
+    }
+
+    public ArrayList<Quest> getQuestList(){
+        return this.questList;
     }
 
 
@@ -107,6 +122,7 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
             clickListener.recyclerViewListClicked(v, getLayoutPosition());
         }
     }
+
 
 
 }

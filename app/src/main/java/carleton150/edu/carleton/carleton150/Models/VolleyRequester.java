@@ -2,12 +2,12 @@ package carleton150.edu.carleton.carleton150.Models;
 
 import android.util.Log;
 
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,6 +25,7 @@ import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceRequestObject.Geofence;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceRequestObject.GeofenceRequestObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceRequestObject.Location;
+import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 
 /**
  * Created by haleyhinze on 10/28/15.
@@ -185,5 +186,45 @@ public class VolleyRequester {
         );
         MyApplication.getInstance().getRequestQueue().add(request);
 
+    }
+
+    public void requestQuests(final MainFragment callerFragment){
+        final Gson gson = new Gson();
+        JSONObject emptyRequest = new JSONObject();
+        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/quest", emptyRequest,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String responseString = response.toString();
+                        ArrayList<Quest> quests = new ArrayList<>();
+                        try {
+                            JSONArray responseArr = response.getJSONArray("content");
+                            for(int i = 0; i<responseArr.length(); i++){
+                                Quest responseQuest = gson.fromJson(responseArr.getString(i), Quest.class);
+                                Log.i(logMessages.VOLLEY, "requestQuests : quest response string = : " + responseArr.getString(i));
+                                quests.add(responseQuest);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        Log.i(logMessages.VOLLEY, "requestQuests : response string = : " + responseString);
+                        callerFragment.handleNewQuests(quests);
+                    }
+                },
+
+                new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.i(logMessages.VOLLEY, "requestQuests : error : " + error.toString());
+                        if(callerFragment!=null) {
+                            callerFragment.handleNewQuests(null);
+                        }
+                    }
+                }
+        );
+        MyApplication.getInstance().getRequestQueue().add(request);
     }
 }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import java.util.List;
 import carleton150.edu.carleton.carleton150.Adapters.QuestAdapter;
 import carleton150.edu.carleton.carleton150.Adapters.QuestInfo;
 import carleton150.edu.carleton.carleton150.Adapters.RecyclerViewClickListener;
+import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
@@ -37,7 +39,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
 
     private static View view;
     private RecyclerView quests;
-    private List<QuestInfo> questInfo;
+    private ArrayList<Quest> questInfo;
     private LinearLayoutManager questLayoutManager;
     private QuestAdapter questAdapter;
     private int screenWidth;
@@ -116,15 +118,16 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
 
     @Override
     public void recyclerViewListClicked(View v, final int position) {
+        Log.i("View", "QuestFragment : recyclerViewListClicked");
         btnStartQuest.setClickable(true);
         btnStartQuest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                beginQuest(questInfo.get(position));
+                // beginQuest(questInfo.get(position));
             }
         });
 
-        txtInfo.setText(questInfo.get(position).getDescription());
+       txtInfo.setText(questAdapter.getQuestList().get(position).getDesc());
     }
 
     private void beginQuest(QuestInfo questInfo){
@@ -155,8 +158,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         questLayoutManager = new LinearLayoutManager(getActivity());
         questLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         quests.setLayoutManager(questLayoutManager);
-        questInfo = createList(30);
-        questAdapter = new QuestAdapter(questInfo, this);
+        questAdapter = new QuestAdapter(questInfo, this, screenWidth);
         quests.setAdapter(questAdapter);
     }
 
@@ -182,4 +184,26 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         return result;
     }
 
+    @Override
+    public void handleNewQuests(ArrayList<Quest> newQuests) {
+        super.handleNewQuests(newQuests);
+        if(newQuests != null) {
+            questAdapter.updateQuests(newQuests);
+            questInfo = newQuests;
+            Log.i(logMessages.VOLLEY, "QuestFragment: handleNewQuests : questAdapter contains : " + questAdapter.getItemCount());
+        }
+
+
+    }
+
+    @Override
+    public void fragmentOutOfView() {
+        super.fragmentOutOfView();
+    }
+
+    @Override
+    public void fragmentInView() {
+        super.fragmentInView();
+        volleyRequester.requestQuests(this);
+    }
 }
