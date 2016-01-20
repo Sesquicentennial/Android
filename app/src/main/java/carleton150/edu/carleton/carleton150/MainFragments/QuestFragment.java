@@ -4,10 +4,21 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.support.v7.widget.RecyclerView;
+import android.widget.Button;
+import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import carleton150.edu.carleton.carleton150.Adapters.QuestAdapter;
+import carleton150.edu.carleton.carleton150.Adapters.QuestInfo;
+import carleton150.edu.carleton.carleton150.Adapters.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
@@ -18,17 +29,28 @@ import carleton150.edu.carleton.carleton150.R;
  * Use the {@link QuestFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class QuestFragment extends MainFragment {
+public class QuestFragment extends MainFragment implements RecyclerViewClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private static View view;
+    private RecyclerView quests;
+    private List<QuestInfo> questInfo;
+    private LinearLayoutManager questLayoutManager;
+    private QuestAdapter questAdapter;
+    private int screenWidth;
+
+    private Button btnStartQuest;
+    private TextView txtInfo;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
 
     /**
      * Use this factory method to create a new instance of
@@ -65,7 +87,14 @@ public class QuestFragment extends MainFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_quest, container, false);
+        view =  inflater.inflate(R.layout.fragment_quest, container, false);
+        btnStartQuest = (Button) view.findViewById(R.id.btn_start_quest);
+        txtInfo = (TextView) view.findViewById(R.id.txt_quest_description);
+
+        //builds RecyclerViews to display scavenger hunts
+        buildRecyclerViews();
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -85,6 +114,23 @@ public class QuestFragment extends MainFragment {
         super.onDetach();
     }
 
+    @Override
+    public void recyclerViewListClicked(View v, final int position) {
+        btnStartQuest.setClickable(true);
+        btnStartQuest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                beginQuest(questInfo.get(position));
+            }
+        });
+
+        txtInfo.setText(questInfo.get(position).getDescription());
+    }
+
+    private void beginQuest(QuestInfo questInfo){
+        //TODO: start questing fragment
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -98,6 +144,42 @@ public class QuestFragment extends MainFragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+    }
+
+    private void buildRecyclerViews(){
+        DisplayMetrics metrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        screenWidth = metrics.widthPixels;
+
+        quests = (RecyclerView) view.findViewById(R.id.lst_quests);
+        questLayoutManager = new LinearLayoutManager(getActivity());
+        questLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        quests.setLayoutManager(questLayoutManager);
+        questInfo = createList(30);
+        questAdapter = new QuestAdapter(questInfo, this);
+        quests.setAdapter(questAdapter);
+    }
+
+
+    /**
+     * Dummy method to create a filler list
+     * @param size
+     * @return
+     */
+    private List createList(int size) {
+
+        List result = new ArrayList();
+        for (int i = 1; i <= size; i++) {
+            QuestInfo qi = new QuestInfo();
+            qi.setTitle("title" + i);
+            qi.setDescription("description blah blah blah blah long description here to see what happens" + i);
+            qi.setCreator("creator" + i);
+            qi.setWidth((int) (screenWidth /1.5));
+            result.add(qi);
+
+        }
+
+        return result;
     }
 
 }
