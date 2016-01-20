@@ -79,7 +79,6 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
             itemView.setOnClickListener(this);
             title = (TextView) itemView.findViewById(R.id.txtTitle);
             description = (TextView) itemView.findViewById(R.id.txtDescription);
-            creator = (TextView) itemView.findViewById(R.id.txtCreator);
         }
 
         /**

@@ -65,15 +65,6 @@ public class HistoryFragment extends MainFragment {
     private boolean debugMode = false;
 
 
-    public HashMap<String, GeofenceObjectContent> curGeofencesMapStorage = new HashMap<>();
-    public GeofenceInfoContent[] curGeofenceInfoStorage;
-    public HashMap<String, GeofenceInfoContent>
-            curGeofencesInfoMapStorage = new HashMap<>();
-    public GeofenceObjectContent[] geofencesBeingMonitoredStorage;
-    public ArrayList<GeofenceObjectContent> curGeofencesStorage = new ArrayList<GeofenceObjectContent>();
-
-
-
     public HistoryFragment() {
         // Required empty public constructor
     }
@@ -476,6 +467,7 @@ public class HistoryFragment extends MainFragment {
     @Override
     public void fragmentInView() {
         super.fragmentInView();
+        mainActivity.getGeofenceMonitor().setCurFragment(0);
         mainActivity.getGeofenceMonitor().getNewGeofences();
         drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfo);
     }

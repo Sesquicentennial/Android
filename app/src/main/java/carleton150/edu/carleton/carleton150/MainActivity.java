@@ -1,7 +1,7 @@
 package carleton150.edu.carleton.carleton150;
 
 import android.app.AlertDialog;
-import android.app.FragmentTransaction;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.location.Location;
@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.service.carrier.CarrierMessagingService;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -31,8 +32,11 @@ import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 
+import carleton150.edu.carleton.carleton150.MainFragments.FragmentChangeListener;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.MyFragmentPagerAdapter;
+import carleton150.edu.carleton.carleton150.MainFragments.QuestFragment;
+import carleton150.edu.carleton.carleton150.MainFragments.QuestInProgressFragment;
 import carleton150.edu.carleton.carleton150.Models.GeofenceErrorMessages;
 import carleton150.edu.carleton.carleton150.Models.GeofenceMonitor;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
@@ -45,7 +49,7 @@ import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectCo
  * to handle geofence and location changes. Also controls which fragment is in view.
  */
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status>{
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status>, FragmentChangeListener{
 
     //things for managing fragments
     public static FragmentManager fragmentManager;
@@ -303,10 +307,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
+
     public void handleGeofenceChange(ArrayList<GeofenceObjectContent> content){
         MainFragment curFragment = adapter.getCurFragment();
         if(curFragment != null) {
             curFragment.handleGeofenceChange(content);
+        }
+    }
+
+    public void notifyQuestFragmentClueCompleted(){
+        MainFragment curFragment = adapter.getCurFragment();
+        if(curFragment != null){
+            curFragment.clueCompleted();
         }
     }
 
@@ -437,8 +449,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
+    @Override
+    public void replaceFragment(MainFragment fragment) {
+        adapter.replaceFragment(fragment);
+    }
 
-
+    @Override
+    public void onBackPressed() {
+        if(adapter.getCurFragment() instanceof QuestInProgressFragment){
+            adapter.replaceFragment();
+        }
+    }
 
     /**
      * TODO: Fix bug where if you start app when not connected to internet then come back you have to restart app
