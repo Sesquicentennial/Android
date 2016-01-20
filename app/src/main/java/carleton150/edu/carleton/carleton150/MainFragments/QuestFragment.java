@@ -96,6 +96,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
 
         //builds RecyclerViews to display scavenger hunts
         buildRecyclerViews();
+        fragmentInView();
 
         return view;
     }
@@ -211,7 +212,9 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
     @Override
     public void fragmentInView() {
         super.fragmentInView();
-        mainActivity.getGeofenceMonitor().setCurFragment(3);
+        if(mainActivity != null) {
+            mainActivity.getGeofenceMonitor().setCurFragment(3);
+        }
         volleyRequester.requestQuests(this);
     }
 }
