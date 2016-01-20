@@ -13,6 +13,7 @@ import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.EventObject.Events;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
+import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 
 /**
  * Created on 10/28/15.
@@ -93,6 +94,10 @@ public class MainFragment extends Fragment{
     }
 
     public void fragmentInView(){
+
+    }
+
+    public void handleNewQuests(ArrayList<Quest> newQuests){
 
     }
 
