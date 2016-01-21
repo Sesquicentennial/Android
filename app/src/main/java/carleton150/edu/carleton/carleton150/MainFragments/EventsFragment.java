@@ -10,7 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,6 +51,8 @@ public class EventsFragment extends MainFragment {
 
     private OnFragmentInteractionListener mListener;
     private ListView eventsListView;
+    private Button btnTryAgain;
+    private TextView txtTryAgain;
     private ArrayList<EventContent> events = new ArrayList<>();
     private EventsListAdapter eventsListAdapter;
 
@@ -88,11 +93,23 @@ public class EventsFragment extends MainFragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_events, container, false);
         eventsListView = (ListView) v.findViewById(R.id.lst_events);
+        txtTryAgain = (TextView) v.findViewById(R.id.txt_request_events);
+        btnTryAgain = (Button) v.findViewById(R.id.btn_try_getting_events);
+
 
         requestEvents();
 
         eventsListAdapter = new EventsListAdapter(events, getActivity().getApplicationContext());
         eventsListView.setAdapter(eventsListAdapter);
+
+        btnTryAgain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                txtTryAgain.setText("Requesting events. Please wait...");
+                btnTryAgain.setVisibility(View.GONE);
+                requestEvents();
+            }
+        });
 
         return v;
     }
@@ -150,9 +167,18 @@ public class EventsFragment extends MainFragment {
             for (int i = 0; i < eventContents.length; i++) {
                 this.events.add(eventContents[i]);
             }
+            txtTryAgain.setVisibility(View.GONE);
+            btnTryAgain.setVisibility(View.GONE);
+            eventsListView.setVisibility(View.VISIBLE);
             eventsListAdapter.notifyDataSetChanged();
         }catch(NullPointerException e){
-            e.printStackTrace();
+            if(this.events.size() == 0) {
+                txtTryAgain.setText("Unable to retrieve events. Please check your network and try again.");
+                txtTryAgain.setVisibility(View.VISIBLE);
+                btnTryAgain.setVisibility(View.VISIBLE);
+                eventsListView.setVisibility(View.GONE);
+                e.printStackTrace();
+            }
         }
     }
 }

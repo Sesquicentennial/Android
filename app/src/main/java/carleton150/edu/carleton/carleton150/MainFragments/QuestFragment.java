@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -47,6 +46,11 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
 
     private Button btnStartQuest;
     private TextView txtInfo;
+    private Button btnTryAgain;
+
+    private String noQuestsRetrieved = "No quests were retrieved from the server. Please make sure you are connected to a network and try again.";
+    private String retrievingQuests = "Retrieving quests. Please wait...";
+    private String selectQuestToViewInfo = "Please select a quest to view its description or to begin the quest";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -93,6 +97,15 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         view =  inflater.inflate(R.layout.fragment_quest, container, false);
         btnStartQuest = (Button) view.findViewById(R.id.btn_start_quest);
         txtInfo = (TextView) view.findViewById(R.id.txt_quest_description);
+        btnTryAgain = (Button) view.findViewById(R.id.btn_try_again);
+        btnTryAgain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnTryAgain.setVisibility(View.GONE);
+                txtInfo.setText(retrievingQuests);
+                fragmentInView();
+            }
+        });
 
         //builds RecyclerViews to display scavenger hunts
         buildRecyclerViews();
@@ -170,35 +183,20 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         quests.setAdapter(questAdapter);
     }
 
-
-    /**
-     * Dummy method to create a filler list
-     * @param size
-     * @return
-     */
-    private List createList(int size) {
-
-        List result = new ArrayList();
-        for (int i = 1; i <= size; i++) {
-            QuestInfo qi = new QuestInfo();
-            qi.setTitle("title" + i);
-            qi.setDescription("description blah blah blah blah long description here to see what happens" + i);
-            qi.setCreator("creator" + i);
-            qi.setWidth((int) (screenWidth /1.5));
-            result.add(qi);
-
-        }
-
-        return result;
-    }
-
     @Override
     public void handleNewQuests(ArrayList<Quest> newQuests) {
         super.handleNewQuests(newQuests);
         if(newQuests != null) {
+            txtInfo.setText(selectQuestToViewInfo);
+            btnTryAgain.setVisibility(View.GONE);
             questAdapter.updateQuests(newQuests);
             questInfo = newQuests;
             Log.i(logMessages.VOLLEY, "QuestFragment: handleNewQuests : questAdapter contains : " + questAdapter.getItemCount());
+        } else {
+            if(questInfo == null) {
+                txtInfo.setText(noQuestsRetrieved);
+                btnTryAgain.setVisibility(View.VISIBLE);
+            }
         }
 
 
@@ -214,6 +212,9 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         super.fragmentInView();
         if(mainActivity != null) {
             mainActivity.getGeofenceMonitor().setCurFragment(3);
+        }
+        if(questInfo != null){
+            txtInfo.setText(selectQuestToViewInfo);
         }
         volleyRequester.requestQuests(this);
     }
