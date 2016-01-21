@@ -150,6 +150,12 @@ public class VolleyRequester {
         MyApplication.getInstance().getRequestQueue().add(request);
     }
 
+    /**
+     * requests events from server
+     * @param startTime time to start getting events from
+     * @param limit max number of events to retrieve
+     * @param mainFragment the fragment that called the function and should be notified of results
+     */
     public void requestEvents(String startTime, int limit, final MainFragment mainFragment){
 
         final Gson gson = new Gson();
@@ -190,6 +196,10 @@ public class VolleyRequester {
 
     }
 
+    /**
+     * Requests Quests from server
+     * @param callerFragment
+     */
     public void requestQuests(final MainFragment callerFragment){
         final Gson gson = new Gson();
         JSONObject emptyRequest = new JSONObject();

@@ -211,7 +211,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
     public void fragmentInView() {
         super.fragmentInView();
         if(mainActivity != null) {
-            mainActivity.getGeofenceMonitor().setCurFragment(3);
+            mainActivity.getGeofenceMonitor().setCurFragment(2);
         }
         if(questInfo != null){
             txtInfo.setText(selectQuestToViewInfo);
