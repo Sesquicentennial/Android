@@ -60,6 +60,11 @@ public class HistoryFragment extends MainFragment {
     private TextView txt_lat;
     private TextView txt_long;
     private TextView queryResult;
+    private TextView txtRequestGeofences;
+    private Button btnRequestGeofences;
+
+    private String noGeofencesRetrieved = "No geofences were retrieved from the server. Please make sure you are connected to a network and try again.";
+    private String retrievingGeofences = "Retrieving geofences. Please wait...";
 
     ArrayList<Marker> currentGeofenceMarkers = new ArrayList<Marker>();
     private boolean debugMode = false;
@@ -88,6 +93,18 @@ public class HistoryFragment extends MainFragment {
         txt_lat = (TextView) view.findViewById(R.id.txt_lat);
         txt_long = (TextView) view.findViewById(R.id.txt_long);
         queryResult = (TextView) view.findViewById(R.id.txt_query_result);
+        txtRequestGeofences = (TextView) view.findViewById(R.id.txt_try_getting_geofences);
+        btnRequestGeofences = (Button) view.findViewById(R.id.btn_request_geofences);
+        btnRequestGeofences.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fragmentInView();
+                btnRequestGeofences.setVisibility(View.GONE);
+                txtRequestGeofences.setText(retrievingGeofences);
+            }
+        });
+
+
         mainActivity.getGeofenceMonitor().startGeofenceMonitoring();
 
 
@@ -437,10 +454,22 @@ public class HistoryFragment extends MainFragment {
     @Override
     public void handleNewGeofences(GeofenceObjectContent[] geofencesContent){
         super.handleNewGeofences(geofencesContent);
-        mainActivity.getGeofenceMonitor().handleNewGeofences(geofencesContent);
-        if(geofencesContent != null) {
-            drawGeofences(geofencesContent);
+        if(mainActivity != null) {
+            if(geofencesContent != null) {
+                btnRequestGeofences.setVisibility(View.GONE);
+                txtRequestGeofences.setVisibility(View.GONE);
+                mainActivity.getGeofenceMonitor().handleNewGeofences(geofencesContent);
+                drawGeofences(geofencesContent);
+
+            }else{
+                if(mainActivity.getGeofenceMonitor().allGeopointsByName.size() == 0){
+                    btnRequestGeofences.setVisibility(View.VISIBLE);
+                    txtRequestGeofences.setText(noGeofencesRetrieved);
+                }
+            }
+
         }
+
     }
 
 

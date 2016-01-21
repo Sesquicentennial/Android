@@ -316,7 +316,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     public void notifyQuestFragmentClueCompleted(){
-        MainFragment curFragment = adapter.getCurFragment();
+        if(curFragment == null) {
+            curFragment = adapter.getCurFragment();
+        }
         if(curFragment != null){
             curFragment.clueCompleted();
         }
@@ -420,9 +422,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if(curFragment == null){
             curFragment = adapter.getCurFragment();
         }
-        if(content != null) {
-            curFragment.handleNewGeofences(content);
-        }
+        curFragment.handleNewGeofences(content);
     }
 
     public GeofenceMonitor getGeofenceMonitor(){

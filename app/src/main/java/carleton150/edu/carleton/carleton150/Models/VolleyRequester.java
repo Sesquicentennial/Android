@@ -2,6 +2,7 @@ package carleton150.edu.carleton.carleton150.Models;
 
 import android.util.Log;
 
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -114,10 +115,11 @@ public class VolleyRequester {
         try {
             jsonObjectrequest = new JSONObject(jsonString);
         } catch (JSONException e) {
+            Log.i(logMessages.VOLLEY, "requestGeofences : JSONException ");
             e.printStackTrace();
         }
 
-        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/geofences", jsonObjectrequest,
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://carl150.carleton.edu/geofences", jsonObjectrequest,
                 new Response.Listener<JSONObject>() {
 
                     @Override
