@@ -48,7 +48,7 @@ public class GeofenceMonitor{
     public GeofenceObjectContent[] geofencesBeingMonitored;
     protected PendingIntent mGeofencePendingIntent;
     public ArrayList<GeofenceObjectContent> curGeofences = new ArrayList<GeofenceObjectContent>();
-    protected HashMap<String, GeofenceObjectContent> allGeopointsByName = new HashMap<String, GeofenceObjectContent>();
+    public HashMap<String, GeofenceObjectContent> allGeopointsByName = new HashMap<String, GeofenceObjectContent>();
     public boolean mGeofencesAdded = false;
     protected ArrayList<Geofence> mGeofenceList;
 
@@ -92,7 +92,7 @@ public class GeofenceMonitor{
                 Log.i(logMessages.GEOFENCE_MONITORING, " GeofenceMonitor: about to handle geofence changes");
                 //calls a method in the current fragment that handles the change in geofences
                 handleGeofenceChange(curGeofences);
-            } else {
+            } else if (curFragment == 3){
                 notifyQuestFragmentClueCompleted();
             }
         }
