@@ -44,6 +44,7 @@ public class QuestInProgressFragment extends MainFragment {
     private TextView txtHint;
     private String locationNotFoundString = "Sorry, you have not yet reached the correct location. If you need a hint," +
             " please click the hint button below.";
+    private String questCompletedString = "You already completed this quest! Please press the back button to select a new quest.";
 
     private boolean zoomCamera = true;
     private static LatLng CENTER_CAMPUS = new LatLng(44.460174, -93.154726);
@@ -71,7 +72,18 @@ public class QuestInProgressFragment extends MainFragment {
         btnShowHint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                txtHint.setText(quest.getWaypoints().get(String.valueOf(numClue)).getHint());
+                if(quest.getWaypoints().get(String.valueOf(numClue)) != null) {
+                    String hint = quest.getWaypoints().get(String.valueOf(numClue)).getHint();
+                    if(hint.equals("")){
+                        txtHint.setText("No hint available for this clue");
+                    }else {
+                        txtHint.setText(quest.getWaypoints().get(String.valueOf(numClue)).getHint());
+                    }
+                //If quest is completed, sets the hint to blank
+                }else{
+                    txtHint.setText("");
+                }
+
                 txtHint.setVisibility(View.VISIBLE);
                 locationNotFoundString = "Sorry, you have not yet reached the correct location";
             }
@@ -93,18 +105,23 @@ public class QuestInProgressFragment extends MainFragment {
 
     private void checkIfClueFound(){
         Location curLocation = mMap.getMyLocation();
-        Geofence hintGeofence = quest.getWaypoints().get(String.valueOf(numClue)).getGeofence();
-        double lat = Double.valueOf(hintGeofence.getLat());
-        double lon = Double.valueOf(hintGeofence.getLng());
-        double rad = Double.valueOf(hintGeofence.getRad());
-        float[] results = new float[1];
-        Location.distanceBetween(curLocation.getLatitude(), curLocation.getLongitude(),
-                lat, lon,
-                results);
-        if(results[0] <= rad){
-            clueCompleted();
+        if(quest.getWaypoints().get(String.valueOf(numClue)) != null) {
+            Geofence hintGeofence = quest.getWaypoints().get(String.valueOf(numClue)).getGeofence();
+            double lat = Double.valueOf(hintGeofence.getLat());
+            double lon = Double.valueOf(hintGeofence.getLng());
+            double rad = Double.valueOf(hintGeofence.getRad());
+            float[] results = new float[1];
+            Location.distanceBetween(curLocation.getLatitude(), curLocation.getLongitude(),
+                    lat, lon,
+                    results);
+            if (results[0] <= rad) {
+                clueCompleted();
+            } else {
+                mainActivity.showAlertDialog(locationNotFoundString,
+                        new AlertDialog.Builder(mainActivity).create());
+            }
         }else{
-            mainActivity.showAlertDialog(locationNotFoundString,
+            mainActivity.showAlertDialog(questCompletedString,
                     new AlertDialog.Builder(mainActivity).create());
         }
     }
@@ -281,7 +298,6 @@ public class QuestInProgressFragment extends MainFragment {
         return finished;
     }
 
-    @Override
     public void clueCompleted() {
         Log.i(logMessages.GEOFENCE_MONITORING, "QuestInProgressFragment: clueCompleted");
         numClue += 1;
@@ -293,6 +309,7 @@ public class QuestInProgressFragment extends MainFragment {
 
     private void showCompletedQuestMessage(){
         txtClue.setText("Quest completed! Message is: " + quest.getCompMsg());
+        txtHint.setVisibility(View.GONE);
     }
 
     @Override
@@ -305,7 +322,6 @@ public class QuestInProgressFragment extends MainFragment {
     public void fragmentInView() {
         Log.i("QuestInProgressFragment", "fragmentInView");
         if(mainActivity != null) {
-            mainActivity.getGeofenceMonitor().setCurFragment(2);
             if(mainActivity.isConnectedToNetwork()) {
                 setUpMapIfNeeded();
             }

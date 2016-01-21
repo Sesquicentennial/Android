@@ -97,10 +97,6 @@ public class MainFragment extends Fragment{
 
     }
 
-    public void clueCompleted(){
-
-    }
-
 }
 
 

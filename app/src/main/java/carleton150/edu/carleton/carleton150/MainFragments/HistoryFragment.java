@@ -496,7 +496,6 @@ public class HistoryFragment extends MainFragment {
     @Override
     public void fragmentInView() {
         super.fragmentInView();
-        mainActivity.getGeofenceMonitor().setCurFragment(0);
         mainActivity.getGeofenceMonitor().getNewGeofences();
         drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfo);
     }

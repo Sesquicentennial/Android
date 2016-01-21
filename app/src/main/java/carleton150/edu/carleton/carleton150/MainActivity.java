@@ -315,21 +315,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    /**
-     * Method called from the geofenceMonitor. Lets the current fragment know that the
-     * current quest clue was completed. geofenceMonitor keeps track of which kind of fragment
-     * is in view, so this will never be called if the QuestFragment or QuestInProgress
-     * fragment isn't in view
-     */
-    public void notifyQuestFragmentClueCompleted(){
-        if(curFragment == null) {
-            curFragment = adapter.getCurFragment();
-        }
-        if(curFragment != null){
-            curFragment.clueCompleted();
-        }
-    }
-
 
     /**
      * Creating location request object
