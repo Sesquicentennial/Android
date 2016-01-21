@@ -81,10 +81,6 @@ public class MainFragment extends Fragment{
 
     }
 
-    public void googlePlayServicesConnected(){
-
-    }
-
     public void handleNewEvents(Events events){
 
     }

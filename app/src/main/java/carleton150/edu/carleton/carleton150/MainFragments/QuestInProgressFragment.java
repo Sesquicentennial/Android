@@ -228,7 +228,6 @@ public class QuestInProgressFragment extends MainFragment {
     @Override
     public void handleLocationChange(Location newLocation) {
         super.handleLocationChange(newLocation);
-        mainActivity.getGeofenceMonitor().handleLocationChange(newLocation);
         setCamera();
 
         if(mainActivity.getGeofenceMonitor().currentLocation != null) {
@@ -304,10 +303,20 @@ public class QuestInProgressFragment extends MainFragment {
 
     @Override
     public void fragmentInView() {
-        super.fragmentInView();
+        Log.i("QuestInProgressFragment", "fragmentInView");
         if(mainActivity != null) {
-            mainActivity.getGeofenceMonitor().setCurFragment(3);
+            mainActivity.getGeofenceMonitor().setCurFragment(2);
+            if(mainActivity.isConnectedToNetwork()) {
+                setUpMapIfNeeded();
+            }
         }
+
         setGeofences();
+        if(mMap == null){
+            setUpMapIfNeeded();
+        }if(mMap != null){
+            setUpMap();
+        }
+        setCamera();
     }
 }
