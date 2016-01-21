@@ -4,6 +4,30 @@
     android:paddingTop="?attr/actionBarSize"
     tools:context="carleton150.edu.carleton.carleton1502.mainActivityFragments.SocialFragment">
 
+    <LinearLayout
+        android:id="@+id/layout_unable_to_retrieve_events"
+        android:layout_width="match_parent"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/txt_request_events"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Getting events..."
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btn_try_getting_events"
+            android:text="Try Again"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
    <ListView
        android:id="@+id/lst_events"
        android:layout_width="match_parent"
