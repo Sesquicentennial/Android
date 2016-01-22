@@ -2,7 +2,6 @@ package carleton150.edu.carleton.carleton150.MainFragments;
 
 
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -21,7 +20,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import carleton150.edu.carleton.carleton150.Adapters.MyInfoWindowAdapter;
 import carleton150.edu.carleton.carleton150.DialogFragments.HistoryPopoverDialogFragment;
@@ -36,9 +34,6 @@ import carleton150.edu.carleton.carleton150.R;
  * The main fragment for the History section of the app
  *
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link HistoryFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
  *
  */
 public class HistoryFragment extends MainFragment {
@@ -63,11 +58,9 @@ public class HistoryFragment extends MainFragment {
     private TextView txtRequestGeofences;
     private Button btnRequestGeofences;
 
-    private String noGeofencesRetrieved = "No geofences were retrieved from the server. Please make sure you are connected to a network and try again.";
-    private String retrievingGeofences = "Retrieving geofences. Please wait...";
-
     ArrayList<Marker> currentGeofenceMarkers = new ArrayList<Marker>();
     private boolean debugMode = false;
+    private Button btnToggle;
 
 
     public HistoryFragment() {
@@ -95,22 +88,38 @@ public class HistoryFragment extends MainFragment {
         queryResult = (TextView) view.findViewById(R.id.txt_query_result);
         txtRequestGeofences = (TextView) view.findViewById(R.id.txt_try_getting_geofences);
         btnRequestGeofences = (Button) view.findViewById(R.id.btn_request_geofences);
+
+        /*If geofences weren't retrieved (likely due to network error), sets button for user
+        to try requesting geofences again. If it is clicked, calls fragmentInView() to get new
+        geofences and draw the necessary map markers
+         */
         btnRequestGeofences.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 fragmentInView();
                 btnRequestGeofences.setVisibility(View.GONE);
-                txtRequestGeofences.setText(retrievingGeofences);
+                txtRequestGeofences.setText(getResources().getString(R.string.retrieving_geofences));
             }
         });
 
-
+        //starts the mainActivity monitoring geofences
         mainActivity.getGeofenceMonitor().startGeofenceMonitoring();
 
-
-        //TODO: refactor section
         //Button to transition to and from debug mode
-        Button btnToggle = (Button) view.findViewById(R.id.btn_debug_toggle);
+        btnToggle = (Button) view.findViewById(R.id.btn_debug_toggle);
+        monitorDebugToggle();
+
+        if(mainActivity.isConnectedToNetwork()) {
+            setUpMapIfNeeded(); // For setting up the MapFragment
+        }
+        return view;
+    }
+
+    /**
+     * Monitors the debug toggle button to show geofence circles when toggled.
+     * This is for testing purposes only.
+     */
+    private void monitorDebugToggle(){
         btnToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,13 +128,11 @@ public class HistoryFragment extends MainFragment {
                     if (mMap != null) {
                         mMap.clear();
                         drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfo);
-                        //queryResult.setVisibility(View.GONE);
                     }
                 } else {
                     try {
                         drawGeofences(mainActivity.getGeofenceMonitor().geofencesBeingMonitored);
                         drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfo);
-                        //queryResult.setVisibility(View.VISIBLE);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -133,34 +140,13 @@ public class HistoryFragment extends MainFragment {
             }
         });
 
-        if(mainActivity.isConnectedToNetwork()) {
-            setUpMapIfNeeded(); // For setting up the MapFragment
-        }
-        return view;
-    }
-
-
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
     }
 
 
     /***** Sets up the map if it is possible to do so *****/
-        public boolean setUpMapIfNeeded() {
-            // Do a null check to confirm that we have not already instantiated the map.
-            if (mMap == null) {
+    public boolean setUpMapIfNeeded() {
+        // Do a null check to confirm that we have not already instantiated the map.
+        if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
             mMap = ((SupportMapFragment) getChildFragmentManager()
                     .findFragmentById(R.id.location_map)).getMap();
@@ -256,13 +242,10 @@ public class HistoryFragment extends MainFragment {
     }
 
 
-
-
     /**
      * Sets the camera for the map. If we have user location, sets the camera to that location.
      * Otherwise, the camera target is the center of campus.
      */
-    //TODO: figure out what to do if user is off campus and handle that appropriately
     private void setCamera(){
         if(mainActivity.getGeofenceMonitor().currentLocation != null && zoomCamera) {
             zoomCamera = false;
@@ -281,8 +264,6 @@ public class HistoryFragment extends MainFragment {
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
     }
-
-
 
     /**
      * Lifecycle method overridden to set up the map and check for internet connectivity
@@ -305,7 +286,7 @@ public class HistoryFragment extends MainFragment {
      *                         each geofence user is currently in
      */
     private void drawGeofenceMapMarker
-            (GeofenceInfoContent[] currentGeofences){
+    (GeofenceInfoContent[] currentGeofences){
         if(currentGeofences != null) {
             for (int i = 0; i < currentGeofenceMarkers.size(); i++) {
                 currentGeofenceMarkers.get(i).remove();
@@ -336,7 +317,7 @@ public class HistoryFragment extends MainFragment {
      */
     private void displayGeofenceInfo(){
         TextView locationView = (TextView) view.findViewById(R.id.txt_geopoint_info);
-        String displayString = "Currently in geofences for: ";
+        String displayString = getResources().getString(R.string.currently_in_geofences_for);
         boolean showString = false;
         if(mainActivity.getGeofenceMonitor().curGeofences == null){
             return;
@@ -348,7 +329,7 @@ public class HistoryFragment extends MainFragment {
         if(showString) {
             locationView.setText(displayString);
         } else {
-            locationView.setText("No items");
+            locationView.setText(getResources().getString(R.string.no_items));
         }
     }
 
@@ -361,26 +342,35 @@ public class HistoryFragment extends MainFragment {
     @Override
     public void handleResult(GeofenceInfoObject result) {
         super.handleResult(result);
+
+        /*This is a call from the VolleyRequester, so this check prevents the app from
+        crashing if the user leaves the tab while the app is trying
+        to get quests from the server
+         */
+        if(this.isDetached()){
+            return;
+        }
+
         mainActivity.getGeofenceMonitor().handleResult(result);
         if (result != null){
-           try {
-               //Gives information to the infoWindowAdapter for displaying info windows
-               myInfoWindowAdapter.setCurrentGeopoints(mainActivity.getGeofenceMonitor().curGeofenceInfo);
-               myInfoWindowAdapter.setCurrentGeopointsMap(mainActivity.getGeofenceMonitor().curGeofencesInfoMap);
+            try {
+                //Gives information to the infoWindowAdapter for displaying info windows
+                myInfoWindowAdapter.setCurrentGeopoints(mainActivity.getGeofenceMonitor().curGeofenceInfo);
+                myInfoWindowAdapter.setCurrentGeopointsMap(mainActivity.getGeofenceMonitor().curGeofencesInfoMap);
 
-               //sets text to display current geofences
-               displayGeofenceInfo();
-               drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfo);
+                //sets text to display current geofences
+                displayGeofenceInfo();
+                drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfo);
 
-               if (!debugMode) {
-                   queryResult.setVisibility(View.GONE);
-               }
-               queryResult.setText(result.toString());
-           }catch (NullPointerException e){
-               e.printStackTrace();
-               queryResult.setText("the geofence request returned a null content array");
-           }
-       }
+                if (!debugMode) {
+                    queryResult.setVisibility(View.GONE);
+                }
+                queryResult.setText(result.toString());
+            }catch (NullPointerException e){
+                e.printStackTrace();
+                queryResult.setText("the geofence request returned a null content array");
+            }
+        }
     }
 
     /**
@@ -454,6 +444,14 @@ public class HistoryFragment extends MainFragment {
     @Override
     public void handleNewGeofences(GeofenceObjectContent[] geofencesContent){
         super.handleNewGeofences(geofencesContent);
+        /*This is a call from the VolleyRequester, so this check prevents the app from
+        crashing if the user leaves the tab while the app is trying
+        to get quests from the server
+         */
+        if(this.isDetached()){
+            return;
+        }
+
         if(mainActivity != null) {
             if(geofencesContent != null) {
                 btnRequestGeofences.setVisibility(View.GONE);
@@ -464,12 +462,10 @@ public class HistoryFragment extends MainFragment {
             }else{
                 if(mainActivity.getGeofenceMonitor().allGeopointsByName.size() == 0){
                     btnRequestGeofences.setVisibility(View.VISIBLE);
-                    txtRequestGeofences.setText(noGeofencesRetrieved);
+                    txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
                 }
             }
-
         }
-
     }
 
 
@@ -480,7 +476,6 @@ public class HistoryFragment extends MainFragment {
     @Override
     public void handleGeofenceChange(ArrayList<GeofenceObjectContent> currentGeofences) {
         super.handleGeofenceChange(currentGeofences);
-        //mainActivity.getGeofenceMonitor().handleGeofenceChange(currentGeofences);
         if(mainActivity.isConnectedToNetwork()) {
             Log.i(logMessages.VOLLEY, "handleGeofenceChange : about to query database : " + currentGeofences.toString());
             volleyRequester.request(this, currentGeofences);
@@ -493,6 +488,10 @@ public class HistoryFragment extends MainFragment {
 
     }
 
+    /**
+     * Called when the fragment becomes visible on the screen. Gets new geofences
+     * and draws markers on the map
+     */
     @Override
     public void fragmentInView() {
         super.fragmentInView();

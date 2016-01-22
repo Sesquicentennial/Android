@@ -1,10 +1,15 @@
-package carleton150.edu.carleton.carleton150.MainFragments;
+package carleton150.edu.carleton.carleton150.Adapters;
 
-import android.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.view.ViewGroup;
+
+import carleton150.edu.carleton.carleton150.MainFragments.EventsFragment;
+import carleton150.edu.carleton.carleton150.MainFragments.HistoryFragment;
+import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
+import carleton150.edu.carleton.carleton150.MainFragments.QuestFragment;
+import carleton150.edu.carleton.carleton150.MainFragments.QuestInProgressFragment;
 
 /**
  * Created by haleyhinze on 10/8/15.
@@ -34,6 +39,7 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
                 EventsFragment tab2 = new EventsFragment();
                 return tab2;
             case 2:
+                //Different because tab3 may be QuestInProgressFragment()
                 if(tab3 == null) {
                     tab3 = new QuestFragment();
                 }
@@ -58,10 +64,18 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
         return mNumOfTabs;
     }
 
+    /**
+     *
+     * @return fragment currently in view
+     */
     public MainFragment getCurFragment(){
         return this.curFragment;
     }
 
+    /**
+     * Replaces the QuestFragment with a QuestInProgressFragment
+     * @param fragment fragment that will be replacing the current fragment
+     */
     public void replaceFragment(MainFragment fragment) {
         if(tab3 != null){
             FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -72,6 +86,9 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
         }
     }
 
+    /**
+     * replaces the QuestInProgressFragment with a QuestFragment
+     */
     public void replaceFragment(){
         if(tab3 != null){
             FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -83,6 +100,13 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
         }
     }
 
+    /**
+     * This is overridden because tab3 could contain either a QuestInProgressFragment
+     * or a QuestFragment. Therefore, the position of whichever one is not currently
+     * being used should be none.
+     * @param object
+     * @return
+     */
     @Override
     public int getItemPosition(Object object) {
         if(object instanceof QuestFragment && tab3 instanceof QuestInProgressFragment){

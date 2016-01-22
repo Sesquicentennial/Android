@@ -1,9 +1,7 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
@@ -18,16 +16,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import carleton150.edu.carleton.carleton150.MainActivity;
-import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Geofence;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
-import carleton150.edu.carleton.carleton150.POJO.Quests.Waypoint;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
@@ -42,9 +33,6 @@ public class QuestInProgressFragment extends MainFragment {
     private Button btnFoundIt;
     private Button btnShowHint;
     private TextView txtHint;
-    private String locationNotFoundString = "Sorry, you have not yet reached the correct location. If you need a hint," +
-            " please click the hint button below.";
-    private String questCompletedString = "You already completed this quest! Please press the back button to select a new quest.";
 
     private boolean zoomCamera = true;
     private static LatLng CENTER_CAMPUS = new LatLng(44.460174, -93.154726);
@@ -55,11 +43,25 @@ public class QuestInProgressFragment extends MainFragment {
         // Required empty public constructor
     }
 
+    /**
+     * This must be called after creating the QuestInProgressFragment in order to pass
+     * it the current quest
+     * @param quest quest to be completed by user
+     */
     public void initialize(Quest quest){
         this.quest = quest;
     }
 
 
+    /**
+     * Sets OnClickListeners to register when hint button or found it button is clicked
+     * and to show the hint or check if the user is within a valid radius of the waypoint
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -75,7 +77,7 @@ public class QuestInProgressFragment extends MainFragment {
                 if(quest.getWaypoints().get(String.valueOf(numClue)) != null) {
                     String hint = quest.getWaypoints().get(String.valueOf(numClue)).getHint();
                     if(hint.equals("")){
-                        txtHint.setText("No hint available for this clue");
+                        txtHint.setText(getResources().getString(R.string.no_hint_available));
                     }else {
                         txtHint.setText(quest.getWaypoints().get(String.valueOf(numClue)).getHint());
                     }
@@ -83,9 +85,7 @@ public class QuestInProgressFragment extends MainFragment {
                 }else{
                     txtHint.setText("");
                 }
-
                 txtHint.setVisibility(View.VISIBLE);
-                locationNotFoundString = "Sorry, you have not yet reached the correct location";
             }
         });
 
@@ -95,17 +95,19 @@ public class QuestInProgressFragment extends MainFragment {
                 checkIfClueFound();
             }
         });
-
         if(mainActivity.isConnectedToNetwork()) {
             setUpMapIfNeeded(); // For setting up the MapFragment
         }
-        setGeofences();
+        updateCurrentWaypoint();
         return v;
     }
 
+    /**
+     * Checks if the user's current location is within the radius of the waypoint
+     * (both the radius and waypoint are specified in the quest object)
+     */
     private void checkIfClueFound(){
         Location curLocation = mMap.getMyLocation();
-        if(quest.getWaypoints().get(String.valueOf(numClue)) != null) {
             Geofence hintGeofence = quest.getWaypoints().get(String.valueOf(numClue)).getGeofence();
             double lat = Double.valueOf(hintGeofence.getLat());
             double lon = Double.valueOf(hintGeofence.getLng());
@@ -117,12 +119,14 @@ public class QuestInProgressFragment extends MainFragment {
             if (results[0] <= rad) {
                 clueCompleted();
             } else {
-                mainActivity.showAlertDialog(locationNotFoundString,
-                        new AlertDialog.Builder(mainActivity).create());
-            }
-        }else{
-            mainActivity.showAlertDialog(questCompletedString,
-                    new AlertDialog.Builder(mainActivity).create());
+                //String to display if hint is not already showing
+                String alertString = getActivity().getResources().getString(R.string.location_not_found_hint);
+                if(txtHint.getVisibility() == View.VISIBLE) {
+                    //String to display if hint is already showing
+                    alertString = getActivity().getResources().getString(R.string.location_not_found);
+                }
+                mainActivity.showAlertDialog(alertString,
+                            new AlertDialog.Builder(mainActivity).create());
         }
     }
 
@@ -138,7 +142,8 @@ public class QuestInProgressFragment extends MainFragment {
                 setUpMap();
                 return true;
             } else {
-                //TODO: display message saying unable to set up map
+                mainActivity.showAlertDialog(getResources().getString(R.string.unable_to_set_up_map),
+                        new AlertDialog.Builder(mainActivity).create());
                 return false;
             }
         }
@@ -146,7 +151,7 @@ public class QuestInProgressFragment extends MainFragment {
     }
 
     /**
-     * Sets up the map (should only be called if mMap is null)
+     * Sets up the map
      * Monitors the zoom and target of the camera and changes them
      * if the user zooms out too much or scrolls map too far off campus.
      */
@@ -169,7 +174,6 @@ public class QuestInProgressFragment extends MainFragment {
                     }
                     mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
                 }
-
                 //makes it so user can't scroll too far off campus
                 //TODO: figure out best map limits
                 double latitude = cameraPosition.target.latitude;
@@ -210,7 +214,8 @@ public class QuestInProgressFragment extends MainFragment {
         if(mainActivity.getGeofenceMonitor().currentLocation != null && zoomCamera) {
             zoomCamera = false;
             CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(mainActivity.getGeofenceMonitor().currentLocation.getLatitude(), mainActivity.getGeofenceMonitor().currentLocation.getLongitude()))
+                    .target(new LatLng(mainActivity.getGeofenceMonitor().currentLocation.getLatitude(),
+                            mainActivity.getGeofenceMonitor().currentLocation.getLongitude()))
                     .zoom(15)
                     .bearing(0)
                     .build();
@@ -252,8 +257,12 @@ public class QuestInProgressFragment extends MainFragment {
         }
     }
 
-    public boolean setGeofences(){
-        Log.i(logMessages.GEOFENCE_MONITORING, "QuestInProgressFragment: setting geofences");
+    /**
+     * Checks if the quest is finished. If not, sets the text to show the next clue
+     *
+     * @return boolean, true if quest is finished, false otherwise
+     */
+    public boolean updateCurrentWaypoint(){
         String currentClue = String.valueOf(numClue);
         boolean finished = false;
         if(quest.getWaypoints().get(currentClue) == null &&
@@ -261,73 +270,55 @@ public class QuestInProgressFragment extends MainFragment {
             finished = true;
             return finished;
         }
-
-        HashMap<String, Waypoint> waypointHashMap = quest.getWaypoints();
-        if(waypointHashMap == null){
-            Log.i(logMessages.GEOFENCE_MONITORING, "QuestInProgressFragment: waypointHashMap is null");
-        }else{
-            Waypoint waypoint = waypointHashMap.get(currentClue);
-            if(waypoint == null){
-                Log.i(logMessages.GEOFENCE_MONITORING, "QuestInProgressFragment: waypoint is null");
-            }else {
-                Geofence geofence = waypoint.getGeofence();
-                if(geofence == null){
-                    Log.i(logMessages.GEOFENCE_MONITORING, "QuestInProgressFragment: geofence is null");
-                }else {
-                    if(mainActivity == null){
-                        Log.i(logMessages.GEOFENCE_MONITORING, "QuestInProgressFragment: mainActivity is null");
-                    }else{
-                        if(mainActivity.getGeofenceMonitor() == null){
-                            Log.i(logMessages.GEOFENCE_MONITORING, "QuestInProgressFragment: geofenceMonitor is null");
-                        }
-                    }
-                    mainActivity.getGeofenceMonitor().addQuestGeofence(geofence);
-                    Log.i(logMessages.GEOFENCE_MONITORING, "QuestInProgressFragment: adding geofence");
-                    txtClue.setText(quest.getWaypoints().get(currentClue).getClue());
-                }
-            }
-        }
-
-        try {
-            mainActivity.getGeofenceMonitor().addQuestGeofence(quest.getWaypoints().get(currentClue).getGeofence());
-            txtClue.setText(quest.getWaypoints().get(currentClue).getClue());
-        }catch (NullPointerException e){
-            Log.i(logMessages.GEOFENCE_MONITORING, "QuestInProgressFragment: the current thing is null");
-            e.printStackTrace();
-        }
+        txtClue.setText(quest.getWaypoints().get(currentClue).getClue());
         return finished;
     }
 
+    /**
+     * Handles when a clue has been completed by incrementing the clue
+     * number, updating the current waypoint, and checking if the quest is completed
+     */
     public void clueCompleted() {
         Log.i(logMessages.GEOFENCE_MONITORING, "QuestInProgressFragment: clueCompleted");
         numClue += 1;
-        boolean completedQuest = setGeofences();
+        boolean completedQuest = updateCurrentWaypoint();
         if (completedQuest){
             showCompletedQuestMessage();
         }
     }
 
+    /**
+     * Shows the message stored with the quest when the quest has been
+     * completed
+     */
     private void showCompletedQuestMessage(){
-        txtClue.setText("Quest completed! Message is: " + quest.getCompMsg());
+        btnFoundIt.setClickable(false);
+        btnShowHint.setClickable(false);
+        txtClue.setText(getResources().getString(R.string.quest_completed_show_message) + quest.getCompMsg());
         txtHint.setVisibility(View.GONE);
     }
 
     @Override
     public void fragmentOutOfView() {
         super.fragmentOutOfView();
-
     }
 
+    /**
+     * Called when the fragment comes into view (different than onResume() because
+     * the viewPager keeps several fragments in resumed state. This method is called
+     * when the fragment actually comes into view on the screen
+     *
+     * Sets up the map if it hasn't already been set up, updates the waypoints,
+     * and sets the map camera
+     */
     @Override
     public void fragmentInView() {
-        Log.i("QuestInProgressFragment", "fragmentInView");
         if(mainActivity != null) {
             if(mainActivity.isConnectedToNetwork()) {
                 setUpMapIfNeeded();
             }
         }
-
-        setGeofences();
+        updateCurrentWaypoint();
         if(mMap == null){
             setUpMapIfNeeded();
         }if(mMap != null){

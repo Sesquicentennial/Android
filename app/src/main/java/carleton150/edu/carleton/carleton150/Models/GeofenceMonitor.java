@@ -26,6 +26,8 @@ import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectLo
 
 
 /**
+ * Class to monitor geofences
+ *
  * Created by haleyhinze on 1/14/16.
  */
 public class GeofenceMonitor{

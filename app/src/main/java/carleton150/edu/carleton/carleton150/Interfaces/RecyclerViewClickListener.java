@@ -1,4 +1,4 @@
-package carleton150.edu.carleton.carleton150.Adapters;
+package carleton150.edu.carleton.carleton150.Interfaces;
 
 import android.view.View;
 
