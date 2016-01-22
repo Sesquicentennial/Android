@@ -19,7 +19,7 @@ import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
  * Created on 10/28/15.
  * Super class for all of the main view fragments. Ensures that they have
  * some methods in common so that the MainActivity can call these methods
- * without knowing which type of fragment is currently in view
+ * without checking which type of fragment is currently in view
  */
 public class MainFragment extends Fragment{
 
@@ -81,6 +81,10 @@ public class MainFragment extends Fragment{
 
     }
 
+    /**
+     * handles new events from server, called by VolleyRequester
+     * @param events
+     */
     public void handleNewEvents(Events events){
 
     }

@@ -13,4 +13,19 @@
     <string name = "not_connected">Not connected to google api client</string>
     <string name = "no_network_connection">No network connection. Please connect and try again.</string>
     <string name = "no_google_services">Google Play Services is unavailable</string>
+    <string name = "location_not_found_hint">Sorry, you have not yet reached the correct location. If you need a hint, please click the hint button below.</string>
+    <string name = "location_not_found">Sorry, you have not yet reached the correct location.</string>
+    <string name = "quest_already_completed">You already completed this quest! Please press the back button to select a new quest.</string>
+    <string name = "no_hint_available">No hint available for this clue</string>
+    <string name = "quest_completed_show_message">Quest completed! Message is:</string>
+    <string name = "unable_to_set_up_map">Unable to set up map.</string>
+    <string name = "no_geofences_retrieved">No geofences were retrieved from the server. Please make sure you are connected to a network and try again.</string>
+    <string name = "retrieving_geofences">Retrieving geofences. Please wait...</string>
+    <string name = "currently_in_geofences_for">Currently in geofences for: </string>
+    <string name = "no_items">No items</string>
+    <string name = "no_quests_retrieved">No quests were retrieved from the server. Please make sure you are connected to a network and try again.</string>
+    <string name = "retrieving_quests">Retrieving quests. Please wait...</string>
+    <string name = "select_quest_to_view_info">Please select a quest to view its description or to begin the quest</string>
+    <string name="requesting_events">Requesting events. Please wait...</string>
+    <string name="no_events_retrieved">Unable to retrieve events. Please check your network and try again.</string>
 </resources>

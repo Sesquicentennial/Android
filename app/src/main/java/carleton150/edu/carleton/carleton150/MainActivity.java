@@ -1,7 +1,6 @@
 package carleton150.edu.carleton.carleton150;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.location.Location;
@@ -10,10 +9,8 @@ import android.net.NetworkInfo;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import android.os.Bundle;
-import android.service.carrier.CarrierMessagingService;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -24,7 +21,6 @@ import android.view.MenuItem;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -32,16 +28,13 @@ import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 
-import carleton150.edu.carleton.carleton150.MainFragments.FragmentChangeListener;
+import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
-import carleton150.edu.carleton.carleton150.MainFragments.MyFragmentPagerAdapter;
-import carleton150.edu.carleton.carleton150.MainFragments.QuestFragment;
+import carleton150.edu.carleton.carleton150.Adapters.MyFragmentPagerAdapter;
 import carleton150.edu.carleton.carleton150.MainFragments.QuestInProgressFragment;
 import carleton150.edu.carleton.carleton150.Models.GeofenceErrorMessages;
 import carleton150.edu.carleton.carleton150.Models.GeofenceMonitor;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
-import carleton150.edu.carleton.carleton150.POJO.EventObject.Events;
-import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
 
 /**
