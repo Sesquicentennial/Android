@@ -6,6 +6,7 @@ import com.android.volley.toolbox.Volley;
 import java.io.InputStream;
 import carleton150.edu.carleton.carleton150.CertificateManagement.ExtHttpClientStack;
 import carleton150.edu.carleton.carleton150.CertificateManagement.SslHttpClient;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
  * Created by haleyhinze on 10/28/15.
@@ -23,6 +24,12 @@ public class MyApplication extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
+
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                        .setDefaultFontPath("fonts/Arsenal-Regular.otf")
+                        .setFontAttrId(R.attr.fontPath)
+                        .build()
+        );
 
         InputStream keyStore = getResources().openRawResource(R.raw.my);
         mRequestQueue = Volley.newRequestQueue(this,

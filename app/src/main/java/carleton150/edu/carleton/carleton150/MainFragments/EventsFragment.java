@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -46,7 +47,7 @@ public class EventsFragment extends MainFragment {
         //requests events from server
         requestEvents();
 
-        eventsListAdapter = new EventsListAdapter(events, getActivity().getApplicationContext());
+        eventsListAdapter = new EventsListAdapter(events, getActivity().getApplicationContext(), getActivity().getLayoutInflater());
         eventsListView.setAdapter(eventsListAdapter);
 
         /*If no events were retrieved, displays this button so the user can click

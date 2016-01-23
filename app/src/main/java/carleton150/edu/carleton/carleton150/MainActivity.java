@@ -3,6 +3,7 @@ package carleton150.edu.carleton.carleton150;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -17,6 +18,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -36,6 +40,7 @@ import carleton150.edu.carleton.carleton150.Models.GeofenceErrorMessages;
 import carleton150.edu.carleton.carleton150.Models.GeofenceMonitor;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Monitors location and geofence information and calls methods in the main view fragments
@@ -110,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         tabLayout.addTab(tabLayout.newTab().setText("Events"));
         tabLayout.addTab(tabLayout.newTab().setText("Quests"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        changeTabsFont(tabLayout);
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         adapter = new MyFragmentPagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
@@ -292,6 +298,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
+    /**
+     * Overridden to use custom fonts using Calligraphy
+     * @param newBase
+     */
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
 
     /**
      * Method called from the geofenceMonitor when the geofences currently
@@ -463,6 +478,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onBackPressed() {
         if(adapter.getCurFragment() instanceof QuestInProgressFragment){
             adapter.replaceFragment();
+        }
+    }
+
+    /**
+     * Changes font of tab items
+     */
+    private void changeTabsFont(TabLayout tabLayout) {
+
+        ViewGroup vg = (ViewGroup) tabLayout.getChildAt(0);
+        int tabsCount = vg.getChildCount();
+        for (int j = 0; j < tabsCount; j++) {
+            ViewGroup vgTab = (ViewGroup) vg.getChildAt(j);
+            int tabChildsCount = vgTab.getChildCount();
+            for (int i = 0; i < tabChildsCount; i++) {
+                View tabViewChild = vgTab.getChildAt(i);
+                if (tabViewChild instanceof TextView) {
+
+                    Typeface font = Typeface.createFromAsset(this.getAssets(), "fonts/Arsenal-Regular.otf");
+                    ((TextView) tabViewChild).setTypeface(font);
+                }
+            }
         }
     }
 

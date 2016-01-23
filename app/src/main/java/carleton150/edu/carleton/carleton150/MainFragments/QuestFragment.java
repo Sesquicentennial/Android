@@ -34,6 +34,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
     private Button btnStartQuest;
     private TextView txtInfo;
     private Button btnTryAgain;
+    private TextView txtTitle;
 
     public QuestFragment() {
         // Required empty public constructor
@@ -46,6 +47,8 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         view =  inflater.inflate(R.layout.fragment_quest, container, false);
         btnStartQuest = (Button) view.findViewById(R.id.btn_start_quest);
         txtInfo = (TextView) view.findViewById(R.id.txt_quest_description);
+        txtTitle = (TextView) view.findViewById(R.id.txt_quest_title);
+
 
         /*Button for user to try getting quests again if the app was unable
         to get them from the server
@@ -86,6 +89,8 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         });
 
        txtInfo.setText(questAdapter.getQuestList().get(position).getDesc());
+        txtTitle.setText(questAdapter.getQuestList().get(position).getName());
+        txtTitle.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -156,6 +161,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
     public void fragmentInView() {
         super.fragmentInView();
         if(questInfo != null){
+            txtTitle.setVisibility(View.INVISIBLE);
             txtInfo.setText(getString(R.string.select_quest_to_view_info));
         }
         volleyRequester.requestQuests(this);
