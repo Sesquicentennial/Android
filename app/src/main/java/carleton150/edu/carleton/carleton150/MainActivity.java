@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     // Location updates intervals in milliseconds
     private static int UPDATE_INTERVAL = 30000; // 30 sec
     private static int FASTEST_INTERVAL = 10000; // 10 sec
-    private static int DISPLACEMENT = 100; // 100 meters
+    private static int DISPLACEMENT = 10; // 100 meters
 
     private LogMessages logMessages = new LogMessages();
 
@@ -184,9 +184,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onResume() {
         super.onResume();
-        if(curFragment != null) {
-            curFragment.fragmentInView();
-        }
+
 
         // Resuming the periodic location updates
         if (mGoogleApiClient.isConnected()) {
