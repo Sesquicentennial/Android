@@ -6,12 +6,14 @@
     android:weightSum="30"
     tools:context="carleton150.edu.carleton.carleton150.MainFragments.QuestInProgressFragment">
 
-    <fragment
+    <RelativeLayout
         android:id="@+id/quest_map"
-        android:layout_weight="20"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        class="com.google.android.gms.maps.SupportMapFragment" />
+        android:layout_weight="20"
+        android:layout_height="0dp">
+
+
+    </RelativeLayout>
 
     <LinearLayout
         android:orientation="vertical"

@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +41,8 @@ public class QuestInProgressFragment extends MainFragment {
     private Button btnFoundIt;
     private Button btnShowHint;
     private TextView txtHint;
+
+    private SupportMapFragment mapFragment;
 
     private boolean zoomCamera = true;
     private static LatLng CENTER_CAMPUS = new LatLng(44.460174, -93.154726);
@@ -104,11 +107,26 @@ public class QuestInProgressFragment extends MainFragment {
                 checkIfClueFound();
             }
         });
-        if(mainActivity.isConnectedToNetwork()) {
-            setUpMapIfNeeded(); // For setting up the MapFragment
-        }
+
         updateCurrentWaypoint();
         return v;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        FragmentManager fm = getChildFragmentManager();
+         mapFragment = (SupportMapFragment) fm.findFragmentById(R.id.quest_map);
+        if (mapFragment == null) {
+            mapFragment = SupportMapFragment.newInstance();
+            fm.beginTransaction().replace(R.id.quest_map, mapFragment).commit();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setUpMapIfNeeded();
     }
 
     /**
@@ -116,7 +134,7 @@ public class QuestInProgressFragment extends MainFragment {
      * (both the radius and waypoint are specified in the quest object)
      */
     private void checkIfClueFound(){
-        Location curLocation = mMap.getMyLocation();
+        Location curLocation = mainActivity.mLastLocation;
         if(curLocation != null) {
             Geofence hintGeofence = quest.getWaypoints().get(String.valueOf(numClue)).getGeofence();
             double lat = Double.valueOf(hintGeofence.getLat());
@@ -152,8 +170,7 @@ public class QuestInProgressFragment extends MainFragment {
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
 
-            mMap = ((SupportMapFragment) getChildFragmentManager()
-                    .findFragmentById(R.id.quest_map)).getMap();
+            mMap = mapFragment.getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
                 setUpMap();
@@ -213,18 +230,6 @@ public class QuestInProgressFragment extends MainFragment {
         }
 
 
-    /**
-     * Sets up the map
-     *
-     * @param view
-     * @param savedInstanceState
-     */
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        if (mMap != null)
-            setUpMap();
-        setUpMapIfNeeded();
-    }
 
     /**
      * Sets the camera for the map. If we have user location, sets the camera to that location.
@@ -254,15 +259,6 @@ public class QuestInProgressFragment extends MainFragment {
         }
     }
 
-    /**
-     * Lifecycle method overridden to set up the map and check for internet connectivity
-     * when the fragment comes into focus
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-
-    }
 
     /**
      * Updates map view to reflect user's new location
@@ -290,6 +286,8 @@ public class QuestInProgressFragment extends MainFragment {
                 .title("Current Location")
                 .icon(icon));
     }
+
+
 
     /**
      * Checks if the quest is finished. If not, sets the text to show the next clue
@@ -352,11 +350,7 @@ public class QuestInProgressFragment extends MainFragment {
     @Override
     public void fragmentInView() {
         Log.i(logMessages.LOCATION, "QuestInProgressFragment : fragmentInView : called");
-        if(mainActivity != null) {
-            if(mainActivity.isConnectedToNetwork()) {
-                setUpMapIfNeeded();
-            }
-        }
+
         updateCurrentWaypoint();
         //setUpMap();
         if(mainActivity.mLastLocation != null){
@@ -368,15 +362,7 @@ public class QuestInProgressFragment extends MainFragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (mMap != null) {
-            getChildFragmentManager().beginTransaction()
-                    .remove(getChildFragmentManager().findFragmentById(R.id.quest_map)).commit();
-            mMap = null;
-        }
-        zoomCamera = true;
-
+        mMap = null;
         super.onSaveInstanceState(outState);
     }
-
-
 }
