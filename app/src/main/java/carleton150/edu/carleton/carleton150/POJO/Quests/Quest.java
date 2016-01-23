@@ -1,5 +1,7 @@
 package carleton150.edu.carleton.carleton150.POJO.Quests;
 
+import android.media.Image;
+
 import java.util.HashMap;
 
 public class Quest
@@ -9,6 +11,8 @@ public class Quest
     private String compMsg;
 
     private String name;
+
+    private Image image;
 
     private HashMap<String, Waypoint> waypoints;
 
@@ -45,6 +49,14 @@ public class Quest
     public HashMap<String, Waypoint> getWaypoints ()
     {
         return waypoints;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
     }
 
     public void setWaypoints (HashMap<String, Waypoint> waypoints)

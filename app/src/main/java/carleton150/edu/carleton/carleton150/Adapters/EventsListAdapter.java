@@ -26,6 +26,7 @@ public class EventsListAdapter extends BaseAdapter {
     private List<EventContent> events;
     private Context context;
     private ViewHolder activeHolder = null;
+    private LayoutInflater layoutInflater;
 
     static class ViewHolder{
         TextView txtTitle;
@@ -35,9 +36,10 @@ public class EventsListAdapter extends BaseAdapter {
         View view;
     }
 
-    public EventsListAdapter(List<EventContent> events, Context context){
+    public EventsListAdapter(List<EventContent> events, Context context, LayoutInflater layoutInflater){
         this.events = events;
         this.context = context;
+        this.layoutInflater = layoutInflater;
     }
 
 
@@ -61,8 +63,9 @@ public class EventsListAdapter extends BaseAdapter {
         View v = convertView;
         LayoutInflater mInflater;
         if(convertView == null){
-            mInflater = LayoutInflater.from(context);
-            v = mInflater.inflate(R.layout.list_item_event, null);
+            //mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+           // mInflater = LayoutInflater.from(context);
+            v = layoutInflater.inflate(R.layout.list_item_event, null);
             ViewHolder holder = new ViewHolder();
             holder.txtTitle = (TextView) v.findViewById(R.id.txt_title);
             holder.txtLocation = (TextView) v.findViewById(R.id.txt_location);
@@ -80,6 +83,8 @@ public class EventsListAdapter extends BaseAdapter {
             holder.txtLocation.setText(event.getLocation());
             holder.txtDescription.setText(event.getDescription());
         }
+
+
 
         v.setOnClickListener(new View.OnClickListener() {
             @Override
