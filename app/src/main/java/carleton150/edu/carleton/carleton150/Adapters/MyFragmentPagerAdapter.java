@@ -83,6 +83,7 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
             tab3 = fragment;
             curFragment = tab3;
             notifyDataSetChanged();
+            curFragment.fragmentInView();
         }
     }
 
@@ -116,4 +117,6 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
         }
         return POSITION_UNCHANGED;
     }
+
+
 }
