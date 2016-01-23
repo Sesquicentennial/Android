@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import com.google.android.gms.common.api.ResultCallback;
@@ -28,6 +29,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.LocationSource;
 
 
 import java.util.ArrayList;
@@ -52,9 +54,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     //things for managing fragments
     public static FragmentManager fragmentManager;
 
+    private LocationListener mLocationListener;
+    private LocationManager mLocationManager;
+
     //things for location
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
-    private Location mLastLocation;
+    public Location mLastLocation = null;
     //last location where we requested new geofences
     private Location lastGeofenceUpdateLocation;
     // Google client to interact with Google API
@@ -179,6 +184,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onResume() {
         super.onResume();
+        if(curFragment != null) {
+            curFragment.fragmentInView();
+        }
 
         // Resuming the periodic location updates
         if (mGoogleApiClient.isConnected()) {
@@ -495,7 +503,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 View tabViewChild = vgTab.getChildAt(i);
                 if (tabViewChild instanceof TextView) {
 
-                    Typeface font = Typeface.createFromAsset(this.getAssets(), "fonts/Arsenal-Regular.otf");
+                    Typeface font = Typeface.createFromAsset(this.getAssets(), "fonts/EBGaramond12-Regular.ttf");
                     ((TextView) tabViewChild).setTypeface(font);
                 }
             }

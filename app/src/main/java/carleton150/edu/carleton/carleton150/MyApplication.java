@@ -25,12 +25,18 @@ public class MyApplication extends Application{
     public void onCreate() {
         super.onCreate();
 
+        /*
+         * Uses Calligraphy library to add custom font to entire app
+         */
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                        .setDefaultFontPath("fonts/Arsenal-Regular.otf")
+                        .setDefaultFontPath("fonts/EBGaramond12-Regular.ttf")
                         .setFontAttrId(R.attr.fontPath)
                         .build()
         );
 
+        /*
+        for using Volley for server requests
+         */
         InputStream keyStore = getResources().openRawResource(R.raw.my);
         mRequestQueue = Volley.newRequestQueue(this,
                 new ExtHttpClientStack(new SslHttpClient(keyStore, "mysecret", 80)));
