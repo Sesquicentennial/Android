@@ -107,11 +107,15 @@ public class QuestInProgressFragment extends MainFragment {
                 checkIfClueFound();
             }
         });
-
         updateCurrentWaypoint();
         return v;
     }
 
+    /**
+     * replaces the RelativeLayout named quest_map with a SupportMapFragment
+     *
+     * @param savedInstanceState
+     */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -123,6 +127,10 @@ public class QuestInProgressFragment extends MainFragment {
         }
     }
 
+    /**
+     * Lifecycle method overridden to set up the map if it
+     * is currently null
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -276,6 +284,10 @@ public class QuestInProgressFragment extends MainFragment {
         }
     }
 
+    /**
+     * draws a custom location marker for the user's current location
+     * @param newLocation
+     */
     private void drawLocationMarker(Location newLocation) {
         mMap.clear();
         Bitmap knightIcon = BitmapFactory.decodeResource(getResources(), R.drawable.knight_horse_icon);
@@ -331,21 +343,13 @@ public class QuestInProgressFragment extends MainFragment {
         txtHint.setVisibility(View.GONE);
     }
 
-    @Override
-    public void fragmentOutOfView() {
-        super.fragmentOutOfView();
-
-
-
-    }
-
     /**
      * Called when the fragment comes into view (different than onResume() because
      * the viewPager keeps several fragments in resumed state. This method is called
      * when the fragment actually comes into view on the screen
      *
-     * Sets up the map if it hasn't already been set up, updates the waypoints,
-     * and sets the map camera
+     * updates the waypoints,
+     * and sets the map camera if necessary
      */
     @Override
     public void fragmentInView() {
@@ -360,6 +364,16 @@ public class QuestInProgressFragment extends MainFragment {
         setCamera();
     }
 
+
+
+    /**
+     * Map should be set to null in onDestroyView(), but then there is an error
+     * because the FragmentManager has already called onSaveInstanceState, so variables
+     * can no longer be changed. Therefore, it is necessary to make mMap = null before
+     * saving the instance state.
+     *
+     * @param outState
+     */
     @Override
     public void onSaveInstanceState(Bundle outState) {
         mMap = null;

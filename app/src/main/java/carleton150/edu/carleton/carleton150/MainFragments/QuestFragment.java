@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.RecyclerView;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.TextView;
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener
 import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.R;
+import jp.wasabeef.recyclerview.animators.adapters.AlphaInAnimationAdapter;
+import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
 /**
  * Class to display quests and allow a user to select a quest to view information about it
@@ -30,11 +33,13 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
     private LinearLayoutManager questLayoutManager;
     private QuestAdapter questAdapter;
     private int screenWidth;
+    private ScaleInAnimationAdapter scaleAdapter;
 
     private Button btnStartQuest;
     private TextView txtInfo;
     private Button btnTryAgain;
     private TextView txtTitle;
+
 
     public QuestFragment() {
         // Required empty public constructor
@@ -78,19 +83,21 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
      */
     @Override
     public void recyclerViewListClicked(View v, final int position) {
-        Log.i("View", "QuestFragment : recyclerViewListClicked");
-        btnStartQuest.setClickable(true);
-        btnStartQuest.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-        btnStartQuest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                beginQuest(questAdapter.getQuestList().get(position));
-            }
-        });
+        if(isVisible) {
+            Log.i("View", "QuestFragment : recyclerViewListClicked");
+            btnStartQuest.setClickable(true);
+            btnStartQuest.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            btnStartQuest.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    beginQuest(questAdapter.getQuestList().get(position));
+                }
+            });
 
-       txtInfo.setText(questAdapter.getQuestList().get(position).getDesc());
-        txtTitle.setText(questAdapter.getQuestList().get(position).getName());
-        txtTitle.setVisibility(View.VISIBLE);
+            txtInfo.setText(questAdapter.getQuestList().get(position).getDesc());
+            txtTitle.setText(questAdapter.getQuestList().get(position).getName());
+            txtTitle.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -117,8 +124,16 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         questLayoutManager = new LinearLayoutManager(getActivity());
         questLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         quests.setLayoutManager(questLayoutManager);
+
+
         questAdapter = new QuestAdapter(questInfo, this, screenWidth);
-        quests.setAdapter(questAdapter);
+
+        //RecyclerView animation
+        scaleAdapter = new ScaleInAnimationAdapter(questAdapter);
+        scaleAdapter.setFirstOnly(false);
+        scaleAdapter.setDuration(200);
+
+        quests.setAdapter(scaleAdapter);
     }
 
     /**
@@ -138,8 +153,16 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         if(newQuests != null) {
             txtInfo.setText(getString(R.string.select_quest_to_view_info));
             btnTryAgain.setVisibility(View.GONE);
-            questAdapter.updateQuests(newQuests);
+
             questInfo = newQuests;
+
+            //TODO:remove
+            questInfo.addAll(newQuests);
+            questInfo.addAll(newQuests);
+            questInfo.addAll(newQuests);
+            questInfo.addAll(newQuests);
+            questAdapter.updateQuests(questInfo);
+            scaleAdapter.notifyDataSetChanged();
             Log.i(logMessages.VOLLEY, "QuestFragment: handleNewQuests : questAdapter contains : " + questAdapter.getItemCount());
         } else {
             if(questInfo == null) {

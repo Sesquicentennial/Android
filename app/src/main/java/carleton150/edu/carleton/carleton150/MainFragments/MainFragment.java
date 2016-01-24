@@ -26,6 +26,7 @@ public class MainFragment extends Fragment{
     //communicates with server
     VolleyRequester volleyRequester = new VolleyRequester();
     public LogMessages logMessages = new LogMessages();
+    public boolean isVisible = false;
 
     protected MainActivity mainActivity;
 
@@ -90,11 +91,11 @@ public class MainFragment extends Fragment{
     }
 
     public void fragmentOutOfView(){
-
+        isVisible = false;
     }
 
     public void fragmentInView(){
-
+        isVisible = true;
     }
 
     public void handleNewQuests(ArrayList<Quest> newQuests){
