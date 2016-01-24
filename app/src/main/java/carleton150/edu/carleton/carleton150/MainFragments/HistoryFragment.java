@@ -1,9 +1,14 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +19,8 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -21,8 +28,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 
+import carleton150.edu.carleton.carleton150.Adapters.HistoryCardAdapter;
 import carleton150.edu.carleton.carleton150.Adapters.MyInfoWindowAdapter;
+import carleton150.edu.carleton.carleton150.Adapters.QuestAdapter;
 import carleton150.edu.carleton.carleton150.DialogFragments.HistoryPopoverDialogFragment;
+import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
@@ -36,7 +46,7 @@ import carleton150.edu.carleton.carleton150.R;
  * A simple {@link Fragment} subclass.
  *
  */
-public class HistoryFragment extends MainFragment {
+public class HistoryFragment extends MainFragment implements RecyclerViewClickListener {
 
     private double MAX_LONGITUDE = -93.141134;
     private double MIN_LONGITUDE = -93.161333;
@@ -47,6 +57,10 @@ public class HistoryFragment extends MainFragment {
     private MainActivity mainActivity;
     private MyInfoWindowAdapter myInfoWindowAdapter;
     private static View view;
+    private int screenWidth;
+    private RecyclerView lstImages;
+    private HistoryCardAdapter historyCardAdapter;
+    private LinearLayoutManager historyCardLayoutManager;
 
     private boolean zoomCamera = true;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
@@ -89,6 +103,7 @@ public class HistoryFragment extends MainFragment {
         txtRequestGeofences = (TextView) view.findViewById(R.id.txt_try_getting_geofences);
         btnRequestGeofences = (Button) view.findViewById(R.id.btn_request_geofences);
 
+        buildRecyclerViews();
         /*If geofences weren't retrieved (likely due to network error), sets button for user
         to try requesting geofences again. If it is clicked, calls fragmentInView() to get new
         geofences and draw the necessary map markers
@@ -160,7 +175,8 @@ public class HistoryFragment extends MainFragment {
                     @Override
                     public void onInfoWindowClick(Marker marker) {
                         marker.hideInfoWindow();
-                        showPopup(marker);
+
+                        showPopup(getContentFromMarker(marker));
                     }
                 });
                 setUpMap();
@@ -298,16 +314,20 @@ public class HistoryFragment extends MainFragment {
                 Log.i(logMessages.GEOFENCE_MONITORING, "drawGeofenceMapMarker : length of currentGeofences is not 0");
             }
             for (int i = 0; i < currentGeofences.length; i++) {
+
                 String curGeofenceName = currentGeofences[i].getName();
                 GeofenceObjectContent geofence = mainActivity.getGeofenceMonitor().curGeofencesMap.get(curGeofenceName);
-                double lat = geofence.getGeofence().getLocation().getLat();
-                double lon = geofence.getGeofence().getLocation().getLng();
-                LatLng latLng = new LatLng(lat, lon);
+                Bitmap markerIcon = BitmapFactory.decodeResource(getResources(), R.drawable.basic_map_marker);
+                LatLng position = new LatLng(geofence.getGeofence().getLocation().getLat(), geofence.getGeofence().getLocation().getLng());
+                BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(markerIcon);
                 MarkerOptions geofenceMarkerOptions = new MarkerOptions()
-                        .position(latLng)
-                        .title(curGeofenceName);
+                        .position(position)
+                        .title(curGeofenceName)
+                        .icon(icon);
                 Marker curGeofenceMarker = mMap.addMarker(geofenceMarkerOptions);
                 currentGeofenceMarkers.add(curGeofenceMarker);
+
+
             }
         }
     }
@@ -357,6 +377,8 @@ public class HistoryFragment extends MainFragment {
                 //Gives information to the infoWindowAdapter for displaying info windows
                 myInfoWindowAdapter.setCurrentGeopoints(mainActivity.getGeofenceMonitor().curGeofenceInfo);
                 myInfoWindowAdapter.setCurrentGeopointsMap(mainActivity.getGeofenceMonitor().curGeofencesInfoMap);
+                historyCardAdapter.updateGeofences(mainActivity.getGeofenceMonitor().curGeofenceInfo);
+                historyCardAdapter.notifyDataSetChanged();
 
                 //sets text to display current geofences
                 displayGeofenceInfo();
@@ -371,6 +393,7 @@ public class HistoryFragment extends MainFragment {
                 queryResult.setText("the geofence request returned a null content array");
             }
         }
+
     }
 
     /**
@@ -391,17 +414,19 @@ public class HistoryFragment extends MainFragment {
         }
     }
 
+    private GeofenceInfoContent getContentFromMarker(Marker marker){
+        return mainActivity.getGeofenceMonitor().curGeofencesInfoMap.get(marker.getTitle());
+    }
+
     /**
      * Shows the history popover for a given marker on the map
      *
-     * @param marker
+     * @param geofenceInfoObject
      */
-    private void showPopup(Marker marker){
+    private void showPopup(GeofenceInfoContent geofenceInfoObject){
 
-        GeofenceInfoContent geofenceInfoObject
-                = mainActivity.getGeofenceMonitor().curGeofencesInfoMap.get(marker.getTitle());
         HistoryPopoverDialogFragment dialog = HistoryPopoverDialogFragment.newInstance(geofenceInfoObject);
-        dialog.show(getFragmentManager(), marker.getTitle());
+        dialog.show(getFragmentManager(), geofenceInfoObject.getName());
     }
 
     /**
@@ -485,7 +510,6 @@ public class HistoryFragment extends MainFragment {
     @Override
     public void fragmentOutOfView() {
         super.fragmentOutOfView();
-
     }
 
     /**
@@ -497,5 +521,26 @@ public class HistoryFragment extends MainFragment {
         super.fragmentInView();
         mainActivity.getGeofenceMonitor().getNewGeofences();
         drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfo);
+    }
+
+    @Override
+    public void recyclerViewListClicked(View v, int position) {
+        GeofenceInfoContent clickedContent = historyCardAdapter.getItemAtPosition(position);
+        showPopup(clickedContent);
+    }
+
+    /**
+     * Builds the views for the quests
+     */
+    private void buildRecyclerViews(){
+        DisplayMetrics metrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        screenWidth = metrics.widthPixels;
+        lstImages = (RecyclerView) view.findViewById(R.id.lst_images);
+        historyCardLayoutManager = new LinearLayoutManager(getActivity());
+        historyCardLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        lstImages.setLayoutManager(historyCardLayoutManager);
+        historyCardAdapter = new HistoryCardAdapter(mainActivity.getGeofenceMonitor().curGeofenceInfo, this, screenWidth);
+        lstImages.setAdapter(historyCardAdapter);
     }
 }

@@ -1,6 +1,8 @@
 package carleton150.edu.carleton.carleton150.Adapters;
 
 import android.graphics.Color;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,7 @@ import java.util.ArrayList;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.R;
+import jp.wasabeef.recyclerview.animators.holder.AnimateViewHolder;
 
 
 /**
@@ -62,8 +65,27 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
     }
 
     public void updateQuests(ArrayList<Quest> newQuests){
-        this.questList = newQuests;
-        notifyDataSetChanged();
+        if(questList != null){
+            for(int i = 0; i<questList.size(); i++){
+                removeItem(0);
+            }
+        }else{
+            questList = new ArrayList<>();
+        }
+        for(int i = 0; i<newQuests.size(); i++){
+           addItem(newQuests.get(i), i);
+        }
+
+    }
+
+    public void removeItem(int position) {
+        questList.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void addItem(Quest quest, int position) {
+        questList.add(position, quest);
+        notifyItemInserted(position);
     }
 
     public ArrayList<Quest> getQuestList(){
@@ -87,6 +109,7 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
 
 
         }
+
 
         /**
          * @return title
