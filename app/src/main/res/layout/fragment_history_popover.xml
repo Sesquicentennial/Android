@@ -5,7 +5,7 @@
     android:paddingTop="16dp"
     android:background="@color/transparent"
     android:orientation="vertical"
-    tools:context="carleton150.edu.carleton.carleton150.DialogFragments.HistoryPopoverFragment">
+    tools:context="carleton150.edu.carleton.carleton150.ExtraFragments.HistoryPopoverFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"

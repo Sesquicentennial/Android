@@ -17,6 +17,8 @@ import carleton150.edu.carleton.carleton150.R;
 
 /**
  * Created by haleyhinze on 1/26/16.
+ *
+ * Adapter for the RecyclerView in the HistoryInfoPopup
  */
 public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
@@ -28,12 +30,25 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.clickListener = clickListener;
     }
 
+    /**
+     * Returns 0 if the object contains an image, 1 if it contains text
+     * @param position
+     * @return
+     */
     @Override
     public int getItemViewType(int position) {
         return historyList.get(position).getType();
     }
 
 
+    /**
+     * Depending on the type, creates a ViewHolder from either the
+     * history_info_card_image or the history_info_card_text
+     *
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
@@ -51,6 +66,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return null;
     }
 
+    /**
+     * When the holder is bound, sets the necessary fields depending on the type
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         HistoryContentObjectDummy historyContentObjectDummy = historyList.get(position);
@@ -63,6 +83,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    /**
+     * returns the number of items in the historyList
+     * @return
+     */
     @Override
     public int getItemCount() {
         if(historyList != null) {
@@ -72,35 +96,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    public void updateHistoryList(ArrayList<HistoryContentObjectDummy> newInfo){
-        if(historyList != null){
-            for(int i = 0; i<historyList.size(); i++){
-                removeItem(0);
-            }
-        }else{
-            historyList = new ArrayList<>();
-        }
-        for(int i = 0; i<newInfo.size(); i++){
-            addItem(newInfo.get(i), i);
-        }
-
-    }
-
-    public void removeItem(int position) {
-        historyList.remove(position);
-        notifyItemRemoved(position);
-    }
-
-    public void addItem(HistoryContentObjectDummy content, int position) {
-        historyList.add(position, content);
-        notifyItemInserted(position);
-    }
-
     public ArrayList<HistoryContentObjectDummy> getHistoryList(){
         return this.historyList;
     }
 
 
+    /**
+     * A ViewHolder for views that contain only an image and date
+     */
     public static class HistoryViewHolderImage extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView txtDate;
         private ImageView imgMedia;
@@ -115,8 +118,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         }
 
-
-
         public String getTxtDate() {
             return txtDate.getText().toString();
         }
@@ -125,13 +126,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             this.txtDate.setText(txtDate);
         }
 
-
-        /**
-         * @param width
-         */
-        public void setWidth(int width) {
-            itemView.setLayoutParams(new RecyclerView.LayoutParams(width, RecyclerView.LayoutParams.MATCH_PARENT));
-        }
 
         /**
          */
@@ -148,12 +142,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
 
-
-
-
-
-
-
+    /**
+     * A ViewHolder for views that contain only a text description and date
+     */
 
     public static class HistoryViewHolderText extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView txtMedia;
@@ -183,14 +174,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         public void setTxtDate(String txtDate) {
             this.txtDate.setText(txtDate);
-        }
-
-
-        /**
-         * @param width
-         */
-        public void setWidth(int width) {
-            itemView.setLayoutParams(new RecyclerView.LayoutParams(width, RecyclerView.LayoutParams.MATCH_PARENT));
         }
 
         @Override
