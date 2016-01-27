@@ -482,10 +482,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     @Override
     public void onBackPressed() {
-        if(adapter.getCurFragment() instanceof QuestInProgressFragment){
-            adapter.replaceFragment();
+
+        if(curFragment instanceof QuestInProgressFragment) {
+            showAlertDialog(getString(R.string.quest_will_not_be_saved), new AlertDialog.Builder(MainActivity.this)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (adapter.getCurFragment() instanceof QuestInProgressFragment) {
+                                adapter.replaceFragment();
+                            }
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    }).create());
+        }else{
+            super.onBackPressed();
         }
+
     }
+
 
     /**
      * Changes font of tab items
