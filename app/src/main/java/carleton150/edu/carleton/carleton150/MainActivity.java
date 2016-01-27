@@ -483,7 +483,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onBackPressed() {
 
-        if(curFragment instanceof QuestInProgressFragment) {
+        if(adapter.getCurFragment() instanceof QuestInProgressFragment) {
             showAlertDialog(getString(R.string.quest_will_not_be_saved), new AlertDialog.Builder(MainActivity.this)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
@@ -498,7 +498,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                         }
-                    }).create());
+                    })
+                    .create());
         }else{
             super.onBackPressed();
         }
