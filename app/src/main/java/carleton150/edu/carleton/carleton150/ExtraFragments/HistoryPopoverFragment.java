@@ -1,22 +1,16 @@
-package carleton150.edu.carleton.carleton150.DialogFragments;
+package carleton150.edu.carleton.carleton150.ExtraFragments;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,14 +20,12 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import carleton150.edu.carleton.carleton150.Adapters.HistoryAdapter;
-import carleton150.edu.carleton.carleton150.Adapters.QuestAdapter;
+import carleton150.edu.carleton.carleton150.Adapters.MyScaleInAnimationAdapter;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.POJO.HistoryContentObjectDummy;
-import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.R;
 import jp.wasabeef.recyclerview.animators.adapters.AlphaInAnimationAdapter;
-import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
 /**
  * Class to manage a HistoryPopoverDialogFragment. Currently fills in a text view
@@ -65,7 +57,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         view = getActivity().getLayoutInflater().
-                inflate(R.layout.fragment_history_popover_dialog, new LinearLayout(getActivity()), false);
+                inflate(R.layout.fragment_history_popover, new LinearLayout(getActivity()), false);
         TextView txtTitle = (TextView) view.findViewById(R.id.txt_title);
         btnClose = (Button) view.findViewById(R.id.btn_exit_popup);
         btnClose.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +81,9 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
     }
 
     private void removeCurrentFragment(){
-        getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+        FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
+        fm.setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
+        fm.remove(this).commit();
     }
 
     /**
@@ -106,7 +100,10 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         historyAdapter = new HistoryAdapter(historyInfo, this);
 
         //RecyclerView animation
-        alphaInAnimationAdapter = new AlphaInAnimationAdapter(historyAdapter);
+        MyScaleInAnimationAdapter scaleInAnimationAdapter = new MyScaleInAnimationAdapter(historyAdapter);
+        scaleInAnimationAdapter.setFirstOnly(false);
+        scaleInAnimationAdapter.setInterpolator(new OvershootInterpolator());
+        alphaInAnimationAdapter = new AlphaInAnimationAdapter(scaleInAnimationAdapter);
         alphaInAnimationAdapter.setFirstOnly(false);
         alphaInAnimationAdapter.setDuration(200);
 

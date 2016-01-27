@@ -32,7 +32,7 @@ import java.util.ArrayList;
 
 import carleton150.edu.carleton.carleton150.Adapters.HistoryCardAdapter;
 import carleton150.edu.carleton.carleton150.Adapters.MyInfoWindowAdapter;
-import carleton150.edu.carleton.carleton150.DialogFragments.HistoryPopoverFragment;
+import carleton150.edu.carleton.carleton150.ExtraFragments.HistoryPopoverFragment;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
@@ -432,7 +432,8 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
         // Transaction start
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
 
-        //fragmentTransaction.setCustomAnimations(animEnter, animExit, animPopEnter, animPopExit);
+        fragmentTransaction.setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom,
+                R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
         fragmentTransaction.add(R.id.fragment_container, historyPopoverFragment,"HistoryPopoverFragment");
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
