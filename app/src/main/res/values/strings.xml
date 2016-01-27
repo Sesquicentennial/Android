@@ -28,4 +28,5 @@
     <string name = "select_quest_to_view_info">Please select a quest to view its description or to begin the quest</string>
     <string name="requesting_events">Requesting events. Please wait...</string>
     <string name="no_events_retrieved">Unable to retrieve events. Please check your network and try again.</string>
+    <string name = "quest_will_not_be_saved">Are you sure you want to go back to the quest selection screen? Your current quest will not be saved.</string>
 </resources>

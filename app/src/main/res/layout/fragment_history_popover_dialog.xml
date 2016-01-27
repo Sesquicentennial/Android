@@ -1,42 +1,71 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/history_popup_bg"
+    android:paddingTop="16dp"
+    android:background="@color/transparent"
     android:orientation="vertical"
-    tools:context="carleton150.edu.carleton.carleton150.DialogFragments.HistoryPopoverDialogFragment">
+    tools:context="carleton150.edu.carleton.carleton150.DialogFragments.HistoryPopoverFragment">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:background="@color/colorPrimaryDarkSlightlyTransparent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/btn_exit_popup"
+            android:background="@color/transparent"
+            android:text="X"
+            android:textSize="@dimen/abc_text_size_large_material"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/colorAccent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/txt_title"
-            android:textSize="20dp"
+            android:textSize="@dimen/abc_text_size_large_material"
             android:textColor="@color/windowBackground"
             android:padding="15dp"
+            android:layout_toLeftOf="@+id/btn_exit_popup"
             android:gravity="center_horizontal"
+            android:layout_alignParentTop="true"
             android:layout_gravity="center_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-             />
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/txt_info"
-            android:padding="10dp"
-            android:textColor="@color/windowBackground"
-            android:textSize="15dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             />
-        </ScrollView>
+
+        <View
+            android:id="@+id/view_line"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/txt_title"
+            android:paddingBottom="3dp"
+            android:background="@color/windowBackground"/>
+
+    <LinearLayout
+        android:background="@color/transparent"
+        android:layout_below="@+id/view_line"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/lst_history_items"
+            android:scrollbars="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+
+
 
     </LinearLayout>
 
+    </RelativeLayout>
 
 
 
-</FrameLayout>
+
+</RelativeLayout>

@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -30,8 +32,7 @@ import java.util.ArrayList;
 
 import carleton150.edu.carleton.carleton150.Adapters.HistoryCardAdapter;
 import carleton150.edu.carleton.carleton150.Adapters.MyInfoWindowAdapter;
-import carleton150.edu.carleton.carleton150.Adapters.QuestAdapter;
-import carleton150.edu.carleton.carleton150.DialogFragments.HistoryPopoverDialogFragment;
+import carleton150.edu.carleton.carleton150.DialogFragments.HistoryPopoverFragment;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
@@ -425,8 +426,16 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
      */
     private void showPopup(GeofenceInfoContent geofenceInfoObject){
 
-        HistoryPopoverDialogFragment dialog = HistoryPopoverDialogFragment.newInstance(geofenceInfoObject);
-        dialog.show(getFragmentManager(), geofenceInfoObject.getName());
+        FragmentManager fm = getFragmentManager();
+        HistoryPopoverFragment historyPopoverFragment = HistoryPopoverFragment.newInstance(geofenceInfoObject);
+
+        // Transaction start
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+        //fragmentTransaction.setCustomAnimations(animEnter, animExit, animPopEnter, animPopExit);
+        fragmentTransaction.add(R.id.fragment_container, historyPopoverFragment,"HistoryPopoverFragment");
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     /**
@@ -523,10 +532,23 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
         drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfo);
     }
 
+    public void showTooltip(GeofenceInfoContent object){
+        Marker marker = null;
+        for(int i = 0; i<currentGeofenceMarkers.size(); i++){
+            Marker curMarker = currentGeofenceMarkers.get(i);
+            if(curMarker.getTitle().equals(object.getName())){
+                marker = curMarker;
+            }
+        }
+       if(marker != null){
+           marker.showInfoWindow();
+       }
+    }
+
     @Override
     public void recyclerViewListClicked(View v, int position) {
         GeofenceInfoContent clickedContent = historyCardAdapter.getItemAtPosition(position);
-        showPopup(clickedContent);
+        showTooltip(clickedContent);
     }
 
     /**
@@ -540,7 +562,7 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
         historyCardLayoutManager = new LinearLayoutManager(getActivity());
         historyCardLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         lstImages.setLayoutManager(historyCardLayoutManager);
-        historyCardAdapter = new HistoryCardAdapter(mainActivity.getGeofenceMonitor().curGeofenceInfo, this, screenWidth);
+        historyCardAdapter = new HistoryCardAdapter(mainActivity.getGeofenceMonitor().curGeofenceInfo, this, screenWidth, getResources());
         lstImages.setAdapter(historyCardAdapter);
     }
 }

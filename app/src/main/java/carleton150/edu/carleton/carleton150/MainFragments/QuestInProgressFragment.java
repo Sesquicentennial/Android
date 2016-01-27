@@ -41,6 +41,7 @@ public class QuestInProgressFragment extends MainFragment {
     private Button btnFoundIt;
     private Button btnShowHint;
     private TextView txtHint;
+    private TextView txtClueNumber;
 
     private SupportMapFragment mapFragment;
 
@@ -81,6 +82,7 @@ public class QuestInProgressFragment extends MainFragment {
         btnFoundIt = (Button) v.findViewById(R.id.btn_found_location);
         btnShowHint = (Button) v.findViewById(R.id.btn_show_hint);
         txtHint = (TextView) v.findViewById(R.id.txt_hint);
+        txtClueNumber = (TextView) v.findViewById(R.id.txt_clue_number);
 
         btnShowHint.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,7 +203,7 @@ public class QuestInProgressFragment extends MainFragment {
     private void setUpMap() {
             // For showing a move to my location button and a blue
             // dot to show user's location
-            mMap.setMyLocationEnabled(false);
+            mMap.setMyLocationEnabled(true);
 
             //Makes it so user can't zoom out very far
             mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
@@ -309,13 +311,19 @@ public class QuestInProgressFragment extends MainFragment {
     public boolean updateCurrentWaypoint(){
         String currentClue = String.valueOf(numClue);
         boolean finished = false;
-        if(quest.getWaypoints().get(currentClue) == null &&
-                quest.getWaypoints().get(String.valueOf(numClue - 1)) != null){
-            finished = true;
+        try {
+            if (quest.getWaypoints().get(currentClue) == null &&
+                    quest.getWaypoints().get(String.valueOf(numClue - 1)) != null) {
+                finished = true;
+                return finished;
+            }
+            txtClue.setText(quest.getWaypoints().get(currentClue).getClue());
+            txtClueNumber.setText((numClue + 1) + "/" + quest.getWaypoints().size());
             return finished;
+        } catch (NullPointerException e){
+            e.printStackTrace();
+            return false;
         }
-        txtClue.setText(quest.getWaypoints().get(currentClue).getClue());
-        return finished;
     }
 
     /**
