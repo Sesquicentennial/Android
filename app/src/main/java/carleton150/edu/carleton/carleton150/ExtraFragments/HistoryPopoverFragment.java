@@ -25,7 +25,6 @@ import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.POJO.HistoryContentObjectDummy;
 import carleton150.edu.carleton.carleton150.R;
-import jp.wasabeef.recyclerview.animators.adapters.AlphaInAnimationAdapter;
 
 /**
  * Class to manage a HistoryPopoverDialogFragment. Currently fills in a text view
@@ -39,7 +38,6 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
     private ArrayList<HistoryContentObjectDummy> historyInfo;
     private LinearLayoutManager historyLayoutManager;
     private HistoryAdapter historyAdapter;
-    private AlphaInAnimationAdapter alphaInAnimationAdapter;
     private Button btnClose;
 
     private static GeofenceInfoContent geofenceInfoObject;
@@ -103,11 +101,10 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         MyScaleInAnimationAdapter scaleInAnimationAdapter = new MyScaleInAnimationAdapter(historyAdapter);
         scaleInAnimationAdapter.setFirstOnly(false);
         scaleInAnimationAdapter.setInterpolator(new OvershootInterpolator());
-        alphaInAnimationAdapter = new AlphaInAnimationAdapter(scaleInAnimationAdapter);
-        alphaInAnimationAdapter.setFirstOnly(false);
-        alphaInAnimationAdapter.setDuration(200);
 
-        historyInfoObjects.setAdapter(alphaInAnimationAdapter);
+
+
+        historyInfoObjects.setAdapter(scaleInAnimationAdapter);
     }
 
     @Override

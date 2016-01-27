@@ -44,12 +44,19 @@
             android:paddingBottom="3dp"
             android:background="@color/windowBackground"/>
 
-    <LinearLayout
+    <RelativeLayout
         android:background="@color/transparent"
         android:layout_below="@+id/view_line"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <View
+            android:id="@+id/view_timeline"
+            android:layout_marginLeft="20dp"
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:background="@color/windowBackground"/>
 
 
         <android.support.v7.widget.RecyclerView
@@ -61,7 +68,7 @@
 
 
 
-    </LinearLayout>
+    </RelativeLayout>
 
     </RelativeLayout>
 
