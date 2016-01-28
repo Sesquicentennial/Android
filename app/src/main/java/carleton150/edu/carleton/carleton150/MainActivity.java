@@ -12,6 +12,7 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -29,7 +30,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.LocationSource;
 
 
 import java.util.ArrayList;
@@ -120,13 +120,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         tabLayout.addTab(tabLayout.newTab().setText("Events"));
         tabLayout.addTab(tabLayout.newTab().setText("Quests"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        changeTabsFont(tabLayout);
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         adapter = new MyFragmentPagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
+        changeTabsFont(tabLayout);
         curFragment = adapter.getCurFragment();
+        viewPager.clearOnPageChangeListeners();
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
 
         /*
         Overrides onTabSelected to notify the fragment going out of view that it is
@@ -135,27 +138,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         since no lifecycle methods are called, this has to be used so that geofences
         can be registered and unregistered depending which fragment is in view
          */
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-                if (curFragment != null) {
-                    curFragment.fragmentOutOfView();
-                }
-                curFragment = adapter.getCurFragment();
-                curFragment.fragmentInView();
-            }
+                tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                    @Override
+                    public void onTabSelected(TabLayout.Tab tab) {
+                        Log.i("UI", "newTabSelectedTablistener");
+                        adapter.getCurFragment().fragmentOutOfView();
+                        viewPager.setCurrentItem(tab.getPosition());
+                    }
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
+                    @Override
+                    public void onTabUnselected(TabLayout.Tab tab) {
 
-            }
+                    }
 
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
+                    @Override
+                    public void onTabReselected(TabLayout.Tab tab) {
 
-            }
-        });
+                    }
+                });
+
+
 
     }
 
@@ -431,9 +433,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * @param content
      */
     public void handleNewGeofences(GeofenceObjectContent[] content){
-        if(curFragment == null){
-            curFragment = adapter.getCurFragment();
-        }
+        curFragment = adapter.getCurFragment();
         curFragment.handleNewGeofences(content);
     }
 

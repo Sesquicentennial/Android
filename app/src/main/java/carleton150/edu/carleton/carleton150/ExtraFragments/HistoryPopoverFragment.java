@@ -22,6 +22,7 @@ import java.util.Random;
 import carleton150.edu.carleton.carleton150.Adapters.HistoryAdapter;
 import carleton150.edu.carleton.carleton150.Adapters.MyScaleInAnimationAdapter;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
+import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewScrolledListener;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.POJO.HistoryContentObjectDummy;
 import carleton150.edu.carleton.carleton150.R;
@@ -30,7 +31,7 @@ import carleton150.edu.carleton.carleton150.R;
  * Class to manage a HistoryPopoverDialogFragment. Currently fills in a text view
  * and a title from the geofenceInfoObject
  */
-public class HistoryPopoverFragment extends Fragment implements RecyclerViewClickListener{
+public class HistoryPopoverFragment extends Fragment implements RecyclerViewClickListener, RecyclerViewScrolledListener{
 
     private View view;
 
@@ -39,6 +40,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
     private LinearLayoutManager historyLayoutManager;
     private HistoryAdapter historyAdapter;
     private Button btnClose;
+    private TextView txtTimelineDate;
 
     private static GeofenceInfoContent geofenceInfoObject;
     public HistoryPopoverFragment()
@@ -57,6 +59,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         view = getActivity().getLayoutInflater().
                 inflate(R.layout.fragment_history_popover, new LinearLayout(getActivity()), false);
         TextView txtTitle = (TextView) view.findViewById(R.id.txt_title);
+        txtTimelineDate = (TextView) view.findViewById(R.id.txt_timeline_date);
         btnClose = (Button) view.findViewById(R.id.btn_exit_popup);
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,7 +98,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         historyInfoObjects.setLayoutManager(historyLayoutManager);
 
 
-        historyAdapter = new HistoryAdapter(historyInfo, this);
+        historyAdapter = new HistoryAdapter(historyInfo, this, historyInfoObjects, this);
 
         //RecyclerView animation
         MyScaleInAnimationAdapter scaleInAnimationAdapter = new MyScaleInAnimationAdapter(historyAdapter);
@@ -112,6 +115,17 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
 
     }
 
+    @Override
+    public void recyclerViewScrolled(String date) {
+        txtTimelineDate.setVisibility(View.VISIBLE);
+        txtTimelineDate.setText(date);
+    }
+
+    @Override
+    public void recyclerViewStoppedScrolling() {
+        txtTimelineDate.setVisibility(View.GONE);
+    }
+
     private void buildDummyHistoryContent(int num, String curContent){
         historyInfo = new ArrayList<>();
         HistoryContentObjectDummy newContent = new HistoryContentObjectDummy();
@@ -123,7 +137,8 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
            Random rand = new Random();
             int value = rand.nextInt(2);
             newDummyContent.setType(value);
-            newDummyContent.setDate("2016");
+            int date = 2000 + i;
+            newDummyContent.setDate("" + date);
             if(value == 1){
                 newDummyContent.setText("SOME DUMMY TEXT");
             }else{

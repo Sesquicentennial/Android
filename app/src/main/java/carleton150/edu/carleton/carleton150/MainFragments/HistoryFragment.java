@@ -85,13 +85,13 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mainActivity = (MainActivity) getActivity();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         myInfoWindowAdapter = new MyInfoWindowAdapter(inflater);
-        mainActivity = (MainActivity) getActivity();
 
         if (container == null) {
             return null;
@@ -120,6 +120,7 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
 
         //starts the mainActivity monitoring geofences
         mainActivity.getGeofenceMonitor().startGeofenceMonitoring();
+
 
         //Button to transition to and from debug mode
         btnToggle = (Button) view.findViewById(R.id.btn_debug_toggle);
@@ -434,7 +435,7 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
 
         fragmentTransaction.setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom,
                 R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
-        fragmentTransaction.add(R.id.fragment_container, historyPopoverFragment,"HistoryPopoverFragment");
+        fragmentTransaction.add(R.id.fragment_container, historyPopoverFragment, "HistoryPopoverFragment");
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
@@ -478,28 +479,32 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
      */
     @Override
     public void handleNewGeofences(GeofenceObjectContent[] geofencesContent){
-        super.handleNewGeofences(geofencesContent);
         /*This is a call from the VolleyRequester, so this check prevents the app from
         crashing if the user leaves the tab while the app is trying
         to get quests from the server
          */
-        if(this.isDetached()){
-            return;
-        }
+        try {
+            super.handleNewGeofences(geofencesContent);
+            Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : handleNewGeofences");
 
-        if(mainActivity != null) {
-            if(geofencesContent != null) {
-                btnRequestGeofences.setVisibility(View.GONE);
-                txtRequestGeofences.setVisibility(View.GONE);
-                mainActivity.getGeofenceMonitor().handleNewGeofences(geofencesContent);
-                drawGeofences(geofencesContent);
 
-            }else{
-                if(mainActivity.getGeofenceMonitor().allGeopointsByName.size() == 0){
-                    btnRequestGeofences.setVisibility(View.VISIBLE);
-                    txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
+            if (mainActivity != null) {
+                Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : mainActivity not null");
+                if (geofencesContent != null) {
+                    Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : geofencesContent not null");
+                    btnRequestGeofences.setVisibility(View.GONE);
+                    txtRequestGeofences.setVisibility(View.GONE);
+                    mainActivity.getGeofenceMonitor().handleNewGeofences(geofencesContent);
+                    drawGeofences(geofencesContent);
+
+                } else if (mainActivity.getGeofenceMonitor().allGeopointsByName.size() == 0){
+
+                        btnRequestGeofences.setVisibility(View.VISIBLE);
+                        txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
                 }
             }
+        }catch (IllegalStateException e){
+            e.printStackTrace();
         }
     }
 
@@ -520,6 +525,7 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
     @Override
     public void fragmentOutOfView() {
         super.fragmentOutOfView();
+        Log.i("UI", "HistoryFragment : fragmentOutOfView");
     }
 
     /**
@@ -529,8 +535,18 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
     @Override
     public void fragmentInView() {
         super.fragmentInView();
-        mainActivity.getGeofenceMonitor().getNewGeofences();
-        drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfo);
+        if(mainActivity == null){
+            mainActivity = (MainActivity) getActivity();
+        }
+        Log.i("UI", "HistoryFragment : fragmentInView");
+
+        boolean gotGeofences = mainActivity.getGeofenceMonitor().getNewGeofences();
+        if(!gotGeofences){
+            btnRequestGeofences.setVisibility(View.VISIBLE);
+            txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
+        }
+
+        //drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfo);
     }
 
     public void showTooltip(GeofenceInfoContent object){
