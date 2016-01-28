@@ -75,7 +75,7 @@ public class EventsFragment extends MainFragment {
         int day = c.get(Calendar.DAY_OF_MONTH);
         String monthString = String.format("%02d", month);
         String dayString = String.format("%02d", day);
-        String startTime = year + "-" + monthString + "-" + dayString;
+        String startTime = monthString + "/" + dayString + "/" + year;
         Log.i(logMessages.VOLLEY, "requestEvents : start time is : " + startTime);
         volleyRequester.requestEvents(startTime, 20, this);
     }
