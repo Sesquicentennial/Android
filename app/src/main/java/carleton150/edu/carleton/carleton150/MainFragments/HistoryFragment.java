@@ -545,8 +545,6 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
             btnRequestGeofences.setVisibility(View.VISIBLE);
             txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
         }
-
-        //drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfo);
     }
 
     public void showTooltip(GeofenceInfoContent object){

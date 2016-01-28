@@ -5,14 +5,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -54,14 +52,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     //things for managing fragments
     public static FragmentManager fragmentManager;
 
-    private LocationListener mLocationListener;
-    private LocationManager mLocationManager;
 
     //things for location
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
     public Location mLastLocation = null;
-    //last location where we requested new geofences
-    private Location lastGeofenceUpdateLocation;
     // Google client to interact with Google API
     public GoogleApiClient mGoogleApiClient;
     // boolean flag to toggle periodic location updates
@@ -75,10 +69,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private LogMessages logMessages = new LogMessages();
 
     MainFragment curFragment = null;
-
-
-
-
     private MyFragmentPagerAdapter adapter;
 
     public VolleyRequester mVolleyRequester = new VolleyRequester();
@@ -96,16 +86,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         networkAlertDialog = new AlertDialog.Builder(MainActivity.this).create();
         playServicesConnectivityAlertDialog = new AlertDialog.Builder(MainActivity.this).create();
-            // check availability of play services for location data and geofencing
-            if (checkPlayServices()) {
-                buildGoogleApiClient();
-                createLocationRequest();
-                if(isConnectedToNetwork()) {
-                    mGoogleApiClient.connect();
-                }
-            } else {
-                showGooglePlayServicesUnavailableDialog();
+        // check availability of play services for location data and geofencing
+        if (checkPlayServices()) {
+            buildGoogleApiClient();
+            createLocationRequest();
+            if(isConnectedToNetwork()) {
+                mGoogleApiClient.connect();
             }
+        } else {
+            showGooglePlayServicesUnavailableDialog();
+        }
 
         //managing fragments and UI
         fragmentManager = getSupportFragmentManager();
@@ -133,29 +123,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         /*
         Overrides onTabSelected to notify the fragment going out of view that it is
-        going out of view and the fragment going in view that it is coming into view.
+        going out of view.
         This is because fragments are kept in onResumed state for the viewPager, so
         since no lifecycle methods are called, this has to be used so that geofences
         can be registered and unregistered depending which fragment is in view
          */
-                tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                    @Override
-                    public void onTabSelected(TabLayout.Tab tab) {
-                        Log.i("UI", "newTabSelectedTablistener");
-                        adapter.getCurFragment().fragmentOutOfView();
-                        viewPager.setCurrentItem(tab.getPosition());
-                    }
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                Log.i("UI", "newTabSelectedTablistener");
+                adapter.getCurFragment().fragmentOutOfView();
+                viewPager.setCurrentItem(tab.getPosition());
+            }
 
-                    @Override
-                    public void onTabUnselected(TabLayout.Tab tab) {
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
 
-                    }
+            }
 
-                    @Override
-                    public void onTabReselected(TabLayout.Tab tab) {
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
 
-                    }
-                });
+            }
+        });
 
 
 
@@ -228,8 +218,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         //it can register geofences
         geofenceMonitor.googlePlayServicesConnected();
 
-        //Sets the last geofence update location since we just retrieved geofences
-        lastGeofenceUpdateLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
     }
 
     /**
@@ -390,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-   /**
+    /**
      * displays a dialog requesting that the user connect to a network
      */
     public void showNetworkNotConnectedDialog() {
@@ -503,7 +491,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }else{
             super.onBackPressed();
         }
-
     }
 
 
@@ -528,7 +515,4 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    /**
-     * TODO: Fix bug where if you start app when not connected to internet then come back you have to restart app
-     */
 }
