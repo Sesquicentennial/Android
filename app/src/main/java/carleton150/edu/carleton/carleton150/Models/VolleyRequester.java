@@ -8,12 +8,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 import carleton150.edu.carleton.carleton150.LogMessages;
+import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
 import carleton150.edu.carleton.carleton150.MyApplication;
 import carleton150.edu.carleton.carleton150.POJO.EventObject.Events;
@@ -24,6 +26,7 @@ import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceRequestObject.Geofence;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceRequestObject.GeofenceRequestObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceRequestObject.Location;
+import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 
 /**
  * Created by haleyhinze on 10/28/15.
@@ -93,9 +96,9 @@ public class VolleyRequester {
      *
      * @param latitude user's latitude
      * @param longitude user's longitude
-     * @param callerFragment
+     * @param callerActivity
      */
-    public void requestGeofences(double latitude, double longitude, final MainFragment callerFragment) {
+    public void requestGeofences(double latitude, double longitude, final MainActivity callerActivity) {
         Log.i(logMessages.VOLLEY, "requestGeofences : about to request geofences. Lat: " + latitude + " Long: " + longitude);
         Location location = new Location();
         location.setLat(latitude);
@@ -112,10 +115,11 @@ public class VolleyRequester {
         try {
             jsonObjectrequest = new JSONObject(jsonString);
         } catch (JSONException e) {
+            Log.i(logMessages.VOLLEY, "requestGeofences : JSONException ");
             e.printStackTrace();
         }
 
-        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/geofences", jsonObjectrequest,
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://carl150.carleton.edu/geofences", jsonObjectrequest,
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -123,7 +127,7 @@ public class VolleyRequester {
                         String responseString = response.toString();
                         Log.i(logMessages.VOLLEY, "requestGeofences : response string = : " + responseString);
                         GeofenceObject responseObject = gson.fromJson(responseString, GeofenceObject.class);
-                        callerFragment.handleNewGeofences(responseObject.getContent());
+                        callerActivity.handleNewGeofences(responseObject.getContent());
                     }
                 },
 
@@ -131,11 +135,11 @@ public class VolleyRequester {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        if(callerFragment!=null) {
+                        if(callerActivity!=null) {
                             Log.i(logMessages.VOLLEY, "requestGeofences : MainActivity is not null");
                             Log.i(logMessages.VOLLEY, "requestGeofences : error : " + error.toString());
                             error.printStackTrace();
-                            callerFragment.handleNewGeofences(null);
+                            callerActivity.handleNewGeofences(null);
                         }else{
                             Log.i(logMessages.VOLLEY, "requestGeofences : MainActivity is null");
                         }
@@ -146,6 +150,12 @@ public class VolleyRequester {
         MyApplication.getInstance().getRequestQueue().add(request);
     }
 
+    /**
+     * requests events from server
+     * @param startTime time to start getting events from
+     * @param limit max number of events to retrieve
+     * @param mainFragment the fragment that called the function and should be notified of results
+     */
     public void requestEvents(String startTime, int limit, final MainFragment mainFragment){
 
         final Gson gson = new Gson();
@@ -184,5 +194,49 @@ public class VolleyRequester {
         );
         MyApplication.getInstance().getRequestQueue().add(request);
 
+    }
+
+    /**
+     * Requests Quests from server
+     * @param callerFragment
+     */
+    public void requestQuests(final MainFragment callerFragment){
+        final Gson gson = new Gson();
+        JSONObject emptyRequest = new JSONObject();
+        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/quest", emptyRequest,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String responseString = response.toString();
+                        ArrayList<Quest> quests = new ArrayList<>();
+                        try {
+                            JSONArray responseArr = response.getJSONArray("content");
+                            for(int i = 0; i<responseArr.length(); i++){
+                                Quest responseQuest = gson.fromJson(responseArr.getString(i), Quest.class);
+                                Log.i(logMessages.VOLLEY, "requestQuests : quest response string = : " + responseArr.getString(i));
+                                quests.add(responseQuest);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        Log.i(logMessages.VOLLEY, "requestQuests : response string = : " + responseString);
+                        callerFragment.handleNewQuests(quests);
+                    }
+                },
+
+                new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.i(logMessages.VOLLEY, "requestQuests : error : " + error.toString());
+                        if(callerFragment!=null) {
+                            callerFragment.handleNewQuests(null);
+                        }
+                    }
+                }
+        );
+        MyApplication.getInstance().getRequestQueue().add(request);
     }
 }

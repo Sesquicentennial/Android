@@ -13,18 +13,20 @@ import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.EventObject.Events;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
+import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 
 /**
  * Created on 10/28/15.
  * Super class for all of the main view fragments. Ensures that they have
  * some methods in common so that the MainActivity can call these methods
- * without knowing which type of fragment is currently in view
+ * without checking which type of fragment is currently in view
  */
 public class MainFragment extends Fragment{
 
     //communicates with server
     VolleyRequester volleyRequester = new VolleyRequester();
     public LogMessages logMessages = new LogMessages();
+    public boolean isVisible = false;
 
     protected MainActivity mainActivity;
 
@@ -80,11 +82,23 @@ public class MainFragment extends Fragment{
 
     }
 
-    public void googlePlayServicesConnected(){
+    /**
+     * handles new events from server, called by VolleyRequester
+     * @param events
+     */
+    public void handleNewEvents(Events events){
 
     }
 
-    public void handleNewEvents(Events events){
+    public void fragmentOutOfView(){
+        isVisible = false;
+    }
+
+    public void fragmentInView(){
+        isVisible = true;
+    }
+
+    public void handleNewQuests(ArrayList<Quest> newQuests){
 
     }
 
