@@ -18,6 +18,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.TileOverlay;
+import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.android.gms.maps.model.TileProvider;
+import com.google.android.gms.maps.model.UrlTileProvider;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Locale;
+
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -82,8 +92,55 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
         // Required empty public constructor
     }
 
+    //This is a variable and not a function
+    public TileProvider tileProvider = new UrlTileProvider(256, 256) {
+        @Override
+        public URL getTileUrl(int x, int y, int zoom) {
+
+    /* Define the URL pattern for the tile images */
+            String s = String.format(" https://www.carleton.edu/global_stock/images/campus_map/tiles/base/16_%d_%d.png",
+                    x, y);
+
+            if (!checkTileExists(x, y, zoom)) {
+                return null;
+            }
+
+            try {
+                return new URL(s);
+            } catch (MalformedURLException e) {
+                throw new AssertionError(e);
+            }
+        }
+
+            /*
+             * Check that the tile server supports the requested x, y and zoom.
+             * Complete this stub according to the tile range you support.
+             * If you support a limited range of tiles at different zoom levels, then you
+             * need to define the supported x, y range at each zoom level.
+             */
+    private boolean checkTileExists(int x, int y, int zoom) {
+        int minZoom = -5000;
+        int maxZoom = 5000;
+
+        //here we'll put the range and domain of the tiles
+        if (x<15807 || x>15813 || y>23713 || y<23713){
+            return false;
+        }
+
+        if ((zoom < minZoom || zoom > maxZoom)) {
+            return false;
+        }
+
+        return true;
+    }
+};
+    //end of tileProvider
+
+    public TileOverlay tileOverlay;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        System.out.println("started!");
         super.onCreate(savedInstanceState);
         mainActivity = (MainActivity) getActivity();
     }
@@ -257,6 +314,10 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
         if (mMap != null)
             setUpMap();
         setUpMapIfNeeded();
+        TileOverlay tileOverlay = mMap.addTileOverlay(new TileOverlayOptions()
+                .tileProvider(tileProvider));
+        System.out.println("Did the thing!");
+        this.tileOverlay = tileOverlay;
     }
 
 
