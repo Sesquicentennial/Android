@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    card_view:cardBackgroundColor="@color/colorPrimarySemiTransparent"
+    card_view:backgroundTintMode="src_over"
+    card_view:backgroundTint="@color/colorAccent"
+    card_view:cardElevation="3dp"
+    card_view:cardCornerRadius="4dp"
+    card_view:cardUseCompatPadding="true"
+    android:layout_margin="2dp">
+    <ImageView
+        android:id="@+id/img_quest"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
+        android:layout_width="match_parent"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/txtTitle"
+            android:padding="5dp"
+            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/blackSemiTransparent"
+            android:text="Title"
+            android:gravity="center"
+            android:textSize="@dimen/abc_text_size_medium_material"
+            android:textColor="@color/windowBackground"
+            />
+
+
+        <TextView
+            android:id="@+id/txtDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:textColor="@color/windowBackground"
+            android:textSize="@dimen/abc_text_size_small_material"
+            android:layout_below="@id/txtTitle"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="5dp"/>
+
+
+    </RelativeLayout>
+    </android.support.v7.widget.CardView>

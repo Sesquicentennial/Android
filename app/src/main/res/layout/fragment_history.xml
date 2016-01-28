@@ -2,102 +2,109 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:paddingTop="?attr/actionBarSize"
     android:layout_height="match_parent" >
 
-    <fragment
-        android:id="@+id/location_map"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="com.google.android.gms.maps.SupportMapFragment" />
 
-   <!-- <SlidingDrawer
-        android:id="@+id/slidingDrawer1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:content="@+id/content" android:allowSingleTap="true"
-        android:handle="@+id/handle" >
 
-        <Button
-            android:id="@+id/handle"
-            android:layout_alignParentTop="true"
-            android:background="@color/blackSemiTransparent"
-            android:textColor="@color/windowBackground"
-            android:textSize="15sp"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:weightSum="20"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Handle"
-            />
+            android:layout_weight="17"
+            android:layout_height="0dp">
 
-        <LinearLayout
-            android:id="@+id/content"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
+            <fragment
+                android:id="@+id/location_map"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                class="com.google.android.gms.maps.SupportMapFragment" />
 
-           <ListView
-               android:id="@+id/lst_cur_landmarks"
-               android:background="@color/transparent"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content">
-
-           </ListView>
-
-        </LinearLayout>
-
-        </SlidingDrawer>-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_alignParentBottom="true"
+                android:layout_height="wrap_content">
 
 
-   <!-- <TextView
-        android:id="@+id/txt_new_geofences"
+
+                <TextView
+                    android:id="@+id/txt_try_getting_geofences"
+                    android:text="Getting geofences. Please wait..."
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:paddingTop="10dp"
+                    android:paddingLeft="10dp" />
+                <Button
+                    android:id="@+id/btn_request_geofences"
+                    android:text="Try again"
+                    android:visibility="gone"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/txt_query_result"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:paddingTop="10dp"
+                    android:paddingLeft="10dp"
+                    />
+
+                <TextView
+                    android:id="@+id/txt_geopoint_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:paddingTop="10dp"
+                    android:paddingLeft="10dp"
+                    />
+
+                <Button
+                    android:id="@+id/btn_debug_toggle"
+                    android:layout_width="match_parent"
+                    android:text="Debug Toggle"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/txt_lat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:paddingTop="10dp"
+                    android:paddingLeft="10dp" />
+                <TextView
+                    android:id="@+id/txt_long"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="10dp" />
+
+            </LinearLayout>
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/lst_images"
+            android:background="@color/colorPrimaryDark"
+            android:layout_weight="3"
+            android:layout_gravity="center_horizontal"
+            android:padding="3dp"
+            android:scrollbars="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"/>
+
+    </LinearLayout>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:paddingTop="10dp"
-        android:paddingLeft="10dp"
-        android:layout_above="@+id/txt_query_result" />
- />-->
-    <TextView
-        android:id="@+id/txt_query_result"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:paddingTop="10dp"
-        android:paddingLeft="10dp"
-        android:layout_above="@+id/txt_geopoint_info"></TextView>
-
-    <TextView
-        android:id="@+id/txt_geopoint_info"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:paddingTop="10dp"
-        android:paddingLeft="10dp"
-        android:layout_above="@+id/btn_debug_toggle" />
-
-    <Button
-        android:id="@+id/btn_debug_toggle"
-        android:layout_width="match_parent"
-        android:text="Debug Toggle"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/txt_lat"/>
-    <TextView
-        android:id="@+id/txt_lat"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:paddingTop="10dp"
-        android:paddingLeft="10dp"
-        android:layout_above="@+id/txt_long" />
-    <TextView
-        android:id="@+id/txt_long"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:paddingLeft="10dp"
-        android:paddingTop="10dp"
-        android:layout_alignParentBottom="true"/>
+        android:layout_height="match_parent" />
 
 </RelativeLayout>

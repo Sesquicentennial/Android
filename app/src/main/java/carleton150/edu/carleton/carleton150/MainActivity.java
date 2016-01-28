@@ -3,9 +3,12 @@ package carleton150.edu.carleton.carleton150;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +18,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -24,17 +30,24 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 
+import java.util.ArrayList;
+
+import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
-import carleton150.edu.carleton.carleton150.MainFragments.MyFragmentPagerAdapter;
+import carleton150.edu.carleton.carleton150.Adapters.MyFragmentPagerAdapter;
+import carleton150.edu.carleton.carleton150.MainFragments.QuestInProgressFragment;
+import carleton150.edu.carleton.carleton150.Models.GeofenceErrorMessages;
+import carleton150.edu.carleton.carleton150.Models.GeofenceMonitor;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
-import carleton150.edu.carleton.carleton150.POJO.EventObject.Events;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Monitors location and geofence information and calls methods in the main view fragments
  * to handle geofence and location changes. Also controls which fragment is in view.
  */
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status>, FragmentChangeListener{
 
     //things for managing fragments
     public static FragmentManager fragmentManager;
@@ -42,9 +55,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     //things for location
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
-    private Location mLastLocation;
-    //last location where we requested new geofences
-    private Location lastGeofenceUpdateLocation;
+    public Location mLastLocation = null;
     // Google client to interact with Google API
     public GoogleApiClient mGoogleApiClient;
     // boolean flag to toggle periodic location updates
@@ -53,19 +64,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     // Location updates intervals in milliseconds
     private static int UPDATE_INTERVAL = 30000; // 30 sec
     private static int FASTEST_INTERVAL = 10000; // 10 sec
-    private static int DISPLACEMENT = 100; // 100 meters
+    private static int DISPLACEMENT = 10; // 100 meters
 
     private LogMessages logMessages = new LogMessages();
 
-    //things for detecting geofence entry
-
-
-
+    MainFragment curFragment = null;
     private MyFragmentPagerAdapter adapter;
 
     public VolleyRequester mVolleyRequester = new VolleyRequester();
     AlertDialog networkAlertDialog;
     AlertDialog playServicesConnectivityAlertDialog;
+
+    public GeofenceMonitor geofenceMonitor = new GeofenceMonitor(this);
 
 
 
@@ -76,20 +86,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         networkAlertDialog = new AlertDialog.Builder(MainActivity.this).create();
         playServicesConnectivityAlertDialog = new AlertDialog.Builder(MainActivity.this).create();
-            // check availability of play services for location data and geofencing
-            if (checkPlayServices()) {
-                buildGoogleApiClient();
-                createLocationRequest();
-                if(isConnectedToNetwork()) {
-                    mGoogleApiClient.connect();
-                }
-            } else {
-                showGooglePlayServicesUnavailableDialog();
+        // check availability of play services for location data and geofencing
+        if (checkPlayServices()) {
+            buildGoogleApiClient();
+            createLocationRequest();
+            if(isConnectedToNetwork()) {
+                mGoogleApiClient.connect();
             }
-
-
-
-        //populateGeofenceList();
+        } else {
+            showGooglePlayServicesUnavailableDialog();
+        }
 
         //managing fragments and UI
         fragmentManager = getSupportFragmentManager();
@@ -102,15 +108,31 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_action_history));
         tabLayout.addTab(tabLayout.newTab().setText("Events"));
+        tabLayout.addTab(tabLayout.newTab().setText("Quests"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         adapter = new MyFragmentPagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
+        changeTabsFont(tabLayout);
+        curFragment = adapter.getCurFragment();
+        viewPager.clearOnPageChangeListeners();
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+
+        /*
+        Overrides onTabSelected to notify the fragment going out of view that it is
+        going out of view.
+        This is because fragments are kept in onResumed state for the viewPager, so
+        since no lifecycle methods are called, this has to be used so that geofences
+        can be registered and unregistered depending which fragment is in view
+         */
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                Log.i("UI", "newTabSelectedTablistener");
+                adapter.getCurFragment().fragmentOutOfView();
                 viewPager.setCurrentItem(tab.getPosition());
             }
 
@@ -126,12 +148,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         });
 
 
+
     }
-
-
-
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -145,7 +163,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -159,6 +176,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onResume() {
         super.onResume();
+
 
         // Resuming the periodic location updates
         if (mGoogleApiClient.isConnected()) {
@@ -187,27 +205,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     @Override
     public void onConnected(Bundle bundle) {
-
         // Once connected with google api, get the location
         mLastLocation = LocationServices.FusedLocationApi
                 .getLastLocation(mGoogleApiClient);
         tellFragmentLocationChanged();
+
         //starts periodic location updates
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
         }
-        tellFragmentGoogleServicesConnected();
+        //tells the geofenceMonitor that googlePlayServices is connected so that
+        //it can register geofences
+        geofenceMonitor.googlePlayServicesConnected();
 
-        //gets new geofences from the server
-        //Sets the last geofence update location since we just retrieved geofences
-        lastGeofenceUpdateLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-    }
-
-    private void tellFragmentGoogleServicesConnected(){
-        MainFragment curFragment = adapter.getCurFragment();
-        if(curFragment != null) {
-            curFragment.googlePlayServicesConnected();
-        }
     }
 
     /**
@@ -259,8 +269,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
         return true;
     }
-    
 
+
+    /**
+     * Method called by the google location client when the user's
+     * location changes. Records the location and passes the new
+     * location information to the fragment
+     * @param location
+     */
     @Override
     public void onLocationChanged(Location location) {
         // Assign the new location
@@ -270,7 +286,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     /**
      * Calls a method in the current fragment to handle a location change.
-     * The contents of handleLocationChange() varies depending on the fragment
      */
     private void tellFragmentLocationChanged(){
         MainFragment curFragment = adapter.getCurFragment();
@@ -279,7 +294,30 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
+    /**
+     * Overridden to use custom fonts using Calligraphy
+     * @param newBase
+     */
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
+
+    /**
+     * Method called from the geofenceMonitor when the geofences currently
+     * triggered by the user change. Passes this information on to
+     * the fragment currently in view. GeofenceMonitor stores a record
+     * of which fragment is in view, so this will only be called if the
+     * HistoryFragment is in view.
+     * @param content
+     */
+    public void handleGeofenceChange(ArrayList<GeofenceObjectContent> content){
+        MainFragment curFragment = adapter.getCurFragment();
+        if(curFragment != null) {
+            curFragment.handleGeofenceChange(content);
+        }
+    }
 
 
     /**
@@ -340,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-   /**
+    /**
      * displays a dialog requesting that the user connect to a network
      */
     public void showNetworkNotConnectedDialog() {
@@ -348,6 +386,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 networkAlertDialog);
     }
 
+    /**
+     * Shows a dialog to tell user google play services is unavailable
+     */
     private void showGooglePlayServicesUnavailableDialog(){
         showAlertDialog(getResources().getString(R.string.no_google_services), playServicesConnectivityAlertDialog);
     }
@@ -373,10 +414,105 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
+    /**
+     * Method called from VolleyRequester when new geofences are retrieved
+     * from server. Calls a function on whatever fragment is currently in view to
+     * handle the new geofences
+     * @param content
+     */
+    public void handleNewGeofences(GeofenceObjectContent[] content){
+        curFragment = adapter.getCurFragment();
+        curFragment.handleNewGeofences(content);
+    }
 
+    /**
+     * returns the geofenceMonitor
+     * @return GeofenceMonitor
+     */
+    public GeofenceMonitor getGeofenceMonitor(){
+        return this.geofenceMonitor;
+    }
+
+    /**
+     * Runs when the result of calling addGeofences() and removeGeofences() becomes available.
+     * Either method can complete successfully or with an error.
+     * The activity implements ResultCallback, so this is a required method
+     *
+     * @param status The Status returned through a PendingIntent when addGeofences() or
+     *               removeGeofences() get called.
+     */
+    public void onResult(Status status) {
+        if (status.isSuccess()) {
+            geofenceMonitor.mGeofencesAdded = !geofenceMonitor.mGeofencesAdded;
+        } else {
+            // Get the status code and log it.
+            String errorMessage = GeofenceErrorMessages.getErrorString(this,
+                    status.getStatusCode());
+            Log.e(logMessages.GEOFENCE_MONITORING, "onResult error: " + errorMessage);
+        }
+    }
+
+    /**
+     * Overridden from FragmentChangeListener interface to replace
+     * the QuestFragment with a new QuestInProgressFragment
+     * when a quest is started from the QuestFragment
+     * @param fragment
+     */
+    @Override
+    public void replaceFragment(MainFragment fragment) {
+        adapter.replaceFragment(fragment);
+    }
+
+    /**
+     * If QuestInProgressFragment is the current fragment,
+     * overrides back button to replaces the QuestInProgressFragment
+     * with a new QuestFragment
+     */
+    @Override
+    public void onBackPressed() {
+
+        if(adapter.getCurFragment() instanceof QuestInProgressFragment) {
+            showAlertDialog(getString(R.string.quest_will_not_be_saved), new AlertDialog.Builder(MainActivity.this)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (adapter.getCurFragment() instanceof QuestInProgressFragment) {
+                                adapter.replaceFragment();
+                            }
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    })
+                    .create());
+        }else{
+            super.onBackPressed();
+        }
+    }
 
 
     /**
-     * TODO: Fix bug where if you start app when not connected to internet then come back you have to restart app
+     * Changes font of tab items
      */
+    private void changeTabsFont(TabLayout tabLayout) {
+
+        ViewGroup vg = (ViewGroup) tabLayout.getChildAt(0);
+        int tabsCount = vg.getChildCount();
+        for (int j = 0; j < tabsCount; j++) {
+            ViewGroup vgTab = (ViewGroup) vg.getChildAt(j);
+            int tabChildsCount = vgTab.getChildCount();
+            for (int i = 0; i < tabChildsCount; i++) {
+                View tabViewChild = vgTab.getChildAt(i);
+                if (tabViewChild instanceof TextView) {
+
+                    Typeface font = Typeface.createFromAsset(this.getAssets(), "fonts/EBGaramond12-Regular.ttf");
+                    ((TextView) tabViewChild).setTypeface(font);
+                }
+            }
+        }
+    }
+
 }

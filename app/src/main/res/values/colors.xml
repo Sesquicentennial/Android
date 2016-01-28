@@ -7,10 +7,11 @@
 
     <color name="colorPrimary">#1D294B</color>
     <color name="colorPrimaryDark">#121831</color>
+    <color name="colorPrimaryDarkSlightlyTransparent">#BB121831</color>
     <color name="colorAccent">#D3BB39</color>
     <color name="colorPrimarySemiTransparent">#771D294B</color>
     <color name="yellowAccent">#D3BB39</color>
-    <color name="blackSemiTransparent">#DD181823</color>
+    <color name="blackSemiTransparent">#77000000</color>
     <color name = "transparent">#00000000</color>
 
 
