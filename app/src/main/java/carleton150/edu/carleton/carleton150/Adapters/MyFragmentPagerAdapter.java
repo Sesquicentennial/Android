@@ -67,7 +67,7 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
                 curFragment.fragmentInView();
             }
         }
-       if (curFragment != object) {
+        if (curFragment != object) {
             curFragment = (MainFragment) object;
         }
 
@@ -156,6 +156,4 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
         return title;
     }
-
-
 }

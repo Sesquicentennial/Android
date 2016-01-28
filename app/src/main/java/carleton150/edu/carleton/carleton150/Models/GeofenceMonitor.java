@@ -36,7 +36,6 @@ public class GeofenceMonitor{
     protected Location currentGeofenceUpdateRequestLocation = null;
     protected Location lastGeofenceUpdateLocation = null;
 
-
     public HashMap<String, GeofenceObjectContent> curGeofencesMap = new HashMap<>();
     public GeofenceInfoContent[] curGeofenceInfo;
     public HashMap<String, GeofenceInfoContent>
@@ -51,7 +50,6 @@ public class GeofenceMonitor{
 
     private MainActivity activity;
     private LogMessages logMessages = new LogMessages();
-
 
     public GeofenceMonitor(MainActivity activity) {
         this.activity = activity;
@@ -93,9 +91,6 @@ public class GeofenceMonitor{
         }
 
     };
-
-
-
 
     /**
      * Called when the geofences currently triggered by the user change.

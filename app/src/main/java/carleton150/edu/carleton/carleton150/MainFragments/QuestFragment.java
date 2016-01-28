@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.RecyclerView;
-import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.TextView;
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener
 import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.R;
-import jp.wasabeef.recyclerview.animators.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
 /**
