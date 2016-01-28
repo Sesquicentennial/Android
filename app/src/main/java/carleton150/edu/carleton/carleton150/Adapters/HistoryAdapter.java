@@ -2,16 +2,19 @@ package carleton150.edu.carleton.carleton150.Adapters;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
+import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewScrolledListener;
 import carleton150.edu.carleton.carleton150.POJO.HistoryContentObjectDummy;
 import carleton150.edu.carleton.carleton150.R;
 
@@ -24,10 +27,36 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private ArrayList<HistoryContentObjectDummy> historyList = null;
     public static RecyclerViewClickListener clickListener;
+    public static RecyclerViewScrolledListener scrolledListener;
 
-    public HistoryAdapter(ArrayList<HistoryContentObjectDummy> historyList, RecyclerViewClickListener clickListener) {
+    public HistoryAdapter(ArrayList<HistoryContentObjectDummy> historyList,
+                          RecyclerViewClickListener clickListener, RecyclerView recyclerView,
+                          RecyclerViewScrolledListener scrolledListener) {
         this.historyList = historyList;
         this.clickListener = clickListener;
+        this.scrolledListener = scrolledListener;
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(newState == recyclerView.SCROLL_STATE_IDLE){
+                    clearDate();
+                }else {
+                    LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
+                    displayDate(lm);
+                }
+
+            }
+        });
+    }
+
+    private void displayDate(LinearLayoutManager lm){
+        int lastVisible = lm.findLastVisibleItemPosition();
+        scrolledListener.recyclerViewScrolled(historyList.get(lastVisible).getDate());
+    }
+
+    private void clearDate(){
+        scrolledListener.recyclerViewStoppedScrolling();
     }
 
     /**
@@ -39,6 +68,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public int getItemViewType(int position) {
         return historyList.get(position).getType();
     }
+
+
 
 
     /**

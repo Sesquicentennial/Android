@@ -28,6 +28,8 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
         fragmentManager = fm;
     }
 
+
+
     @Override
     public MainFragment getItem(int position) {
 
@@ -49,15 +51,30 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
         }
     }
 
+    /**
+     * If the object is not already in view, calls MainFragment.fragmentInView()
+     *
+     * @param container
+     * @param position
+     * @param object
+     */
     @Override
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
-
+        super.setPrimaryItem(container, position, object);
+        if(curFragment != null) {
+            if (curFragment != object) {
+                curFragment = (MainFragment) object;
+                curFragment.fragmentInView();
+            }
+        }
        if (curFragment != object) {
             curFragment = (MainFragment) object;
         }
 
-        super.setPrimaryItem(container, position, object);
+
     }
+
+
 
     @Override
     public int getCount() {
@@ -70,6 +87,10 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
      */
     public MainFragment getCurFragment(){
         return this.curFragment;
+    }
+
+    public void setCurFragment(MainFragment curFragment){
+        this.curFragment = curFragment;
     }
 
     /**
@@ -116,6 +137,24 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
             return POSITION_NONE;
         }
         return POSITION_UNCHANGED;
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        String title=" ";
+        switch (position){
+            case 0:
+                title="History";
+                break;
+            case 1:
+                title="Events";
+                break;
+            case 2:
+                title="Quests";
+                break;
+        }
+
+        return title;
     }
 
 

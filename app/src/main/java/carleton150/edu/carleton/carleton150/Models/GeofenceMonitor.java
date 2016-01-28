@@ -180,12 +180,15 @@ public class GeofenceMonitor{
     /**
      * Requests geofences from server using VolleyRequester
      */
-    public void getNewGeofences(){
-        if (activity.isConnectedToNetwork()) {
+    public boolean getNewGeofences(){
+        try {
             activity.mVolleyRequester.requestGeofences(currentLocation.getLatitude(),
                     currentLocation.getLongitude(), activity);
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
         }
-
     }
 
     /**

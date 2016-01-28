@@ -92,27 +92,41 @@ public class EventsFragment extends MainFragment {
         crashing if the user leaves the tab while the app is trying
         to get quests from the server
          */
-        if(this.isDetached()){
-            return;
-        }
 
         try {
-            EventContent[] eventContents = events.getContent();
-            for (int i = 0; i < eventContents.length; i++) {
-                this.events.add(eventContents[i]);
+
+            try {
+                EventContent[] eventContents = events.getContent();
+                for (int i = 0; i < eventContents.length; i++) {
+                    this.events.add(eventContents[i]);
+                }
+                txtTryAgain.setVisibility(View.GONE);
+                btnTryAgain.setVisibility(View.GONE);
+                eventsListView.setVisibility(View.VISIBLE);
+                eventsListAdapter.notifyDataSetChanged();
+            } catch (NullPointerException e) {
+                if (this.events.size() == 0) {
+                    txtTryAgain.setText(getString(R.string.no_events_retrieved));
+                    txtTryAgain.setVisibility(View.VISIBLE);
+                    btnTryAgain.setVisibility(View.VISIBLE);
+                    eventsListView.setVisibility(View.GONE);
+                    e.printStackTrace();
+                }
             }
-            txtTryAgain.setVisibility(View.GONE);
-            btnTryAgain.setVisibility(View.GONE);
-            eventsListView.setVisibility(View.VISIBLE);
-            eventsListAdapter.notifyDataSetChanged();
-        }catch(NullPointerException e){
-            if(this.events.size() == 0) {
-                txtTryAgain.setText(getString(R.string.no_events_retrieved));
-                txtTryAgain.setVisibility(View.VISIBLE);
-                btnTryAgain.setVisibility(View.VISIBLE);
-                eventsListView.setVisibility(View.GONE);
-                e.printStackTrace();
-            }
+        }catch (IllegalStateException e){
+            e.printStackTrace();
         }
+    }
+
+    @Override
+    public void fragmentOutOfView() {
+        super.fragmentOutOfView();
+        Log.i("UI", "EventsFragment : fragmentOutOfView");
+    }
+
+    @Override
+    public void fragmentInView() {
+        super.fragmentInView();
+        Log.i("UI", "EventsFragment : fragmentInView");
     }
 }

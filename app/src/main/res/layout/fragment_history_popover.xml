@@ -12,6 +12,12 @@
         android:background="@color/colorPrimaryDarkSlightlyTransparent"
         android:layout_height="match_parent">
 
+
+        <RelativeLayout
+            android:id="@+id/layout_title"
+            android:layout_width="match_parent"
+            android:background="@color/colorPrimaryDarkSlightlyTransparent"
+            android:layout_height="wrap_content">
         <Button
             android:id="@+id/btn_exit_popup"
             android:background="@color/transparent"
@@ -35,12 +41,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
-
+        </RelativeLayout>
         <View
             android:id="@+id/view_line"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@+id/txt_title"
+            android:layout_below="@+id/layout_title"
             android:paddingBottom="3dp"
             android:background="@color/windowBackground"/>
 
@@ -69,6 +75,17 @@
 
 
     </RelativeLayout>
+
+        <TextView
+            android:id="@+id/txt_timeline_date"
+            android:padding="10dp"
+            android:visibility="gone"
+            android:background="@drawable/scroll_year_bg"
+            android:textSize="50sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
     </RelativeLayout>
 

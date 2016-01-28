@@ -146,35 +146,39 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         crashing if the user leaves the tab while the app is trying
         to get quests from the server
          */
-        if(this.isDetached()){
-            return;
-        }
-        super.handleNewQuests(newQuests);
-        if(newQuests != null) {
-            txtInfo.setText(getString(R.string.select_quest_to_view_info));
-            btnTryAgain.setVisibility(View.GONE);
+        try {
 
-            questInfo = newQuests;
 
-            //TODO:remove
-            questInfo.addAll(newQuests);
-            questInfo.addAll(newQuests);
-            questInfo.addAll(newQuests);
-            questInfo.addAll(newQuests);
-            questAdapter.updateQuests(questInfo);
-            scaleAdapter.notifyDataSetChanged();
-            Log.i(logMessages.VOLLEY, "QuestFragment: handleNewQuests : questAdapter contains : " + questAdapter.getItemCount());
-        } else {
-            if(questInfo == null) {
-                txtInfo.setText(getString(R.string.no_quests_retrieved));
-                btnTryAgain.setVisibility(View.VISIBLE);
+            super.handleNewQuests(newQuests);
+            if (newQuests != null) {
+                txtInfo.setText(getString(R.string.select_quest_to_view_info));
+                btnTryAgain.setVisibility(View.GONE);
+
+                questInfo = newQuests;
+
+                //TODO:remove
+                questInfo.addAll(newQuests);
+                questInfo.addAll(newQuests);
+                questInfo.addAll(newQuests);
+                questInfo.addAll(newQuests);
+                questAdapter.updateQuests(questInfo);
+                scaleAdapter.notifyDataSetChanged();
+                Log.i(logMessages.VOLLEY, "QuestFragment: handleNewQuests : questAdapter contains : " + questAdapter.getItemCount());
+            } else {
+                if (questInfo == null) {
+                    txtInfo.setText(getString(R.string.no_quests_retrieved));
+                    btnTryAgain.setVisibility(View.VISIBLE);
+                }
             }
+        }catch (IllegalStateException e){
+            e.printStackTrace();
         }
     }
 
     @Override
     public void fragmentOutOfView() {
         super.fragmentOutOfView();
+        Log.i("UI", "QuestFragment : fragmentOutOfView");
     }
 
     /**
@@ -183,6 +187,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
     @Override
     public void fragmentInView() {
         super.fragmentInView();
+        Log.i("UI", "QuestFragment : fragmentInView");
         if(questInfo != null){
             txtTitle.setVisibility(View.INVISIBLE);
             txtInfo.setText(getString(R.string.select_quest_to_view_info));

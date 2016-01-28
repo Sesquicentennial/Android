@@ -45,7 +45,7 @@
                 android:gravity="start"
                 android:layout_gravity="start"
                 android:textSize="@dimen/abc_text_size_medium_material"
-                android:textColor="@color/windowBackground"
+                android:textColor="@color/colorAccent"
                 />
 
             <TextView
