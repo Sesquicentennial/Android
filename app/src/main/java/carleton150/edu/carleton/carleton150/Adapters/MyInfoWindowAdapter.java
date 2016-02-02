@@ -22,8 +22,7 @@ import carleton150.edu.carleton.carleton150.R;
  */
 public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
     LayoutInflater inflater;
-    GeofenceInfoContent[] currentGeopoints;
-    HashMap<String, GeofenceInfoContent> currentGeopointsMap;
+    HashMap<String, GeofenceInfoContent[]> currentGeopointsMap;
 
     public MyInfoWindowAdapter(){
 
@@ -33,11 +32,7 @@ public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         this.inflater = inflater;
     }
 
-    public void setCurrentGeopoints(GeofenceInfoContent[] currentGeopoints){
-        this.currentGeopoints = currentGeopoints;
-    }
-
-    public void setCurrentGeopointsMap(HashMap<String, GeofenceInfoContent> currentGeopointsMap){
+    public void setCurrentGeopoints(HashMap<String, GeofenceInfoContent[]> currentGeopointsMap){
         this.currentGeopointsMap = currentGeopointsMap;
     }
 
@@ -54,11 +49,20 @@ public class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         TextView title = (TextView) v.findViewById(R.id.title);
         TextView snippet = (TextView) v.findViewById(R.id.snippet);
         if(currentGeopointsMap.get(marker.getTitle()) != null) {
-            String summary = currentGeopointsMap.get(marker.getTitle()).getSummary();
-            snippet.setText(summary);
+            GeofenceInfoContent[] geofenceInfoContents = currentGeopointsMap.get(marker.getTitle());
+            String summary = null;
+            for(int i = 0; i<geofenceInfoContents.length; i++){
+                if (summary != null){
+                    break;
+                }else if (geofenceInfoContents[i].getSummary() != null){
+                    summary = geofenceInfoContents[i].getSummary();
+                }
+            }
+            if(summary != null) {
+                snippet.setText(summary);
+            }
         }
         title.setText(marker.getTitle());
-        //TODO: SET IMAGE USING THE CURRENTGEOPOINTS
 
         // Returning the view containing InfoWindow contents
         return v;
