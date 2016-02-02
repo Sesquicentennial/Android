@@ -9,7 +9,6 @@ import carleton150.edu.carleton.carleton150.R;
 import jp.wasabeef.recyclerview.animators.adapters.AnimationAdapter;
 
 /**
- * Created by haleyhinze on 1/26/16.
  * Based on ScaleInAnimationAdapter by wasabeef https://github.com/wasabeef/recyclerview-animators
  * This differs from the ScaleInAnimationAdapter because it only animates certain aspects
  * of the view rather than the entire view

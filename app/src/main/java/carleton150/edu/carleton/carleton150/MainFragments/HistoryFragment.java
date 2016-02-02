@@ -59,13 +59,7 @@ import carleton150.edu.carleton.carleton150.R;
  * A simple {@link Fragment} subclass.
  *
  */
-public class HistoryFragment extends MainFragment implements RecyclerViewClickListener {
-
-    private double MAX_LONGITUDE = -93.141134;
-    private double MIN_LONGITUDE = -93.161333;
-    private double MAX_LATITUDE = 44.488045;
-    private double MIN_LATITUDE = 44.458869;
-    private static LatLng CENTER_CAMPUS = new LatLng(44.460174, -93.154726);
+public class HistoryFragment extends MapMainFragment implements RecyclerViewClickListener {
 
     private MainActivity mainActivity;
     private MyInfoWindowAdapter myInfoWindowAdapter;
@@ -74,10 +68,6 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
     private RecyclerView lstImages;
     private HistoryCardAdapter historyCardAdapter;
     private LinearLayoutManager historyCardLayoutManager;
-
-    private boolean zoomCamera = true;
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-
 
     private TextView txt_lat;
     private TextView txt_long;
@@ -168,7 +158,7 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
 
 
         buildRecyclerViews();
-        /*If geofences weren't retrieved (likely due to network error), sets button for user
+        /*If geofences weren't retrieved (likely due to network error), shows button for user
         to try requesting geofences again. If it is clicked, calls fragmentInView() to get new
         geofences and draw the necessary map markers
          */
@@ -189,6 +179,7 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
         btnToggle = (Button) view.findViewById(R.id.btn_debug_toggle);
         monitorDebugToggle();
 
+        //TODO: remove
         if(mainActivity.isConnectedToNetwork()) {
             setUpMapIfNeeded(); // For setting up the MapFragment
         }
@@ -222,15 +213,11 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
 
     }
 
-
+    @Override
     /***** Sets up the map if it is possible to do so *****/
     public boolean setUpMapIfNeeded() {
-        // Do a null check to confirm that we have not already instantiated the map.
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getChildFragmentManager()
-                    .findFragmentById(R.id.location_map)).getMap();
-            // Check if we were successful in obtaining the map.
+        super.setUpMapIfNeeded();
+
             if (mMap != null) {
                 mMap.setInfoWindowAdapter(myInfoWindowAdapter);
                 if(mainActivity.getGeofenceMonitor().curGeofenceInfoMap != null){
@@ -244,14 +231,11 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
                         showPopup(getContentFromMarker(marker));
                     }
                 });
-                setUpMap();
                 return true;
             } else {
                 //TODO: display message saying unable to set up map
                 return false;
             }
-        }
-        return true;
     }
 
     /**
@@ -259,54 +243,15 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
      * Monitors the zoom and target of the camera and changes them
      * if the user zooms out too much or scrolls map too far off campus.
      */
-    private void setUpMap() {
+    @Override
+    protected void setUpMap() {
 
+
+        super.setUpMap();
         // For showing a move to my location button and a blue
         // dot to show user's location
         //TODO: the move to my location button is behind the toolbar -- fix it
         mMap.setMyLocationEnabled(true);
-
-        //Makes it so user can't zoom out very far
-        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-            @Override
-            public void onCameraChange(CameraPosition cameraPosition) {
-                setCamera();
-                //TODO: figure out best zoom level for campus
-                if (cameraPosition.zoom <= 13) {
-                    if (cameraPosition.target == null) {
-                        setCamera();
-                    }
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
-                }
-
-                //makes it so user can't scroll too far off campus
-                //TODO: figure out best map limits
-                double latitude = cameraPosition.target.latitude;
-                double longitude = cameraPosition.target.longitude;
-                if (cameraPosition.target.longitude > MAX_LONGITUDE) {
-                    longitude = MAX_LONGITUDE;
-                }
-                if (cameraPosition.target.longitude < MIN_LONGITUDE) {
-                    longitude = MIN_LONGITUDE;
-                }
-                if (cameraPosition.target.latitude > MAX_LATITUDE) {
-                    latitude = MAX_LATITUDE;
-                }
-                if (cameraPosition.target.latitude < MIN_LATITUDE) {
-                    latitude = MIN_LATITUDE;
-                }
-
-                CameraPosition newCameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(latitude, longitude))
-                        .zoom(cameraPosition.zoom)
-                        .bearing(cameraPosition.bearing)
-                        .build();
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(newCameraPosition));
-
-            }
-        });
-
-        setCamera();
     }
 
     /**
@@ -325,29 +270,6 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
         this.tileOverlay = tileOverlay;
     }
 
-
-    /**
-     * Sets the camera for the map. If we have user location, sets the camera to that location.
-     * Otherwise, the camera target is the center of campus.
-     */
-    private void setCamera(){
-        if(mainActivity.getGeofenceMonitor().currentLocation != null && zoomCamera) {
-            zoomCamera = false;
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(mainActivity.getGeofenceMonitor().currentLocation.getLatitude(), mainActivity.getGeofenceMonitor().currentLocation.getLongitude()))
-                    .zoom(15)
-                    .bearing(0)
-                    .build();
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        }if(mainActivity.getGeofenceMonitor().currentLocation == null){
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(CENTER_CAMPUS.latitude, CENTER_CAMPUS.longitude))
-                    .zoom(15)
-                    .bearing(0)
-                    .build();
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        }
-    }
 
     /**
      * Lifecycle method overridden to set up the map and check for internet connectivity
@@ -588,6 +510,7 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
     @Override
     public void fragmentOutOfView() {
         super.fragmentOutOfView();
+        mainActivity.getGeofenceMonitor().removeAllGeofences();
         Log.i("UI", "HistoryFragment : fragmentOutOfView");
     }
 

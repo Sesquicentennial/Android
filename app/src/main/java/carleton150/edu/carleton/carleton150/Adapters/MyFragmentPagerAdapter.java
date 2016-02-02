@@ -12,7 +12,6 @@ import carleton150.edu.carleton.carleton150.MainFragments.QuestFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.QuestInProgressFragment;
 
 /**
- * Created by haleyhinze on 10/8/15.
  *
  * Adapter to manage the tabs for the main tab view and set the appropriate Fragment for each
  */

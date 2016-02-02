@@ -13,7 +13,6 @@ import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfo
 import carleton150.edu.carleton.carleton150.R;
 
 /**
- * Created by haleyhinze on 11/5/15.
  *
  * Class to override methods in GoogleMap.InfoWindowAdapter so that we can
  * make custom views for InfoWindows (windows that pop up when a google map

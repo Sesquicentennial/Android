@@ -23,7 +23,7 @@ import carleton150.edu.carleton.carleton150.R;
 
 
 /**
- * Created by haleyhinze on 12/8/15.
+ * Adapter for the RecyclerView that shows images in the bottom of the HistoryFragment
  */
 public class HistoryCardAdapter extends RecyclerView.Adapter<HistoryCardAdapter.HistoryCardViewHolder> {
 
@@ -66,7 +66,7 @@ public class HistoryCardAdapter extends RecyclerView.Adapter<HistoryCardAdapter.
         int i = 0;
         while (imageString == null && i < geofenceInfoContents.length) {
 
-            if(geofenceInfoContents[i].getType().equals("image")){
+            if(geofenceInfoContents[i].getType().equals(geofenceInfoContents[i].TYPE_IMAGE)){
                 imageString = geofenceInfoContents[i].getData();
             }
             i++;
