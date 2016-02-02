@@ -76,7 +76,7 @@ public class VolleyRequester {
                         String responseString = response.toString();
                         try {
                             GeofenceInfoObject geofenceInfoResponseObject = gson.fromJson(responseString, GeofenceInfoObject.class);
-                            Log.i(logMessages.VOLLEY, "request : length of response: " + geofenceInfoResponseObject.getContent().length);
+                            Log.i(logMessages.VOLLEY, "request : length of response: " + geofenceInfoResponseObject.getContent().size());
                             callerFragment.handleResult(geofenceInfoResponseObject);
                         }catch (Exception e){
                             Log.i(logMessages.VOLLEY, "VolleyRequester : request : unable to parse with gson");

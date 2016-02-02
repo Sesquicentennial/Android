@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.MainActivity;
@@ -24,16 +27,20 @@ import carleton150.edu.carleton.carleton150.R;
  */
 public class HistoryCardAdapter extends RecyclerView.Adapter<HistoryCardAdapter.HistoryCardViewHolder> {
 
-    private GeofenceInfoContent[] geofenceList = null;
+    private ArrayList<GeofenceInfoContent[]> geofenceList = new ArrayList<>();
     public static RecyclerViewClickListener clickListener;
     private int screenWidth;
     private View itemView;
     private Resources resources;
 
 
-    public HistoryCardAdapter(GeofenceInfoContent[] geofenceList, RecyclerViewClickListener clickListener,
+    public HistoryCardAdapter(HashMap<String, GeofenceInfoContent[]> geofenceMap, RecyclerViewClickListener clickListener,
                               int screenWidth, Resources resources) {
-        this.geofenceList = geofenceList;
+
+        if(geofenceMap != null){
+            geofenceList = turnHashMapToArr(geofenceMap);
+        }
+
         this.clickListener = clickListener;
         this.screenWidth = screenWidth;
         this.resources = resources;
@@ -53,32 +60,51 @@ public class HistoryCardAdapter extends RecyclerView.Adapter<HistoryCardAdapter.
 
     @Override
     public void onBindViewHolder(HistoryCardViewHolder holder, int position) {
-        GeofenceInfoContent geofenceInfoContent = geofenceList[position];
+
+        String imageString = null;
+        GeofenceInfoContent[] geofenceInfoContents = geofenceList.get(position);
+        int i = 0;
+        while (imageString == null && i < geofenceInfoContents.length) {
+
+            if(geofenceInfoContents[i].getType().equals("image")){
+                imageString = geofenceInfoContents[i].getData();
+            }
+            i++;
+        }
 
 
         //TODO: get a good width...
         holder.setWidth((int) (screenWidth / 5));
 
-
-        //TODO:make this background come from qi
-        holder.setBackground();
+        if(imageString != null) {
+            holder.setBackground(imageString);
+        }
     }
 
     @Override
     public int getItemCount() {
         if(geofenceList != null) {
-            return geofenceList.length;
+            return geofenceList.size();
         }else{
             return 0;
         }
     }
 
-    public void updateGeofences(GeofenceInfoContent[] newGeofences){
-        this.geofenceList = newGeofences;
+    private ArrayList<GeofenceInfoContent[]> turnHashMapToArr(HashMap<String, GeofenceInfoContent[]> hashMap){
+
+        ArrayList<GeofenceInfoContent[]> arrayList = new ArrayList<>();
+        for(Map.Entry<String, GeofenceInfoContent[]> e : hashMap.entrySet()){
+            arrayList.add(e.getValue());
+        }
+        return arrayList;
+    }
+
+    public void updateGeofences(HashMap<String, GeofenceInfoContent[]> newGeofences){
+        this.geofenceList = turnHashMapToArr(newGeofences);
         notifyDataSetChanged();
     }
 
-    public GeofenceInfoContent[] getGeofencesList(){
+    public ArrayList<GeofenceInfoContent[]> getGeofencesList(){
         return this.geofenceList;
     }
 
@@ -105,8 +131,11 @@ public class HistoryCardAdapter extends RecyclerView.Adapter<HistoryCardAdapter.
 
         /**
          */
-        public void setBackground() {
-            image.setImageBitmap(decodeSampledBitmapFromResource(resources, R.drawable.test_image1, 100, 100));
+        public void setBackground(String encodedImage) {
+            byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+            image.setImageBitmap(decodedByte);
 
         }
 
@@ -117,48 +146,11 @@ public class HistoryCardAdapter extends RecyclerView.Adapter<HistoryCardAdapter.
 
     }
 
-    public GeofenceInfoContent getItemAtPosition(int position){
-        return geofenceList[position];
+    public GeofenceInfoContent[] getItemAtPosition(int position){
+        return geofenceList.get(position);
     }
 
 
-    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId,
-                                                         int reqWidth, int reqHeight) {
 
-        // First decode with inJustDecodeBounds=true to check dimensions
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(res, resId, options);
-
-        // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeResource(res, resId, options);
-    }
-
-    public static int calculateInSampleSize(
-            BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
-
-        if (height > reqHeight || width > reqWidth) {
-
-            final int halfHeight = height / 2;
-            final int halfWidth = width / 2;
-
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) > reqHeight
-                    && (halfWidth / inSampleSize) > reqWidth) {
-                inSampleSize *= 2;
-            }
-        }
-
-        return inSampleSize;
-    }
 
 }
