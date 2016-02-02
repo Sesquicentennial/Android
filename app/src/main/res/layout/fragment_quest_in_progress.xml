@@ -11,7 +11,7 @@
         android:layout_weight="20"
         android:layout_height="0dp">
     <RelativeLayout
-        android:id="@+id/quest_map"
+        android:id="@+id/my_map"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

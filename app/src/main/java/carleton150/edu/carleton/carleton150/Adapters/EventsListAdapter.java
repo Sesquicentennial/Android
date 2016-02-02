@@ -20,7 +20,7 @@ import carleton150.edu.carleton.carleton150.POJO.EventObject.Events;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
- * Created by haleyhinze on 1/10/16.
+ * Adapter for the events list view
  */
 public class EventsListAdapter extends BaseAdapter {
 

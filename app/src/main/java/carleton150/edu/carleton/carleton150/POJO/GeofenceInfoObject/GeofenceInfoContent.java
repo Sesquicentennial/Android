@@ -1,10 +1,14 @@
 package carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject;
 
 /**
- * Created by haleyhinze on 11/9/15.
+ *
  */
 public class GeofenceInfoContent
 {
+    public final String TYPE_IMAGE = "image";
+    public final String TYPE_TEXT = "text";
+
+
     private String summary;
 
     private String geofence_id;

@@ -21,8 +21,6 @@ import carleton150.edu.carleton.carleton150.POJO.HistoryContentObjectDummy;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
- * Created by haleyhinze on 1/26/16.
- *
  * Adapter for the RecyclerView in the HistoryInfoPopup
  */
 public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
@@ -68,9 +66,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      */
     @Override
     public int getItemViewType(int position) {
-        if(historyList[position].getType().equals("image")){
+        if(historyList[position].getType().equals(historyList[position].TYPE_IMAGE)){
             return 0;
-        } if(historyList[position].getType().equals("text")){
+        } if(historyList[position].getType().equals(historyList[position].TYPE_TEXT)){
             return 1;
         } else {
             return -1;

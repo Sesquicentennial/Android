@@ -19,7 +19,7 @@ import jp.wasabeef.recyclerview.animators.holder.AnimateViewHolder;
 
 
 /**
- * Created by haleyhinze on 12/8/15.
+ * Adapter for the RecyclerView in the QuestFragment
  */
 public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHolder> {
 
