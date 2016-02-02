@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -42,6 +43,7 @@ public class QuestInProgressFragment extends MainFragment {
     private Button btnShowHint;
     private TextView txtHint;
     private TextView txtClueNumber;
+    private ImageButton btnReturnToMyLocation;
 
     private SupportMapFragment mapFragment;
 
@@ -83,6 +85,14 @@ public class QuestInProgressFragment extends MainFragment {
         btnShowHint = (Button) v.findViewById(R.id.btn_show_hint);
         txtHint = (TextView) v.findViewById(R.id.txt_hint);
         txtClueNumber = (TextView) v.findViewById(R.id.txt_clue_number);
+        btnReturnToMyLocation = (ImageButton) v.findViewById(R.id.btn_return_to_my_location);
+
+        btnReturnToMyLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                returnZoomToUserLocation();
+            }
+        });
 
         btnShowHint.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,6 +121,14 @@ public class QuestInProgressFragment extends MainFragment {
         });
         updateCurrentWaypoint();
         return v;
+    }
+
+    /**
+     * zooms to the user's current location
+     */
+    private void returnZoomToUserLocation(){
+        zoomCamera = true;
+        setCamera();
     }
 
     /**
@@ -201,9 +219,8 @@ public class QuestInProgressFragment extends MainFragment {
      * if the user zooms out too much or scrolls map too far off campus.
      */
     private void setUpMap() {
-            // For showing a move to my location button and a blue
-            // dot to show user's location
-            mMap.setMyLocationEnabled(true);
+            // to get rid of blue dot showing user's location
+            mMap.setMyLocationEnabled(false);
 
             //Makes it so user can't zoom out very far
             mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
@@ -291,14 +308,16 @@ public class QuestInProgressFragment extends MainFragment {
      * @param newLocation
      */
     private void drawLocationMarker(Location newLocation) {
-        mMap.clear();
-        Bitmap knightIcon = BitmapFactory.decodeResource(getResources(), R.drawable.knight_horse_icon);
-        LatLng position = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
-        BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(knightIcon);
-        Marker curLocationMarker = mMap.addMarker(new MarkerOptions()
-                .position(position)
-                .title("Current Location")
-                .icon(icon));
+        if(mMap != null) {
+            mMap.clear();
+            Bitmap knightIcon = BitmapFactory.decodeResource(getResources(), R.drawable.knight_horse_icon);
+            LatLng position = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(knightIcon);
+            Marker curLocationMarker = mMap.addMarker(new MarkerOptions()
+                    .position(position)
+                    .title("Current Location")
+                    .icon(icon));
+        }
     }
 
 

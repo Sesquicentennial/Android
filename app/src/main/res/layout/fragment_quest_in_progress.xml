@@ -7,12 +7,26 @@
     tools:context="carleton150.edu.carleton.carleton150.MainFragments.QuestInProgressFragment">
 
     <RelativeLayout
-        android:id="@+id/quest_map"
         android:layout_width="match_parent"
         android:layout_weight="20"
         android:layout_height="0dp">
+    <RelativeLayout
+        android:id="@+id/quest_map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
+    </RelativeLayout>
 
+        <ImageButton
+            android:id="@+id/btn_return_to_my_location"
+            android:background="@color/windowBackground"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:adjustViewBounds="true"
+            android:padding="5dp"
+            android:src="@drawable/ic_device_gps_fixed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </RelativeLayout>
 
     <LinearLayout
