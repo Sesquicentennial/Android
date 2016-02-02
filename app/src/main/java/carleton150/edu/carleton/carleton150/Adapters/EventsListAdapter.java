@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import java.text.ParseException;
 import java.util.List;
 
 import carleton150.edu.carleton.carleton150.POJO.Event;
@@ -59,24 +60,36 @@ public class EventsListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View v = convertView;
-        LayoutInflater mInflater;
+    public int getItemViewType(int position) {
+        if (events.get(position).isExpanded()) {
+            return 1;
+        }
+        return 0;
+    }
+
+    @Override
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        // View it's trying to recycle (convertView), viewHolder (for the convertView), and event it's a view for
+        // LayoutInflater mInflater;
+        final ViewHolder holder;
         if(convertView == null){
             //mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-           // mInflater = LayoutInflater.from(context);
-            v = layoutInflater.inflate(R.layout.list_item_event, null);
-            ViewHolder holder = new ViewHolder();
-            holder.txtTitle = (TextView) v.findViewById(R.id.txt_title);
-            holder.txtLocation = (TextView) v.findViewById(R.id.txt_location);
-            holder.txtDate = (TextView) v.findViewById(R.id.txt_date);
-            holder.txtDescription = (TextView) v.findViewById(R.id.txt_description);
-            holder.view = v;
-            v.setTag(holder);
+            // mInflater = LayoutInflater.from(context);
+            convertView = layoutInflater.inflate(R.layout.list_item_event, null);
+            holder = new ViewHolder();
+            holder.txtTitle = (TextView) convertView.findViewById(R.id.txt_title);
+            holder.txtLocation = (TextView) convertView.findViewById(R.id.txt_location);
+            holder.txtDate = (TextView) convertView.findViewById(R.id.txt_date);
+            holder.txtDescription = (TextView) convertView.findViewById(R.id.txt_description);
+            holder.view = convertView;
+            convertView.setTag(holder);
+        }
+        else {
+            holder = (ViewHolder) convertView.getTag();
         }
 
         final EventContent event = events.get(position);
-        final ViewHolder holder = (ViewHolder) v.getTag();
+        //final ViewHolder holder = (ViewHolder) v.getTag();
         if(event != null){
             holder.txtTitle.setText(event.getTitle());
             holder.txtDate.setText(event.getStartTime());
@@ -84,12 +97,49 @@ public class EventsListAdapter extends BaseAdapter {
             holder.txtDescription.setText(event.getDescription());
         }
 
+        if (event.isExpanded()) {
+            holder.txtDescription.setVisibility(View.VISIBLE);
+            holder.view.setBackgroundColor(Color.parseColor("#c8bc9d"));
+            event.setIsExpanded(true);
+        } else {
+            holder.txtDescription.setVisibility(View.GONE);
+            holder.view.setBackgroundColor(Color.parseColor("#e4decf"));
+            event.setIsExpanded(false);
+        }
 
-
-        v.setOnClickListener(new View.OnClickListener() {
+        convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(activeHolder != null) {
+                if (!event.isExpanded()) {
+                    holder.txtDescription.setVisibility(View.VISIBLE);
+                    holder.view.setBackgroundColor(Color.parseColor("#c8bc9d"));
+                    event.setIsExpanded(true);
+                } else {
+                    holder.txtDescription.setVisibility(View.GONE);
+                    holder.view.setBackgroundColor(Color.parseColor("#e4decf"));
+                    event.setIsExpanded(false);
+                }
+                /*if (activeHolder == null) {
+                    activeHolder = holder;
+                    holder.txtDescription.setVisibility(View.VISIBLE);
+                    holder.view.setBackgroundColor(Color.parseColor("#c8bc9d"));
+                    System.out.println("Got here 2");
+                } else {    // Something is tapped
+                    // Collapse active holder
+                    activeHolder.txtDescription.setVisibility(View.GONE);
+                    activeHolder.view.setBackgroundColor(Color.parseColor("#e4decf"));
+
+                    // If new holder is not the same as before, expand new holder
+                    if (activeHolder != holder) {
+                        holder.txtDescription.setVisibility(View.VISIBLE);
+                        holder.view.setBackgroundColor(Color.parseColor("#c8bc9d"));
+                        activeHolder = holder;
+                    } else {
+                        activeHolder = null;
+                    }
+                }*/
+
+/*                if(activeHolder != null) {
                     activeHolder.txtDescription.setVisibility(View.GONE);
                     activeHolder.view.setBackgroundColor(Color.parseColor("#e4decf"));
                 }
@@ -99,10 +149,10 @@ public class EventsListAdapter extends BaseAdapter {
                     activeHolder = holder;
                 }else{
                     activeHolder = null;
-                }
+                }*/
             }
         });
 
-        return v;
+        return convertView;
     }
 }

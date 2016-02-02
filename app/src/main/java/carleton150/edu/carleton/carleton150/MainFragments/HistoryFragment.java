@@ -143,6 +143,7 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        System.out.println("started!");
         super.onCreate(savedInstanceState);
         mainActivity = (MainActivity) getActivity();
     }
@@ -319,7 +320,6 @@ public class HistoryFragment extends MainFragment implements RecyclerViewClickLi
         TileOverlay tileOverlay = mMap.addTileOverlay(new TileOverlayOptions()
                 .tileProvider(tileProvider));
         this.tileOverlay = tileOverlay;
-
     }
 
 
