@@ -128,7 +128,7 @@ public class QuestInProgressFragment extends MapMainFragment {
     }
 
     /**
-     * replaces the RelativeLayout named quest_map with a SupportMapFragment
+     * replaces the RelativeLayout named my_map with a SupportMapFragment
      *
      * @param savedInstanceState
      */
@@ -141,6 +141,7 @@ public class QuestInProgressFragment extends MapMainFragment {
             mapFragment = SupportMapFragment.newInstance();
             fm.beginTransaction().replace(R.id.my_map, mapFragment).commit();
         }
+
     }
 
     /**
@@ -151,6 +152,9 @@ public class QuestInProgressFragment extends MapMainFragment {
     public void onResume() {
         super.onResume();
         setUpMapIfNeeded();
+        if(mainActivity.mLastLocation != null){
+            drawLocationMarker(mainActivity.mLastLocation);
+        }
     }
 
     /**
