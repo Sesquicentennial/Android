@@ -12,6 +12,8 @@ public class EventContent
 
     private String description;
 
+    private boolean isExpanded = false;
+
     public String getStartTime ()
     {
         return startTime;
@@ -55,6 +57,14 @@ public class EventContent
     public String getDescription ()
     {
         return description;
+    }
+
+    public boolean isExpanded() {
+        return isExpanded;
+    }
+
+    public void setIsExpanded(boolean isExpanded) {
+        this.isExpanded = isExpanded;
     }
 
     public void setDescription (String description)
