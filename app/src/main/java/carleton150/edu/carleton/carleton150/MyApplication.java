@@ -28,11 +28,11 @@ public class MyApplication extends Application{
         /*
          * Uses Calligraphy library to add custom font to entire app
          */
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+        /*CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                         .setDefaultFontPath("fonts/EBGaramond12-Regular.ttf")
                         .setFontAttrId(R.attr.fontPath)
                         .build()
-        );
+        );*/
 
         /*
         for using Volley for server requests
