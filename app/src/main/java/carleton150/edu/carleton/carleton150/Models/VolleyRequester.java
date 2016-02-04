@@ -74,9 +74,13 @@ public class VolleyRequester {
                     @Override
                     public void onResponse(JSONObject response) {
                         String responseString = response.toString();
-                        GeofenceInfoObject geofenceInfoResponseObject = gson.fromJson(responseString, GeofenceInfoObject.class);
-                        Log.i(logMessages.VOLLEY, "request : length of response: " + geofenceInfoResponseObject.getContent().length);
-                        callerFragment.handleResult(geofenceInfoResponseObject);
+                        try {
+                            GeofenceInfoObject geofenceInfoResponseObject = gson.fromJson(responseString, GeofenceInfoObject.class);
+                            Log.i(logMessages.VOLLEY, "request : length of response: " + geofenceInfoResponseObject.getContent().size());
+                            callerFragment.handleResult(geofenceInfoResponseObject);
+                        }catch (Exception e){
+                            Log.i(logMessages.VOLLEY, "VolleyRequester : request : unable to parse with gson");
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -126,8 +130,12 @@ public class VolleyRequester {
                     public void onResponse(JSONObject response) {
                         String responseString = response.toString();
                         Log.i(logMessages.VOLLEY, "requestGeofences : response string = : " + responseString);
-                        GeofenceObject responseObject = gson.fromJson(responseString, GeofenceObject.class);
-                        callerActivity.handleNewGeofences(responseObject.getContent());
+                        try {
+                            GeofenceObject responseObject = gson.fromJson(responseString, GeofenceObject.class);
+                            callerActivity.handleNewGeofences(responseObject.getContent());
+                        }catch (Exception e){
+                            Log.i(logMessages.VOLLEY, "requestGeofences : error parsing result");
+                        }
                     }
                 },
 
@@ -176,8 +184,12 @@ public class VolleyRequester {
                     public void onResponse(JSONObject response) {
                         String responseString = response.toString();
                         Log.i(logMessages.VOLLEY, "requestEvents : response string = : " + responseString);
-                        Events responseObject = gson.fromJson(responseString, Events.class);
-                        mainFragment.handleNewEvents(responseObject);
+                        try {
+                            Events responseObject = gson.fromJson(responseString, Events.class);
+                            mainFragment.handleNewEvents(responseObject);
+                        }catch (Exception e){
+                            Log.i(logMessages.VOLLEY, "requestEvents : unable to parse result");
+                        }
                     }
                 },
 
@@ -212,10 +224,14 @@ public class VolleyRequester {
                         ArrayList<Quest> quests = new ArrayList<>();
                         try {
                             JSONArray responseArr = response.getJSONArray("content");
-                            for(int i = 0; i<responseArr.length(); i++){
-                                Quest responseQuest = gson.fromJson(responseArr.getString(i), Quest.class);
-                                Log.i(logMessages.VOLLEY, "requestQuests : quest response string = : " + responseArr.getString(i));
-                                quests.add(responseQuest);
+                            try {
+                                for (int i = 0; i < responseArr.length(); i++) {
+                                    Quest responseQuest = gson.fromJson(responseArr.getString(i), Quest.class);
+                                    Log.i(logMessages.VOLLEY, "requestQuests : quest response string = : " + responseArr.getString(i));
+                                    quests.add(responseQuest);
+                                }
+                            }catch (Exception e) {
+                                Log.i(logMessages.VOLLEY, "requestQuests : unable to parse result");
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
