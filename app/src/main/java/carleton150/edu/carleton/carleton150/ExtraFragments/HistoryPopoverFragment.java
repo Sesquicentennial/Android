@@ -36,18 +36,17 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
     private View view;
 
     private RecyclerView historyInfoObjects;
-    private ArrayList<HistoryContentObjectDummy> historyInfo;
     private LinearLayoutManager historyLayoutManager;
     private HistoryAdapter historyAdapter;
     private Button btnClose;
     private TextView txtTimelineDate;
 
-    private static GeofenceInfoContent geofenceInfoObject;
+    private static GeofenceInfoContent[] geofenceInfoObject;
     public HistoryPopoverFragment()
     {
     }
 
-    public static HistoryPopoverFragment newInstance(GeofenceInfoContent object) {
+    public static HistoryPopoverFragment newInstance(GeofenceInfoContent[] object) {
         HistoryPopoverFragment f = new HistoryPopoverFragment();
         geofenceInfoObject = object;
         return f;
@@ -68,10 +67,17 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
             }
         });
 
-        txtTitle.setText(geofenceInfoObject.getName());
+        String name = null;
+        int i = 0;
+        while(name == null && i<geofenceInfoObject.length){
 
+            if(geofenceInfoObject[i].getName() != null){
+                name = geofenceInfoObject[i].getName();
+            }
+            i++;
+        }
 
-        buildDummyHistoryContent(12, geofenceInfoObject.getData());
+        txtTitle.setText(name);
 
         //builds RecyclerViews to display info
         buildRecyclerViews();
@@ -98,7 +104,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         historyInfoObjects.setLayoutManager(historyLayoutManager);
 
 
-        historyAdapter = new HistoryAdapter(historyInfo, this, historyInfoObjects, this);
+        historyAdapter = new HistoryAdapter(geofenceInfoObject, this, historyInfoObjects, this);
 
         //RecyclerView animation
         MyScaleInAnimationAdapter scaleInAnimationAdapter = new MyScaleInAnimationAdapter(historyAdapter);
@@ -126,29 +132,4 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         txtTimelineDate.setVisibility(View.GONE);
     }
 
-    private void buildDummyHistoryContent(int num, String curContent){
-        historyInfo = new ArrayList<>();
-        HistoryContentObjectDummy newContent = new HistoryContentObjectDummy();
-        newContent.setType(1);
-        newContent.setText(curContent);
-        historyInfo.add(newContent);
-        for(int i = 0; i <num ; i++){
-            HistoryContentObjectDummy newDummyContent = new HistoryContentObjectDummy();
-           Random rand = new Random();
-            int value = rand.nextInt(2);
-            newDummyContent.setType(value);
-            int date = 2000 + i;
-            newDummyContent.setDate("" + date);
-            if(value == 1){
-                newDummyContent.setText("SOME DUMMY TEXT");
-            }else{
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test_image1);
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                byte[] bitmapdata = stream.toByteArray();
-                newDummyContent.setImage(bitmapdata);
-            }
-            historyInfo.add(newDummyContent);
-        }
-    }
 }

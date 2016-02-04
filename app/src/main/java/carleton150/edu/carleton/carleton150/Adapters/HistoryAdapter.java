@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,21 +16,20 @@ import java.util.ArrayList;
 
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewScrolledListener;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.POJO.HistoryContentObjectDummy;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
- * Created by haleyhinze on 1/26/16.
- *
  * Adapter for the RecyclerView in the HistoryInfoPopup
  */
 public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
-    private ArrayList<HistoryContentObjectDummy> historyList = null;
+    private GeofenceInfoContent[] historyList = null;
     public static RecyclerViewClickListener clickListener;
     public static RecyclerViewScrolledListener scrolledListener;
 
-    public HistoryAdapter(ArrayList<HistoryContentObjectDummy> historyList,
+    public HistoryAdapter(GeofenceInfoContent[] historyList,
                           RecyclerViewClickListener clickListener, RecyclerView recyclerView,
                           RecyclerViewScrolledListener scrolledListener) {
         this.historyList = historyList;
@@ -52,7 +52,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private void displayDate(LinearLayoutManager lm){
         int lastVisible = lm.findLastVisibleItemPosition();
-        scrolledListener.recyclerViewScrolled(historyList.get(lastVisible).getDate());
+        scrolledListener.recyclerViewScrolled(historyList[lastVisible].getYear());
     }
 
     private void clearDate(){
@@ -66,7 +66,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      */
     @Override
     public int getItemViewType(int position) {
-        return historyList.get(position).getType();
+        if(historyList[position].getType().equals(historyList[position].TYPE_IMAGE)){
+            return 0;
+        } if(historyList[position].getType().equals(historyList[position].TYPE_TEXT)){
+            return 1;
+        } else {
+            return -1;
+        }
     }
 
 
@@ -104,13 +110,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      */
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        HistoryContentObjectDummy historyContentObjectDummy = historyList.get(position);
+        GeofenceInfoContent geofenceInfoContent = historyList[position];
         if(holder instanceof HistoryViewHolderText){
-            ((HistoryViewHolderText) holder).setTxtMedia(historyContentObjectDummy.getText());
-            ((HistoryViewHolderText) holder).setTxtDate(historyContentObjectDummy.getDate());
+            ((HistoryViewHolderText) holder).setTxtMedia(geofenceInfoContent.getData());
+            ((HistoryViewHolderText) holder).setTxtDate(geofenceInfoContent.getYear());
         }else if(holder instanceof HistoryViewHolderImage){
-            ((HistoryViewHolderImage) holder).setImage(historyContentObjectDummy.getImage());
-            ((HistoryViewHolderImage) holder).setTxtDate(historyContentObjectDummy.getDate());
+            ((HistoryViewHolderImage) holder).setImage(geofenceInfoContent.getData());
+            ((HistoryViewHolderImage) holder).setTxtDate(geofenceInfoContent.getYear());
         }
     }
 
@@ -121,13 +127,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public int getItemCount() {
         if(historyList != null) {
-            return historyList.size();
+            return historyList.length;
         }else{
             return 0;
         }
     }
 
-    public ArrayList<HistoryContentObjectDummy> getHistoryList(){
+    public GeofenceInfoContent[] getHistoryList(){
         return this.historyList;
     }
 
@@ -160,9 +166,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         /**
          */
-        public void setImage(byte[] image) {
-            Bitmap bMap = BitmapFactory.decodeByteArray(image, 0, image.length);
-            imgMedia.setImageBitmap(bMap);
+        public void setImage(String encodedImage) {
+            byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+            imgMedia.setImageBitmap(decodedByte);
 
         }
 

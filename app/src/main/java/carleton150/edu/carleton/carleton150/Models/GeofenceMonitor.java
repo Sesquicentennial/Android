@@ -37,9 +37,7 @@ public class GeofenceMonitor{
     protected Location lastGeofenceUpdateLocation = null;
 
     public HashMap<String, GeofenceObjectContent> curGeofencesMap = new HashMap<>();
-    public GeofenceInfoContent[] curGeofenceInfo;
-    public HashMap<String, GeofenceInfoContent>
-            curGeofencesInfoMap = new HashMap<>();
+    public HashMap<String, GeofenceInfoContent[]> curGeofenceInfoMap;
 
     public GeofenceObjectContent[] geofencesBeingMonitored;
     protected PendingIntent mGeofencePendingIntent;
@@ -109,24 +107,6 @@ public class GeofenceMonitor{
         activity.handleGeofenceChange(currentGeofences);
     }
 
-    /**
-     * Deletes all entries in the curGeofencesInfoMap, then adds each current geofence
-     * to the map where the key is the name of the geofence and the value is the info Content
-     * of that geofence
-     *
-     * @param currentGeofences
-     */
-    private void makeGeofenceInfoMap
-    (GeofenceInfoContent[] currentGeofences){
-        curGeofencesInfoMap.clear();
-        if(currentGeofences.length == 0){
-            Log.i(logMessages.GEOFENCE_MONITORING, "makeGeofenceInfoMap: length is 0");
-        }
-        for(int i = 0; i < currentGeofences.length; i++){
-            String curGeofenceName = currentGeofences[i].getName();
-            curGeofencesInfoMap.put(curGeofenceName, currentGeofences[i]);
-        }
-    }
 
     /**
      * Handles the result of a query for information about a geofence.
@@ -141,10 +121,11 @@ public class GeofenceMonitor{
         } else {
             Log.i(logMessages.VOLLEY, "handleResult: result is: " + result.toString());
             try {
-                curGeofenceInfo = result.getContent();
-                makeGeofenceInfoMap(curGeofenceInfo);
+                curGeofenceInfoMap = result.getContent();
+                Log.i(logMessages.VOLLEY, "GeofenceMonitor handleResult : got content");
             }catch (NullPointerException e){
                 e.printStackTrace();
+                Log.i(logMessages.VOLLEY, "GeofenceMonitor handleResult : NullPointerException");
             }
         }
 
