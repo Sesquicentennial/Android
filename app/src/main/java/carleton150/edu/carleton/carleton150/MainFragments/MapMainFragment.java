@@ -32,6 +32,18 @@ public class MapMainFragment extends MainFragment {
     private double MIN_LONGITUDE = -93.161333;
     private double MAX_LATITUDE = 44.488045;
     private double MIN_LATITUDE = 44.458869;
+    private int MAX_ZOOM_TILING = 5000;
+    private int MIN_ZOOM_TILING = -5000;
+
+    private int DEFAULT_MAX_ZOOM = 13;
+
+    private String tilingURLString = " https://www.carleton.edu/global_stock/images/campus_map/tiles/base/16_%d_%d.png";
+
+    private int X_MIN_TILING = 15807;
+    private int X_MAX_TILING = 15813;
+    private int Y_MIN_TILING = 23705;
+    private int Y_MAX_TILING = 23715;
+
     protected boolean zoomCamera = true;
     protected GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
@@ -41,7 +53,7 @@ public class MapMainFragment extends MainFragment {
         public URL getTileUrl(int x, int y, int zoom) {
 
     /* Define the URL pattern for the tile images */
-            String s = String.format(" https://www.carleton.edu/global_stock/images/campus_map/tiles/base/16_%d_%d.png",
+            String s = String.format(tilingURLString,
                     x, y);
 
             if (!checkTileExists(x, y, zoom)) {
@@ -62,15 +74,14 @@ public class MapMainFragment extends MainFragment {
          * need to define the supported x, y range at each zoom level.
          */
         private boolean checkTileExists(int x, int y, int zoom) {
-            int minZoom = -5000;
-            int maxZoom = 5000;
+
 
             //here we'll put the range and domain of the tiles
-            if (x<15807 || x>15813 || y>23713 || y<23713){
+            if (x<X_MIN_TILING || x>X_MAX_TILING || y>Y_MAX_TILING || y<Y_MIN_TILING){
                 return false;
             }
 
-            if ((zoom < minZoom || zoom > maxZoom)) {
+            if ((zoom < MIN_ZOOM_TILING || zoom > MAX_ZOOM_TILING)) {
                 return false;
             }
 
@@ -116,11 +127,11 @@ public class MapMainFragment extends MainFragment {
             public void onCameraChange(CameraPosition cameraPosition) {
                 setCamera();
                 //TODO: figure out best zoom level for campus
-                if (cameraPosition.zoom <= 13) {
+                if (cameraPosition.zoom <= DEFAULT_MAX_ZOOM) {
                     if (cameraPosition.target == null) {
                         setCamera();
                     }
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(DEFAULT_MAX_ZOOM));
                 }
 
                 //makes it so user can't scroll too far off campus
