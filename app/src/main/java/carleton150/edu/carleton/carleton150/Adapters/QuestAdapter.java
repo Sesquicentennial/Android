@@ -46,7 +46,6 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
     public void onBindViewHolder(QuestViewHolder holder, int position) {
         Quest qi = questList.get(position);
         holder.setTitle(qi.getName());
-        holder.setDescription(qi.getDesc());
 
         //TODO: get a good width...
         holder.setWidth((int) (screenWidth/1.5));
@@ -95,7 +94,6 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
 
     public static class QuestViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView title;
-        private TextView description;
         private ImageView image;
         private TextView creator;
 
@@ -104,7 +102,6 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
             itemView.setOnClickListener(this);
 
             title = (TextView) itemView.findViewById(R.id.txtTitle);
-            description = (TextView) itemView.findViewById(R.id.txtDescription);
             image = (ImageView) itemView.findViewById(R.id.img_quest);
 
 
@@ -123,13 +120,6 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
          */
         public void setTitle(String title) {
             this.title.setText(title);
-        }
-
-        /**
-         * @param description
-         */
-        public void setDescription(String description) {
-            this.description.setText(description);
         }
 
         /**
