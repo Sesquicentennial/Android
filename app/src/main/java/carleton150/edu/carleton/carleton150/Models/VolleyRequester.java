@@ -123,7 +123,8 @@ public class VolleyRequester {
             e.printStackTrace();
         }
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://carl150.carleton.edu/geofences", jsonObjectrequest,
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://carl150.carleton.edu/geofences",
+                jsonObjectrequest,
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -155,6 +156,7 @@ public class VolleyRequester {
                     }
                 }
         );
+        //TODO: check what request object is to make sure it isn't GET
         MyApplication.getInstance().getRequestQueue().add(request);
     }
 

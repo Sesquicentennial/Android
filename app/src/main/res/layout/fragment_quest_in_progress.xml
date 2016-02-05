@@ -98,7 +98,7 @@
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/rounded_corner_button_bg"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="@color/windowBackground"
                 android:text="Found it!"
                 android:layout_centerHorizontal="true"
                 android:layout_height="wrap_content"
