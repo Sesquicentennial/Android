@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
-import java.text.ParseException;
 import java.util.List;
 
 import carleton150.edu.carleton.carleton150.POJO.EventObject.EventContent;
@@ -28,6 +27,10 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
         TextView txtTitle;
         TextView txtLocation;
         TextView txtDate;
+        View view;
+    }
+
+    static class ChildViewHolder {
         TextView txtDescription;
         View view;
     }
@@ -73,18 +76,18 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
 
         TextView item = (TextView) convertView.findViewById(R.id.event);
 
-        final ViewHolder holder;
+        final ChildViewHolder holder;
 
         if (convertView == null) {
-            holder = new ViewHolder();
+            holder = new ChildViewHolder();
             LayoutInflater groupinflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = groupinflater.inflate(R.layout.child_item, null);
         }
 
         else {
-            holder = (ViewHolder) convertView.getTag();
+            holder = (ChildViewHolder) convertView.getTag();
         }
-        holder.txtTitle.setText(event.getDescription());
+        holder.txtDescription.setText(event.getDescription());
         return convertView;
     }
 
