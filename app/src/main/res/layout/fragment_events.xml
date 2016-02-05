@@ -1,8 +1,9 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingTop="?attr/actionBarSize"
-    tools:context="carleton150.edu.carleton.carleton1502.mainActivityFragments.SocialFragment">
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_root"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 
     <LinearLayout
         android:id="@+id/layout_unable_to_retrieve_events"
@@ -10,6 +11,7 @@
         android:padding="10dp"
         android:orientation="vertical"
         android:layout_height="match_parent">
+
         <TextView
             android:id="@+id/txt_request_events"
             android:layout_width="wrap_content"
@@ -26,12 +28,58 @@
             android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="January 31"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Feb 1"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Feb 2"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Feb 3"/>
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <ExpandableListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/lst_events">
+        </ExpandableListView>
 
     </LinearLayout>
-   <ListView
+   <!--<ListView
        android:id="@+id/lst_events"
        android:layout_width="match_parent"
        android:layout_height="match_parent"
-       android:padding="16dp" />
+       android:padding="16dp" />-->
 
-</FrameLayout>
+</RelativeLayout>

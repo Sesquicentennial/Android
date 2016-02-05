@@ -5,7 +5,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import carleton150.edu.carleton.carleton150.R;
 /**
  * Created by haleyhinze on 1/10/16.
  */
-public class EventsListAdapter extends BaseAdapter {
+public class EventsListAdapter extends BaseExpandableListAdapter {
 
     private List<EventContent> events;
     private Context context;
@@ -31,72 +31,111 @@ public class EventsListAdapter extends BaseAdapter {
         View view;
     }
 
-    public EventsListAdapter(List<EventContent> events, Context context, LayoutInflater layoutInflater){
+    public EventsListAdapter(Context context, List<EventContent> events){
         this.events = events;
         this.context = context;
-        this.layoutInflater = layoutInflater;
     }
 
+    // Added child
+    public Object getChild(int groupPosition, int childPosition) {
+        return events.get(groupPosition).getDescription();
+    }
 
-    @Override
-    public int getCount() {
+    public long getChildId(int groupPosition, int childPosition) {
+        return childPosition;
+    }
+
+    /*public View getChildView(final int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        final EventContent event = (EventContent) getChild(groupPosition, childPosition);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.child_item, null);
+        }
+
+        TextView item = (TextView) convertView.findViewById(R.id.event);
+
+        final ViewHolder holder = new ViewHolder();;
+        holder.txtDescription = (TextView) convertView.findViewById(R.id.txt_description);
+
+        item.setText(event.getDescription());
+        return convertView;
+    }*/
+
+    public View getChildView(final int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        final EventContent event = (EventContent) getChild(groupPosition, childPosition);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.child_item, null);
+        }
+
+        TextView item = (TextView) convertView.findViewById(R.id.event);
+
+        final ViewHolder holder;
+
+        if (convertView == null) {
+            holder = new ViewHolder();
+            LayoutInflater groupinflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = groupinflater.inflate(R.layout.child_item, null);
+        }
+
+        else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+        holder.txtTitle.setText(event.getDescription());
+        return convertView;
+    }
+
+    public int getChildrenCount(int groupPosition) {
+        return 1;
+    }
+
+    public Object getGroup(int groupPosition) {
+        return events.get(groupPosition);
+    }
+
+    public int getGroupCount() {
         return events.size();
     }
 
-    @Override
-    public Object getItem(int position) {
-        return events.get(position);
+    public long getGroupId(int groupPosition) {
+        return groupPosition;
     }
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if (events.get(position).isExpanded()) {
-            return 1;
-        }
-        return 0;
-    }
-
-    @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        // View it's trying to recycle (convertView), viewHolder (for the convertView), and event it's a view for
-        // LayoutInflater mInflater;
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        EventContent eventName = (EventContent) getGroup(groupPosition);
         final ViewHolder holder;
-        if(convertView == null){
-            //mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            // mInflater = LayoutInflater.from(context);
-            convertView = layoutInflater.inflate(R.layout.list_item_event, null);
+
+        if (convertView == null) {
             holder = new ViewHolder();
-            holder.txtTitle = (TextView) convertView.findViewById(R.id.txt_title);
-            holder.txtLocation = (TextView) convertView.findViewById(R.id.txt_location);
-            holder.txtDate = (TextView) convertView.findViewById(R.id.txt_date);
-            holder.txtDescription = (TextView) convertView.findViewById(R.id.txt_description);
-            holder.view = convertView;
-            convertView.setTag(holder);
+            LayoutInflater groupinflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = groupinflater.inflate(R.layout.group_item, null);
         }
+
         else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        final EventContent event = events.get(position);
+        TextView item = (TextView) convertView.findViewById(R.id.event);
+        holder.txtTitle = (TextView) convertView.findViewById(R.id.txt_title);
+        holder.txtLocation = (TextView) convertView.findViewById(R.id.txt_location);
+        holder.txtDate = (TextView) convertView.findViewById(R.id.txt_date);
+        holder.view = convertView;
+        convertView.setTag(holder);
+
+        final EventContent event = events.get(groupPosition);
         //final ViewHolder holder = (ViewHolder) v.getTag();
         if(event != null){
             holder.txtTitle.setText(event.getTitle());
             holder.txtDate.setText(event.getStartTime());
             holder.txtLocation.setText(event.getLocation());
-            holder.txtDescription.setText(event.getDescription());
         }
 
         if (event.isExpanded()) {
-            holder.txtDescription.setVisibility(View.VISIBLE);
             holder.view.setBackgroundColor(Color.parseColor("#c8bc9d"));
             event.setIsExpanded(true);
         } else {
-            holder.txtDescription.setVisibility(View.GONE);
             holder.view.setBackgroundColor(Color.parseColor("#e4decf"));
             event.setIsExpanded(false);
         }
@@ -105,11 +144,9 @@ public class EventsListAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 if (!event.isExpanded()) {
-                    holder.txtDescription.setVisibility(View.VISIBLE);
                     holder.view.setBackgroundColor(Color.parseColor("#c8bc9d"));
                     event.setIsExpanded(true);
                 } else {
-                    holder.txtDescription.setVisibility(View.GONE);
                     holder.view.setBackgroundColor(Color.parseColor("#e4decf"));
                     event.setIsExpanded(false);
                 }
@@ -118,4 +155,13 @@ public class EventsListAdapter extends BaseAdapter {
 
         return convertView;
     }
+
+    public boolean hasStableIds() {
+        return true;
+    }
+
+    public boolean isChildSelectable(int groupPosition, int childPosition) {
+        return true;
+    }
+
 }
