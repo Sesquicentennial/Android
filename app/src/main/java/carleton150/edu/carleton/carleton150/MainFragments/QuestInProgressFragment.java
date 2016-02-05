@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,7 +33,7 @@ import carleton150.edu.carleton.carleton150.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class QuestInProgressFragment extends MainFragment {
+public class QuestInProgressFragment extends MapMainFragment {
 
 
     private Quest quest = null;
@@ -42,12 +43,9 @@ public class QuestInProgressFragment extends MainFragment {
     private Button btnShowHint;
     private TextView txtHint;
     private TextView txtClueNumber;
+    private ImageButton btnReturnToMyLocation;
 
     private SupportMapFragment mapFragment;
-
-    private boolean zoomCamera = true;
-    private static LatLng CENTER_CAMPUS = new LatLng(44.460174, -93.154726);
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
 
     public QuestInProgressFragment() {
@@ -83,6 +81,14 @@ public class QuestInProgressFragment extends MainFragment {
         btnShowHint = (Button) v.findViewById(R.id.btn_show_hint);
         txtHint = (TextView) v.findViewById(R.id.txt_hint);
         txtClueNumber = (TextView) v.findViewById(R.id.txt_clue_number);
+        btnReturnToMyLocation = (ImageButton) v.findViewById(R.id.btn_return_to_my_location);
+
+        btnReturnToMyLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                returnZoomToUserLocation();
+            }
+        });
 
         btnShowHint.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,7 +120,15 @@ public class QuestInProgressFragment extends MainFragment {
     }
 
     /**
-     * replaces the RelativeLayout named quest_map with a SupportMapFragment
+     * zooms to the user's current location
+     */
+    private void returnZoomToUserLocation(){
+        zoomCamera = true;
+        setCamera();
+    }
+
+    /**
+     * replaces the RelativeLayout named my_map with a SupportMapFragment
      *
      * @param savedInstanceState
      */
@@ -122,11 +136,12 @@ public class QuestInProgressFragment extends MainFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         FragmentManager fm = getChildFragmentManager();
-         mapFragment = (SupportMapFragment) fm.findFragmentById(R.id.quest_map);
+         mapFragment = (SupportMapFragment) fm.findFragmentById(R.id.my_map);
         if (mapFragment == null) {
             mapFragment = SupportMapFragment.newInstance();
-            fm.beginTransaction().replace(R.id.quest_map, mapFragment).commit();
+            fm.beginTransaction().replace(R.id.my_map, mapFragment).commit();
         }
+
     }
 
     /**
@@ -137,6 +152,9 @@ public class QuestInProgressFragment extends MainFragment {
     public void onResume() {
         super.onResume();
         setUpMapIfNeeded();
+        if(mainActivity.mLastLocation != null){
+            drawLocationMarker(mainActivity.mLastLocation);
+        }
     }
 
     /**
@@ -173,101 +191,19 @@ public class QuestInProgressFragment extends MainFragment {
         }
     }
 
-    /***** Sets up the map if it is possible to do so *****/
-    public boolean setUpMapIfNeeded() {
-        boolean setUp = true;
-        // Do a null check to confirm that we have not already instantiated the map.
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-
-            mMap = mapFragment.getMap();
-            // Check if we were successful in obtaining the map.
-            if (mMap != null) {
-                setUpMap();
-                setUp = true;
-            } else {
-                mainActivity.showAlertDialog(getResources().getString(R.string.unable_to_set_up_map),
-                        new AlertDialog.Builder(mainActivity).create());
-                return false;
-            }
-        }
-        return setUp;
-    }
-
 
     /**
      * Sets up the map
      * Monitors the zoom and target of the camera and changes them
      * if the user zooms out too much or scrolls map too far off campus.
      */
-    private void setUpMap() {
-            // For showing a move to my location button and a blue
-            // dot to show user's location
-            mMap.setMyLocationEnabled(true);
+    @Override
+    protected void setUpMap() {
 
-            //Makes it so user can't zoom out very far
-            mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-                @Override
-                public void onCameraChange(CameraPosition cameraPosition) {
-                    setCamera();
-                    //TODO: figure out best zoom level for campus
-                    try {
-                        if (cameraPosition.zoom <= 13) {
-                            if (cameraPosition.target == null) {
-                                setCamera();
-                            }
-                            mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
-                        }
-                        //makes it so user can't scroll too far off campus
-                        //TODO: figure out best map limits
-                        double latitude = cameraPosition.target.latitude;
-                        double longitude = cameraPosition.target.longitude;
-
-                        CameraPosition newCameraPosition = new CameraPosition.Builder()
-                                .target(new LatLng(latitude, longitude))
-                                .zoom(cameraPosition.zoom)
-                                .bearing(cameraPosition.bearing)
-                                .build();
-                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(newCameraPosition));
-                    }catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            });
-
-            setCamera();
+        super.setUpMap();
+        // to get rid of blue dot showing user's location
+        mMap.setMyLocationEnabled(false);
         }
-
-
-
-    /**
-     * Sets the camera for the map. If we have user location, sets the camera to that location.
-     * Otherwise, the camera target is the center of campus.
-     */
-    //TODO: figure out what to do if user is off campus and handle that appropriately
-    private void setCamera(){
-        if(mMap != null) {
-            if (mainActivity.getGeofenceMonitor().currentLocation != null && zoomCamera) {
-                zoomCamera = false;
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(mainActivity.getGeofenceMonitor().currentLocation.getLatitude(),
-                                mainActivity.getGeofenceMonitor().currentLocation.getLongitude()))
-                        .zoom(15)
-                        .bearing(0)
-                        .build();
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            }
-            if (mainActivity.getGeofenceMonitor().currentLocation == null) {
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(CENTER_CAMPUS.latitude, CENTER_CAMPUS.longitude))
-                        .zoom(15)
-                        .bearing(0)
-                        .build();
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            }
-        }
-    }
 
 
     /**
@@ -291,14 +227,19 @@ public class QuestInProgressFragment extends MainFragment {
      * @param newLocation
      */
     private void drawLocationMarker(Location newLocation) {
-        mMap.clear();
-        Bitmap knightIcon = BitmapFactory.decodeResource(getResources(), R.drawable.knight_horse_icon);
-        LatLng position = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
-        BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(knightIcon);
-        Marker curLocationMarker = mMap.addMarker(new MarkerOptions()
-                .position(position)
-                .title("Current Location")
-                .icon(icon));
+        if(mMap != null) {
+            Log.i(logMessages.LOCATION, "QuestInProgressFragment : drawLocationMarker : mMap is not null");
+            mMap.clear();
+            Bitmap knightIcon = BitmapFactory.decodeResource(getResources(), R.drawable.knight_horse_icon);
+            LatLng position = new LatLng(newLocation.getLatitude(), newLocation.getLongitude());
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(knightIcon);
+            Marker curLocationMarker = mMap.addMarker(new MarkerOptions()
+                    .position(position)
+                    .title("Current Location")
+                    .icon(icon));
+        }else{
+            Log.i(logMessages.LOCATION, "QuestInProgressFragment : drawLocationMarker : mMap is null");
+        }
     }
 
 
@@ -362,9 +303,7 @@ public class QuestInProgressFragment extends MainFragment {
     @Override
     public void fragmentInView() {
         Log.i(logMessages.LOCATION, "QuestInProgressFragment : fragmentInView : called");
-
         updateCurrentWaypoint();
-        //setUpMap();
         if(mainActivity.mLastLocation != null){
             Log.i(logMessages.LOCATION, "QuestInProgressFragment : fragmentInView : last location not null, drawing marker");
             drawLocationMarker(mainActivity.mLastLocation);
