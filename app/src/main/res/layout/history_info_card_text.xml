@@ -32,7 +32,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:background="@drawable/speech_bubble_2"
-                android:paddingBottom="0dp"
+                android:paddingBottom="20dp"
                 android:orientation="vertical"
                 android:layout_height="wrap_content">
 
@@ -51,7 +51,6 @@
             <TextView
                 android:id="@+id/txt_txt_media"
                 android:padding="5dp"
-                android:textStyle="bold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="left"

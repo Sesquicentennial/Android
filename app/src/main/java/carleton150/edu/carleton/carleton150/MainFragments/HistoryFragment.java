@@ -157,7 +157,9 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         btnRequestGeofences = (Button) view.findViewById(R.id.btn_request_geofences);
 
 
-        buildRecyclerViews();
+        //buildRecyclerViews();
+
+
         /*If geofences weren't retrieved (likely due to network error), shows button for user
         to try requesting geofences again. If it is clicked, calls fragmentInView() to get new
         geofences and draw the necessary map markers
@@ -365,8 +367,8 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
             try {
                 //Gives information to the infoWindowAdapter for displaying info windows
                 myInfoWindowAdapter.setCurrentGeopoints(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
-                historyCardAdapter.updateGeofences(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
-                historyCardAdapter.notifyDataSetChanged();
+               // historyCardAdapter.updateGeofences(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
+               // historyCardAdapter.notifyDataSetChanged();
 
                 //sets text to display current geofences
                 displayGeofenceInfo();
@@ -563,7 +565,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
     /**
      * Builds the views for the quests
      */
-    private void buildRecyclerViews(){
+   /* private void buildRecyclerViews(){
         DisplayMetrics metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         screenWidth = metrics.widthPixels;
@@ -575,5 +577,5 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         historyCardAdapter = new HistoryCardAdapter(mainActivity.getGeofenceMonitor().curGeofenceInfoMap, this, screenWidth, getResources());
         lstImages.setAdapter(historyCardAdapter);
 
-    }
+    }*/
 }

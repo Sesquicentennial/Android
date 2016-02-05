@@ -1,91 +1,23 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingTop="?attr/actionBarSize"
     tools:context="carleton150.edu.carleton.carleton150.MainFragments.QuestFragment">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:orientation="vertical"
-        android:weightSum="7"
-        android:layout_height="fill_parent">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:orientation="vertical"
-        android:layout_weight="3"
-        android:layout_height="0dp">
 
-        <android.support.v7.widget.RecyclerView
+        <com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager
             android:id="@+id/lst_quests"
-            android:layout_weight="2"
-            android:padding="16dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:scrollbars="horizontal"
+            app:rvp_triggerOffset="0.1"
+            app:rvp_singlePageFling="true"
+            android:clipToPadding="false"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-        </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:orientation="vertical"
-        android:layout_weight="4"
-        android:weightSum="7"
-        android:layout_height="0dp">
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_weight="6"
-            android:layout_height="0dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:layout_height="fill_parent">
-
-                <TextView
-                    android:id="@+id/txt_quest_title"
-                    android:layout_gravity="center_horizontal"
-                    android:padding="5dp"
-                    android:gravity="center_horizontal"
-                    android:layout_width="match_parent"
-                    android:textStyle="bold"
-                    android:textSize="@dimen/abc_text_size_medium_material"
-                    android:visibility="invisible"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:id="@+id/txt_quest_description"
-                    android:layout_gravity="center_horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_horizontal"
-                    android:layout_width="match_parent"
-                    android:text="Retreiving quests. Please wait..."
-                    android:layout_height="wrap_content" />
-
-                <Button
-                    android:id="@+id/btn_try_again"
-                    android:layout_gravity="center_horizontal"
-                    android:text="Try Again"
-                    android:visibility="gone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-            </LinearLayout>
-
-        </ScrollView>
-
-        <Button
-            android:id="@+id/btn_start_quest"
-            android:layout_weight="1"
-            android:textColor="@color/windowBackground"
-            android:background="@color/colorPrimarySemiTransparent"
-            android:text="Begin Quest"
-            android:textSize="@dimen/abc_text_size_medium_material"
-            android:layout_width="match_parent"
-            android:clickable="false"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
-    </LinearLayout>
 
 </FrameLayout>

@@ -7,7 +7,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -46,12 +48,12 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
     public void onBindViewHolder(QuestViewHolder holder, int position) {
         Quest qi = questList.get(position);
         holder.setTitle(qi.getName());
-
-        //TODO: get a good width...
-        holder.setWidth((int) (screenWidth/1.5));
+        holder.setWidth((int) (screenWidth));
+        holder.setDescription(qi.getDesc());
+        holder.setLayoutRatings(4);
 
         //TODO:make this background come from qi
-        holder.setBackground();
+        holder.setImage();
     }
 
     @Override
@@ -96,17 +98,37 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
         private TextView title;
         private ImageView image;
         private TextView creator;
+        private TextView description;
+        private LinearLayout layoutRatings;
+        private Button btnBeginQuest;
+
 
         public QuestViewHolder(View itemView) {
             super(itemView);
-            itemView.setOnClickListener(this);
 
             title = (TextView) itemView.findViewById(R.id.txtTitle);
             image = (ImageView) itemView.findViewById(R.id.img_quest);
+            description = (TextView) itemView.findViewById(R.id.txt_quest_description);
+            layoutRatings = (LinearLayout) itemView.findViewById(R.id.lin_layout_ratings);
+            btnBeginQuest = (Button) itemView.findViewById(R.id.btn_start_quest);
 
-
+            btnBeginQuest.setOnClickListener(this);
         }
 
+
+        public void setDescription(String description) {
+            this.description.setText(description);
+        }
+
+        public void setLayoutRatings(int ratings) {
+            for(int i = 0; i < ratings; i++){
+                ImageView imageView = (ImageView) this.layoutRatings.getChildAt(i);
+                imageView.setImageResource(R.drawable.ic_yellow_star);
+            }for(int i = ratings; i<5; i++){
+                ImageView imageView = (ImageView) this.layoutRatings.getChildAt(i);
+                imageView.setImageResource(R.drawable.ic_cream_star);
+            }
+        }
 
         /**
          * @return title
@@ -131,7 +153,7 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
 
         /**
          */
-        public void setBackground() {
+        public void setImage() {
             image.setImageResource(R.drawable.test_image1);
             image.setColorFilter(R.color.blackSemiTransparent);
 
