@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 (getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
-        changeTabsFont(tabLayout);
+        //changeTabsFont(tabLayout);
         curFragment = adapter.getCurFragment();
         viewPager.clearOnPageChangeListeners();
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));

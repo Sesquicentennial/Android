@@ -8,13 +8,14 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
+import java.text.ParseException;
 import java.util.List;
 
 import carleton150.edu.carleton.carleton150.POJO.EventObject.EventContent;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
- * Created by haleyhinze on 1/10/16.
+ * Adapter for the events list view
  */
 public class EventsListAdapter extends BaseExpandableListAdapter {
 
@@ -150,6 +151,37 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
                     holder.view.setBackgroundColor(Color.parseColor("#e4decf"));
                     event.setIsExpanded(false);
                 }
+                /*if (activeHolder == null) {
+                    activeHolder = holder;
+                    holder.txtDescription.setVisibility(View.VISIBLE);
+                    holder.view.setBackgroundColor(Color.parseColor("#c8bc9d"));
+                    System.out.println("Got here 2");
+                } else {    // Something is tapped
+                    // Collapse active holder
+                    activeHolder.txtDescription.setVisibility(View.GONE);
+                    activeHolder.view.setBackgroundColor(Color.parseColor("#e4decf"));
+
+                    // If new holder is not the same as before, expand new holder
+                    if (activeHolder != holder) {
+                        holder.txtDescription.setVisibility(View.VISIBLE);
+                        holder.view.setBackgroundColor(Color.parseColor("#c8bc9d"));
+                        activeHolder = holder;
+                    } else {
+                        activeHolder = null;
+                    }
+                }*/
+
+/*                if(activeHolder != null) {
+                    activeHolder.txtDescription.setVisibility(View.GONE);
+                    activeHolder.view.setBackgroundColor(Color.parseColor("#e4decf"));
+                }
+                if(activeHolder != holder) {
+                    holder.txtDescription.setVisibility(View.VISIBLE);
+                    holder.view.setBackgroundColor(Color.parseColor("#c8bc9d"));
+                    activeHolder = holder;
+                }else{
+                    activeHolder = null;
+                }*/
             }
         });
 
