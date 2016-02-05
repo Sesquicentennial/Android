@@ -6,11 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import carleton150.edu.carleton.carleton150.Adapters.EventsListAdapter;
 import carleton150.edu.carleton.carleton150.POJO.EventObject.EventContent;
@@ -24,11 +25,14 @@ import carleton150.edu.carleton.carleton150.R;
  */
 public class EventsFragment extends MainFragment {
 
-    private ListView eventsListView;
     private Button btnTryAgain;
     private TextView txtTryAgain;
     private ArrayList<EventContent> events = new ArrayList<>();
     private EventsListAdapter eventsListAdapter;
+
+    List<EventContent> groupList;
+    List<EventContent> childList;
+    ExpandableListView eventsListView;
 
     public EventsFragment() {
         // Required empty public constructor
@@ -39,14 +43,14 @@ public class EventsFragment extends MainFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_events, container, false);
-        eventsListView = (ListView) v.findViewById(R.id.lst_events);
         txtTryAgain = (TextView) v.findViewById(R.id.txt_request_events);
         btnTryAgain = (Button) v.findViewById(R.id.btn_try_getting_events);
 
         //requests events from server
         requestEvents();
 
-        eventsListAdapter = new EventsListAdapter(events, getActivity().getApplicationContext(), getActivity().getLayoutInflater());
+        eventsListView = (ExpandableListView) v.findViewById(R.id.lst_events);
+        eventsListAdapter = new EventsListAdapter(getActivity(), events);
         eventsListView.setAdapter(eventsListAdapter);
 
         /*If no events were retrieved, displays this button so the user can click
