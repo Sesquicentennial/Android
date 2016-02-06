@@ -9,10 +9,13 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.CardView;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -337,6 +340,8 @@ public class QuestInProgressFragment extends MapMainFragment {
     private void showCompletedQuestMessage(){
         relLayoutQuestCompleted.setVisibility(View.VISIBLE);
         txtQuestCompleted.setText("Message is : " + quest.getCompMsg());
+        txtQuestCompleted.setMovementMethod(new ScrollingMovementMethod());
+        
         ((AnimationDrawable) imgQuestCompleted.getBackground()).start();
         btnDoneWithQuest.setOnClickListener(new View.OnClickListener() {
             @Override
