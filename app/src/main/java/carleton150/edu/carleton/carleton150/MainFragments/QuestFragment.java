@@ -34,7 +34,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
     private LinearLayoutManager questLayoutManager;
     private QuestAdapter questAdapter;
     private int screenWidth;
-    private ScaleInAnimationAdapter scaleAdapter;
+    //private ScaleInAnimationAdapter scaleAdapter;
 
     private Button btnTryAgain;
 
@@ -114,11 +114,11 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         questAdapter = new QuestAdapter(questInfo, this, screenWidth);
 
         //RecyclerView animation
-        scaleAdapter = new ScaleInAnimationAdapter(questAdapter);
+        /*scaleAdapter = new ScaleInAnimationAdapter(questAdapter);
         scaleAdapter.setFirstOnly(false);
-        scaleAdapter.setDuration(200);
+        scaleAdapter.setDuration(200);*/
 
-        quests.setAdapter(scaleAdapter);
+        quests.setAdapter(questAdapter);
     }
 
     /**
@@ -147,7 +147,8 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
                 questInfo.addAll(newQuests);
                 questInfo.addAll(newQuests);
                 questAdapter.updateQuests(questInfo);
-                scaleAdapter.notifyDataSetChanged();
+                questAdapter.notifyDataSetChanged();
+                //scaleAdapter.notifyDataSetChanged();
                 Log.i(logMessages.VOLLEY, "QuestFragment: handleNewQuests : questAdapter contains : " + questAdapter.getItemCount());
             } else {
                 if (questInfo == null) {
