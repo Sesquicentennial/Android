@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    android:id="@+id/rel_layout_quest_completed"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="gone"
+    android:background="@color/windowBackground"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:padding="10dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/clue_bg"
+        android:layout_height="wrap_content">
+
+<android.support.v7.widget.CardView
+    android:id="@+id/quest_completed_view_card"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    card_view:cardBackgroundColor="@color/colorPrimaryDarkSlightlyTransparent"
+    card_view:backgroundTintMode="src_over"
+    card_view:backgroundTint="@color/colorAccent"
+    card_view:cardElevation="0dp"
+    card_view:cardCornerRadius="3dp"
+    card_view:cardUseCompatPadding="true"
+    android:layout_margin="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/img_animation_quest_completed"
+        android:layout_height="wrap_content"
+        android:scaleType="centerInside"
+        android:layout_width="wrap_content"
+        android:background="@drawable/anim_quest_completed"
+        />
+
+        <TextView
+            android:id="@+id/txt_completion_message"
+            android:padding="15dp"
+            android:textSize="@dimen/abc_text_size_large_material"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:textColor="@color/colorAccent"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent" />
+
+        <Button
+            android:id="@+id/btn_done_with_quest"
+            android:layout_width="wrap_content"
+            android:background="@drawable/rounded_corner_button_bg"
+            android:textColor="@color/windowBackground"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"
+            android:text="Done"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>
+    </RelativeLayout>
+</RelativeLayout>
