@@ -3,16 +3,20 @@ package carleton150.edu.carleton.carleton150.MainFragments;
 import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.AnimationDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -26,6 +30,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import carleton150.edu.carleton.carleton150.FlipAnimation;
+import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Geofence;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
@@ -46,6 +51,10 @@ public class QuestInProgressFragment extends MapMainFragment {
     private ImageButton btnReturnToMyLocation;
     private Button btnFlipCardToHint;
     private Button btnFlipCardToClue;
+    private RelativeLayout relLayoutQuestCompleted;
+    private TextView txtQuestCompleted;
+    private ImageView imgQuestCompleted;
+    private Button btnDoneWithQuest;
 
     View rootLayout;
     View cardFace;
@@ -93,6 +102,10 @@ public class QuestInProgressFragment extends MapMainFragment {
         cardBack = v.findViewById(R.id.clue_view_back);
         btnFlipCardToClue = (Button) v.findViewById(R.id.btn_show_clue);
         btnFlipCardToHint = (Button) v.findViewById(R.id.btn_show_hint);
+        relLayoutQuestCompleted = (RelativeLayout) v.findViewById(R.id.rel_layout_quest_completed);
+        txtQuestCompleted = (TextView) v.findViewById(R.id.txt_completion_message);
+        imgQuestCompleted = (ImageView) v.findViewById(R.id.img_animation_quest_completed);
+        btnDoneWithQuest = (Button) v.findViewById(R.id.btn_done_with_quest);
 
         btnFlipCardToHint.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,6 +159,9 @@ public class QuestInProgressFragment extends MapMainFragment {
             @Override
             public void onClick(View v) {
                 checkIfClueFound();
+
+                //TODO: remove this, for testing only
+                showCompletedQuestMessage();
             }
         });
         updateCurrentWaypoint();
@@ -319,10 +335,15 @@ public class QuestInProgressFragment extends MapMainFragment {
      * completed
      */
     private void showCompletedQuestMessage(){
-        //btnShowHint.setVisibility(View.GONE);
-        btnFoundIt.setVisibility(View.GONE);
-        txtClue.setText(getResources().getString(R.string.quest_completed_show_message) + quest.getCompMsg());
-        txtHint.setVisibility(View.GONE);
+        relLayoutQuestCompleted.setVisibility(View.VISIBLE);
+        txtQuestCompleted.setText("Message is : " + quest.getCompMsg());
+        ((AnimationDrawable) imgQuestCompleted.getBackground()).start();
+        btnDoneWithQuest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goBackToQuestSelectionScreen();
+            }
+        });
     }
 
     /**
@@ -360,9 +381,10 @@ public class QuestInProgressFragment extends MapMainFragment {
         super.onSaveInstanceState(outState);
     }
 
-    public void onCardClick()
-    {
-        flipCard();
+    private void goBackToQuestSelectionScreen(){
+        QuestFragment fr=new QuestFragment();
+        FragmentChangeListener fc=(FragmentChangeListener)getActivity();
+        fc.replaceFragment(fr);
     }
 
     private void flipCard()
