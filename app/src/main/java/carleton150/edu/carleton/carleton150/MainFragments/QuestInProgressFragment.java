@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import carleton150.edu.carleton.carleton150.FlipAnimation;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Geofence;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
@@ -40,10 +41,16 @@ public class QuestInProgressFragment extends MapMainFragment {
     private int numClue = 0;
     private TextView txtClue;
     private Button btnFoundIt;
-    private Button btnShowHint;
     private TextView txtHint;
     private TextView txtClueNumber;
     private ImageButton btnReturnToMyLocation;
+    private Button btnFlipCardToHint;
+    private Button btnFlipCardToClue;
+
+    View rootLayout;
+    View cardFace;
+    View cardBack;
+
 
     private SupportMapFragment mapFragment;
 
@@ -78,10 +85,36 @@ public class QuestInProgressFragment extends MapMainFragment {
 
         txtClue = (TextView) v.findViewById(R.id.txt_clue);
         btnFoundIt = (Button) v.findViewById(R.id.btn_found_location);
-        btnShowHint = (Button) v.findViewById(R.id.btn_show_hint);
         txtHint = (TextView) v.findViewById(R.id.txt_hint);
         txtClueNumber = (TextView) v.findViewById(R.id.txt_clue_number);
         btnReturnToMyLocation = (ImageButton) v.findViewById(R.id.btn_return_to_my_location);
+        rootLayout = v.findViewById(R.id.lin_layout_card_root);
+        cardFace = v.findViewById(R.id.clue_view_front);
+        cardBack = v.findViewById(R.id.clue_view_back);
+        btnFlipCardToClue = (Button) v.findViewById(R.id.btn_show_clue);
+        btnFlipCardToHint = (Button) v.findViewById(R.id.btn_show_hint);
+
+        btnFlipCardToHint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                flipCard();
+            }
+        });
+
+        btnFlipCardToClue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                flipCard();
+            }
+        });
+
+
+        String hint = quest.getWaypoints().get(String.valueOf(numClue)).getHint();
+        if(hint.equals("")){
+            txtHint.setText(getResources().getString(R.string.no_hint_available));
+        }else {
+            txtHint.setText(quest.getWaypoints().get(String.valueOf(numClue)).getHint());
+        }
 
         btnReturnToMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,7 +123,7 @@ public class QuestInProgressFragment extends MapMainFragment {
             }
         });
 
-        btnShowHint.setOnClickListener(new View.OnClickListener() {
+        /*btnShowHint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(quest.getWaypoints().get(String.valueOf(numClue)) != null) {
@@ -107,7 +140,7 @@ public class QuestInProgressFragment extends MapMainFragment {
                 }
                 txtHint.setVisibility(View.VISIBLE);
             }
-        });
+        });*/
 
         btnFoundIt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -286,7 +319,7 @@ public class QuestInProgressFragment extends MapMainFragment {
      * completed
      */
     private void showCompletedQuestMessage(){
-        btnShowHint.setVisibility(View.GONE);
+        //btnShowHint.setVisibility(View.GONE);
         btnFoundIt.setVisibility(View.GONE);
         txtClue.setText(getResources().getString(R.string.quest_completed_show_message) + quest.getCompMsg());
         txtHint.setVisibility(View.GONE);
@@ -325,5 +358,22 @@ public class QuestInProgressFragment extends MapMainFragment {
     public void onSaveInstanceState(Bundle outState) {
         mMap = null;
         super.onSaveInstanceState(outState);
+    }
+
+    public void onCardClick()
+    {
+        flipCard();
+    }
+
+    private void flipCard()
+    {
+
+        FlipAnimation flipAnimation = new FlipAnimation(cardFace, cardBack);
+
+        if (cardFace.getVisibility() == View.GONE)
+        {
+            flipAnimation.reverse();
+        }
+        rootLayout.startAnimation(flipAnimation);
     }
 }
