@@ -1,5 +1,98 @@
+/*
 package carleton150.edu.carleton.carleton150.Adapters;
 
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Typeface;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.TextView;
+
+import java.util.List;
+import java.util.Map;
+
+import carleton150.edu.carleton.carleton150.POJO.EventObject.EventContent;
+import carleton150.edu.carleton.carleton150.R;
+
+*//**
+ * Created by nayelymartinez on 2/4/16.
+ *//*
+public class EventsListAdapter extends BaseExpandableListAdapter {
+    private Activity context;
+    private Map<String, List<String>> eventCollections;
+    private List<EventContent> events;
+
+    public EventsListAdapter(Activity context, List<EventContent> events){
+        this.events = events;
+        this.context = context;
+    }
+
+    public Object getChild(int groupPosition, int childPosition) {
+        return eventCollections.get(events.get(groupPosition)).get(childPosition);
+    }
+
+    public long getChildId(int groupPosition, int childPosition) {
+        return childPosition;
+    }
+
+    public View getChildView(final int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        final String event = (String) getChild(groupPosition, childPosition);
+        LayoutInflater inflater = context.getLayoutInflater();
+
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.child_item, null);
+        }
+
+        TextView item = (TextView) convertView.findViewById(R.id.event);
+
+        item.setText(event);
+        return convertView;
+    }
+
+    public int getChildrenCount(int groupPosition) {
+        return eventCollections.get(events.get(groupPosition)).size();
+    }
+
+    public Object getGroup(int groupPosition) {
+        return events.get(groupPosition);
+    }
+
+    public int getGroupCount() {
+        return events.size();
+    }
+
+    public long getGroupId(int groupPosition) {
+        return groupPosition;
+    }
+
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        String eventName = (String) getGroup(groupPosition);
+        if (convertView == null) {
+            LayoutInflater groupinflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = groupinflater.inflate(R.layout.group_item, null);
+        }
+
+        TextView item = (TextView) convertView.findViewById(R.id.event);
+        item.setTypeface(null, Typeface.BOLD);
+        item.setText(eventName);
+        return convertView;
+    }
+
+    public boolean hasStableIds() {
+        return true;
+    }
+
+    public boolean isChildSelectable(int groupPosition, int childPosition) {
+        return true;
+    }
+}*/
+
+
+package carleton150.edu.carleton.carleton150.Adapters;
+
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -13,13 +106,13 @@ import java.util.List;
 import carleton150.edu.carleton.carleton150.POJO.EventObject.EventContent;
 import carleton150.edu.carleton.carleton150.R;
 
-/**
- * Adapter for the events list view
- */
+// Adapter for the events list view
+
+
 public class EventsListAdapter extends BaseExpandableListAdapter {
 
     private List<EventContent> events;
-    private Context context;
+    private Activity context;
     private ViewHolder activeHolder = null;
     private LayoutInflater layoutInflater;
 
@@ -35,13 +128,13 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
         View view;
     }
 
-    public EventsListAdapter(Context context, List<EventContent> events){
+    public EventsListAdapter(Activity context, List<EventContent> events){
         this.events = events;
         this.context = context;
     }
 
     // Added child
-    public Object getChild(int groupPosition, int childPosition) {
+    public String getChild(int groupPosition, int childPosition) {
         return events.get(groupPosition).getDescription();
     }
 
@@ -49,45 +142,32 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
         return childPosition;
     }
 
-    /*public View getChildView(final int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        final EventContent event = (EventContent) getChild(groupPosition, childPosition);
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.child_item, null);
-        }
-
-        TextView item = (TextView) convertView.findViewById(R.id.event);
-
-        final ViewHolder holder = new ViewHolder();;
-        holder.txtDescription = (TextView) convertView.findViewById(R.id.txt_description);
-
-        item.setText(event.getDescription());
-        return convertView;
-    }*/
 
     public View getChildView(final int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        final EventContent event = (EventContent) getChild(groupPosition, childPosition);
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final String event = (String) getChild(groupPosition, childPosition);
+        LayoutInflater inflater = context.getLayoutInflater();
 
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.child_item, null);
         }
-
-        TextView item = (TextView) convertView.findViewById(R.id.event);
 
         final ChildViewHolder holder;
 
         if (convertView == null) {
             holder = new ChildViewHolder();
-            LayoutInflater groupinflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = groupinflater.inflate(R.layout.child_item, null);
+            convertView = inflater.inflate(R.layout.child_item, null);
         }
 
         else {
             holder = (ChildViewHolder) convertView.getTag();
         }
-        holder.txtDescription.setText(event.getDescription());
+
+        //holder.txtDescription = (TextView) convertView.findViewById(R.id.txt_description);
+        //holder.txtDescription.setText(event);
+
+        TextView item = (TextView) convertView.findViewById(R.id.txt_description);
+
+        item.setText(event);
         return convertView;
     }
 
@@ -121,7 +201,6 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        TextView item = (TextView) convertView.findViewById(R.id.event);
         holder.txtTitle = (TextView) convertView.findViewById(R.id.txt_title);
         holder.txtLocation = (TextView) convertView.findViewById(R.id.txt_location);
         holder.txtDate = (TextView) convertView.findViewById(R.id.txt_date);
@@ -144,7 +223,7 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
             event.setIsExpanded(false);
         }
 
-        convertView.setOnClickListener(new View.OnClickListener() {
+        /*convertView.OnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!event.isExpanded()) {
@@ -154,39 +233,9 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
                     holder.view.setBackgroundColor(Color.parseColor("#e4decf"));
                     event.setIsExpanded(false);
                 }
-                /*if (activeHolder == null) {
-                    activeHolder = holder;
-                    holder.txtDescription.setVisibility(View.VISIBLE);
-                    holder.view.setBackgroundColor(Color.parseColor("#c8bc9d"));
-                    System.out.println("Got here 2");
-                } else {    // Something is tapped
-                    // Collapse active holder
-                    activeHolder.txtDescription.setVisibility(View.GONE);
-                    activeHolder.view.setBackgroundColor(Color.parseColor("#e4decf"));
 
-                    // If new holder is not the same as before, expand new holder
-                    if (activeHolder != holder) {
-                        holder.txtDescription.setVisibility(View.VISIBLE);
-                        holder.view.setBackgroundColor(Color.parseColor("#c8bc9d"));
-                        activeHolder = holder;
-                    } else {
-                        activeHolder = null;
-                    }
-                }*/
-
-/*                if(activeHolder != null) {
-                    activeHolder.txtDescription.setVisibility(View.GONE);
-                    activeHolder.view.setBackgroundColor(Color.parseColor("#e4decf"));
-                }
-                if(activeHolder != holder) {
-                    holder.txtDescription.setVisibility(View.VISIBLE);
-                    holder.view.setBackgroundColor(Color.parseColor("#c8bc9d"));
-                    activeHolder = holder;
-                }else{
-                    activeHolder = null;
-                }*/
             }
-        });
+        });*/
 
         return convertView;
     }
