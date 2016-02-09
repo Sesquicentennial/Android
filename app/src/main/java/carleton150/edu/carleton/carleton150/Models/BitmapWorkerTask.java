@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.util.Base64;
 import android.widget.ImageView;
 
 import java.lang.ref.WeakReference;
@@ -16,11 +17,11 @@ public class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
 
     private final WeakReference<ImageView> imageViewReference;
     public int data = 0;
-    private byte[] image;
+    private String image;
     private int screenWidth;
     private int screenHeight;
 
-    public BitmapWorkerTask(ImageView imageView, byte[] image, int screenWidth, int screenHeight) {
+    public BitmapWorkerTask(ImageView imageView, String image, int screenWidth, int screenHeight) {
         // Use a WeakReference to ensure the ImageView can be garbage collected
         imageViewReference = new WeakReference<ImageView>(imageView);
         this.image = image;
@@ -32,7 +33,8 @@ public class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
     @Override
     protected Bitmap doInBackground(Integer... params) {
         data = params[0];
-        return decodeSampledBitmap(image, screenWidth, screenHeight);
+        byte[] curImage = Base64.decode(image, Base64.DEFAULT);
+        return decodeSampledBitmap(curImage, screenWidth, screenHeight);
     }
 
     // Once complete, see if ImageView is still around and set bitmap.

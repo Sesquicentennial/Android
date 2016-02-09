@@ -179,7 +179,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if (cancelPotentialWork(resId, imgMedia)) {
 
                 //TODO: find better formula than dividing by 2
-                final BitmapWorkerTask task = new BitmapWorkerTask(imgMedia,  Base64.decode(encodedImage, Base64.DEFAULT)
+                final BitmapWorkerTask task = new BitmapWorkerTask(imgMedia,  encodedImage
                         , screenWidth/2, screenHeight/2);
                 final BitmapWorkerTask.AsyncDrawable asyncDrawable =
                         new BitmapWorkerTask.AsyncDrawable(mPlaceHolderBitmap, task);

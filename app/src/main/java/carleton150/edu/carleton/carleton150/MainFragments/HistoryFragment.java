@@ -320,6 +320,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
 
             }
         }
+        Log.i(logMessages.GEOFENCE_MONITORING, "drawGeofenceMapMarker : done drawing markers");
     }
 
     /**
@@ -413,8 +414,10 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
      */
     private void showPopup(GeofenceInfoContent[] geofenceInfoObject){
 
+        GeofenceInfoContent[] sortedContent = sortByDate(geofenceInfoObject);
+
         FragmentManager fm = getFragmentManager();
-        HistoryPopoverFragment historyPopoverFragment = HistoryPopoverFragment.newInstance(geofenceInfoObject);
+        HistoryPopoverFragment historyPopoverFragment = HistoryPopoverFragment.newInstance(sortedContent);
 
         // Transaction start
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
@@ -424,6 +427,32 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         fragmentTransaction.add(R.id.fragment_container, historyPopoverFragment, "HistoryPopoverFragment");
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+    }
+
+    /**
+     * Uses bubble sort to sort geofenceInfoContents by date
+     *
+     * @param geofenceInfoContents
+     * @return
+     */
+    private GeofenceInfoContent[] sortByDate(GeofenceInfoContent[] geofenceInfoContents){
+        GeofenceInfoContent infoContent = null;
+        for(int j = 0; j < geofenceInfoContents.length; j++) {
+            for (int i = 0; i < geofenceInfoContents.length; i++) {
+                infoContent = geofenceInfoContents[i];
+                if (i < geofenceInfoContents.length - 1) {
+                    String year1 = infoContent.getYear();
+                    String year2 = geofenceInfoContents[i + 1].getYear();
+                    int year1Int = Integer.parseInt(year1);
+                    int year2Int = Integer.parseInt(year2);
+                    if (year1Int > year2Int) {
+                        geofenceInfoContents[i] = geofenceInfoContents[i + 1];
+                        geofenceInfoContents[i + 1] = infoContent;
+                    }
+                }
+            }
+        }
+        return geofenceInfoContents;
     }
 
     /**
