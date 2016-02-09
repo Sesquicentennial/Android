@@ -1,7 +1,7 @@
 package carleton150.edu.carleton.carleton150.Adapters;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
@@ -9,15 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import java.util.ArrayList;
 
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewScrolledListener;
+import carleton150.edu.carleton.carleton150.Models.BitmapWorkerTask;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
-import carleton150.edu.carleton.carleton150.POJO.HistoryContentObjectDummy;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
@@ -28,13 +25,17 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private GeofenceInfoContent[] historyList = null;
     public static RecyclerViewClickListener clickListener;
     public static RecyclerViewScrolledListener scrolledListener;
+    public int screenWidth;
+    public int screenHeight;
 
     public HistoryAdapter(GeofenceInfoContent[] historyList,
                           RecyclerViewClickListener clickListener, RecyclerView recyclerView,
-                          RecyclerViewScrolledListener scrolledListener) {
+                          RecyclerViewScrolledListener scrolledListener, int screenWidth, int screenHeight) {
         this.historyList = historyList;
         this.clickListener = clickListener;
         this.scrolledListener = scrolledListener;
+        this.screenHeight = screenHeight;
+        this.screenWidth = screenWidth;
         recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -115,7 +116,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ((HistoryViewHolderText) holder).setTxtMedia(geofenceInfoContent.getData());
             ((HistoryViewHolderText) holder).setTxtDate(geofenceInfoContent.getYear());
         }else if(holder instanceof HistoryViewHolderImage){
-            ((HistoryViewHolderImage) holder).setImage(geofenceInfoContent.getData());
+            ((HistoryViewHolderImage) holder).setImage(position, geofenceInfoContent.getData(), screenWidth, screenHeight);
             ((HistoryViewHolderImage) holder).setTxtDate(geofenceInfoContent.getYear());
         }
     }
@@ -166,12 +167,56 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         /**
          */
-        public void setImage(String encodedImage) {
+        public void setImage(int resId, String encodedImage, int screenWidth, int screenHeight) {
             byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-            imgMedia.setImageBitmap(decodedByte);
+            int w = 10, h = 10;
 
+            Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+            Bitmap mPlaceHolderBitmap = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
+
+
+            if (cancelPotentialWork(resId, imgMedia)) {
+
+                //TODO: find better formula than dividing by 2
+                final BitmapWorkerTask task = new BitmapWorkerTask(imgMedia,  Base64.decode(encodedImage, Base64.DEFAULT)
+                        , screenWidth/2, screenHeight/2);
+                final BitmapWorkerTask.AsyncDrawable asyncDrawable =
+                        new BitmapWorkerTask.AsyncDrawable(mPlaceHolderBitmap, task);
+                imgMedia.setImageDrawable(asyncDrawable);
+                task.execute(resId);
+            }
+
+        }
+
+        public static boolean cancelPotentialWork(int data, ImageView imageView) {
+            final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
+
+            if (bitmapWorkerTask != null) {
+                final int bitmapData = bitmapWorkerTask.data;
+                // If bitmapData is not yet set or it differs from the new data
+                if (bitmapData == 0 || bitmapData != data) {
+                    // Cancel previous task
+                    bitmapWorkerTask.cancel(true);
+                } else {
+                    // The same work is already in progress
+                    return false;
+                }
+            }
+            // No task associated with the ImageView, or an existing task was cancelled
+            return true;
+        }
+
+
+        private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) {
+            if (imageView != null) {
+                final Drawable drawable = imageView.getDrawable();
+                if (drawable instanceof BitmapWorkerTask.AsyncDrawable) {
+                    final BitmapWorkerTask.AsyncDrawable asyncDrawable = (BitmapWorkerTask.AsyncDrawable) drawable;
+                    return asyncDrawable.getBitmapWorkerTask();
+                }
+            }
+            return null;
         }
 
         @Override

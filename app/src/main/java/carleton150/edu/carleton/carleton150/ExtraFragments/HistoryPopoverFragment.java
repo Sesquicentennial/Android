@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,9 +103,13 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         historyLayoutManager = new LinearLayoutManager(getActivity());
         historyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         historyInfoObjects.setLayoutManager(historyLayoutManager);
+        DisplayMetrics metrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int screenWidth = metrics.widthPixels;
+        int screenHeight = metrics.heightPixels;
 
 
-        historyAdapter = new HistoryAdapter(geofenceInfoObject, this, historyInfoObjects, this);
+        historyAdapter = new HistoryAdapter(geofenceInfoObject, this, historyInfoObjects, this, screenWidth, screenHeight);
 
         //RecyclerView animation
         MyScaleInAnimationAdapter scaleInAnimationAdapter = new MyScaleInAnimationAdapter(historyAdapter);
