@@ -118,6 +118,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }else if(holder instanceof HistoryViewHolderImage){
             ((HistoryViewHolderImage) holder).setImage(position, geofenceInfoContent.getData(), screenWidth, screenHeight);
             ((HistoryViewHolderImage) holder).setTxtDate(geofenceInfoContent.getYear());
+            ((HistoryViewHolderImage) holder).setTxtCaption(geofenceInfoContent.getCaption());
         }
     }
 
@@ -145,6 +146,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public static class HistoryViewHolderImage extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView txtDate;
         private ImageView imgMedia;
+        private TextView txtCaption;
 
         public HistoryViewHolderImage(View itemView) {
             super(itemView);
@@ -152,6 +154,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             txtDate = (TextView) itemView.findViewById(R.id.txt_date);
             imgMedia = (ImageView) itemView.findViewById(R.id.img_history_info_image);
+            txtCaption = (TextView) itemView.findViewById(R.id.txt_caption);
 
 
         }
@@ -162,6 +165,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         public void setTxtDate(String txtDate) {
             this.txtDate.setText(txtDate);
+        }
+
+        public void setTxtCaption(String caption){
+            this.txtCaption.setText(caption);
         }
 
 
