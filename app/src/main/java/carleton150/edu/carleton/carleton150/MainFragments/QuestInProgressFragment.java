@@ -162,9 +162,6 @@ public class QuestInProgressFragment extends MapMainFragment {
             @Override
             public void onClick(View v) {
                 checkIfClueFound();
-
-                //TODO: remove this, for testing only
-                showCompletedQuestMessage();
             }
         });
         updateCurrentWaypoint();
@@ -341,7 +338,7 @@ public class QuestInProgressFragment extends MapMainFragment {
         relLayoutQuestCompleted.setVisibility(View.VISIBLE);
         txtQuestCompleted.setText("Message is : " + quest.getCompMsg());
         txtQuestCompleted.setMovementMethod(new ScrollingMovementMethod());
-        
+
         ((AnimationDrawable) imgQuestCompleted.getBackground()).start();
         btnDoneWithQuest.setOnClickListener(new View.OnClickListener() {
             @Override

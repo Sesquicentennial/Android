@@ -47,6 +47,10 @@ public class MapMainFragment extends MainFragment {
     protected boolean zoomCamera = true;
     protected GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
+    public MapMainFragment(){
+        //required empty public constructor
+    }
+
     //This is a variable and not a function
     public TileProvider tileProvider = new UrlTileProvider(256, 256) {
         @Override

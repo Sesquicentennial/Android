@@ -79,7 +79,6 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
     private boolean debugMode = false;
     private Button btnToggle;
 
-
     //This is a variable and not a function
     public TileProvider tileProvider = new UrlTileProvider(256, 256) {
         @Override
