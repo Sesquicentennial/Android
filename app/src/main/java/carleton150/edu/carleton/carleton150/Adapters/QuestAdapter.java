@@ -7,6 +7,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +30,7 @@ import jp.wasabeef.recyclerview.animators.holder.AnimateViewHolder;
  */
 public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHolder> {
 
-    private ArrayList<Quest> questList = null;
+    private ArrayList<Quest> questList = new ArrayList<>();
     public static RecyclerViewClickListener clickListener;
     private int screenWidth;
     private int screenHeight;
@@ -71,18 +72,8 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
         }
     }
 
-    public void updateQuests(ArrayList<Quest> newQuests){
-        if(questList != null){
-            for(int i = 0; i<questList.size(); i++){
-                removeItem(0);
-            }
-        }else{
-            questList = new ArrayList<>();
-        }
-        for(int i = 0; i<newQuests.size(); i++){
-           addItem(newQuests.get(i), i);
-        }
-
+    public void updateQuestList(ArrayList<Quest> newQuests){
+        questList = newQuests;
     }
 
     public void removeItem(int position) {
