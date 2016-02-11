@@ -32,7 +32,11 @@ public class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
 
     @Override
     protected Bitmap doInBackground(Integer... params) {
-        data = params[0];
+        if(params.length > 0) {
+            data = params[0];
+        }else{
+            data = 0;
+        }
         byte[] curImage = Base64.decode(image, Base64.DEFAULT);
         return decodeSampledBitmap(curImage, screenWidth, screenHeight);
     }

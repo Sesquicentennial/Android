@@ -1,9 +1,12 @@
 package carleton150.edu.carleton.carleton150.Adapters;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
+import carleton150.edu.carleton.carleton150.Models.BitmapWorkerTask;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.R;
 import jp.wasabeef.recyclerview.animators.holder.AnimateViewHolder;
@@ -28,12 +32,14 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
     private ArrayList<Quest> questList = null;
     public static RecyclerViewClickListener clickListener;
     private int screenWidth;
+    private int screenHeight;
     private View itemView;
 
-    public QuestAdapter(ArrayList<Quest> questList, RecyclerViewClickListener clickListener, int screenWidth) {
+    public QuestAdapter(ArrayList<Quest> questList, RecyclerViewClickListener clickListener, int screenWidth, int screenHeight) {
         this.questList = questList;
         this.clickListener = clickListener;
         this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
     }
 
     @Override
@@ -52,8 +58,8 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
         holder.setDescription(qi.getDesc());
         holder.setLayoutRatings(4);
 
-        //TODO:make this background come from qi
-        holder.setImage();
+        holder.setImage(position, qi.getImage(), screenWidth, screenHeight);
+
     }
 
     @Override
@@ -153,10 +159,63 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
 
         /**
          */
-        public void setImage() {
-            image.setImageResource(R.drawable.test_image1);
-            image.setColorFilter(R.color.blackSemiTransparent);
+        public void setImage(int resId, String encodedImage, int screenWidth, int screenHeight) {
+            if(encodedImage == null) {
+                image.setImageResource(R.drawable.test_image1);
+                image.setColorFilter(R.color.blackSemiTransparent);
+            }else {
 
+
+                byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+
+                int w = 10, h = 10;
+
+                Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+                Bitmap mPlaceHolderBitmap = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
+
+
+                if (cancelPotentialWork(resId, image)) {
+
+                    //TODO: find better formula than dividing by 2
+                    final BitmapWorkerTask task = new BitmapWorkerTask(image, encodedImage
+                            , screenWidth / 2, screenHeight / 2);
+                    final BitmapWorkerTask.AsyncDrawable asyncDrawable =
+                            new BitmapWorkerTask.AsyncDrawable(mPlaceHolderBitmap, task);
+                    image.setImageDrawable(asyncDrawable);
+                    task.execute(resId);
+                }
+
+            }
+        }
+
+        public static boolean cancelPotentialWork(int data, ImageView imageView) {
+            final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
+
+            if (bitmapWorkerTask != null) {
+                final int bitmapData = bitmapWorkerTask.data;
+                // If bitmapData is not yet set or it differs from the new data
+                if (bitmapData == 0 || bitmapData != data) {
+                    // Cancel previous task
+                    bitmapWorkerTask.cancel(true);
+                } else {
+                    // The same work is already in progress
+                    return false;
+                }
+            }
+            // No task associated with the ImageView, or an existing task was cancelled
+            return true;
+        }
+
+
+        private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) {
+            if (imageView != null) {
+                final Drawable drawable = imageView.getDrawable();
+                if (drawable instanceof BitmapWorkerTask.AsyncDrawable) {
+                    final BitmapWorkerTask.AsyncDrawable asyncDrawable = (BitmapWorkerTask.AsyncDrawable) drawable;
+                    return asyncDrawable.getBitmapWorkerTask();
+                }
+            }
+            return null;
         }
 
         /**

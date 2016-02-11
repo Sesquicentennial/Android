@@ -217,7 +217,7 @@ public class VolleyRequester {
     public void requestQuests(final MainFragment callerFragment){
         final Gson gson = new Gson();
         JSONObject emptyRequest = new JSONObject();
-        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/quest", emptyRequest,
+        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/quest_re", emptyRequest,
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -226,6 +226,15 @@ public class VolleyRequester {
                         ArrayList<Quest> quests = new ArrayList<>();
                         try {
                             JSONArray responseArr = response.getJSONArray("content");
+                            for(int i = 0; i<responseArr.length(); i++){
+                                if(isJSONValid(responseArr.getString(i))){
+                                    Log.i(logMessages.VOLLEY, "requestQuests : response is valid json = : " + responseArr.getString(i));
+                                    longLog(responseArr.getString(i));
+                                }else{
+                                    Log.i(logMessages.VOLLEY, "requestQuests : response is not a valid json = : " + responseArr.getString(i));
+                                }
+                            }
+
                             try {
                                 for (int i = 0; i < responseArr.length(); i++) {
                                     Quest responseQuest = gson.fromJson(responseArr.getString(i), Quest.class);
@@ -234,6 +243,8 @@ public class VolleyRequester {
                                 }
                             }catch (Exception e) {
                                 Log.i(logMessages.VOLLEY, "requestQuests : unable to parse result");
+                                e.getMessage();
+                                e.printStackTrace();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -256,5 +267,32 @@ public class VolleyRequester {
                 }
         );
         MyApplication.getInstance().getRequestQueue().add(request);
+    }
+
+    public boolean isJSONValid(String test) {
+        try {
+            new JSONObject(test);
+        } catch (JSONException ex) {
+            // edited, to include @Arthur's comment
+            // e.g. in case JSONArray is valid as well...
+            try {
+                new JSONArray(test);
+            } catch (JSONException ex1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static void longLog(String str) {
+        if (str.length() > 4000) {
+
+            String string = str.substring(0, 4000);
+            if(string.contains("lng")){
+                Log.d("longLog", str.substring(0, 4000));
+            }
+            longLog(str.substring(4000));
+        } else
+            Log.d("longLog", str);
     }
 }
