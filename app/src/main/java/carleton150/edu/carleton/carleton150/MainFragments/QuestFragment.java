@@ -133,8 +133,8 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         crashing if the user leaves the tab while the app is trying
         to get quests from the server
          */
-        try {
 
+        try {
 
             super.handleNewQuests(newQuests);
             if (newQuests != null) {
@@ -143,7 +143,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
 
                 questInfo = newQuests;
 
-                questAdapter.updateQuests(questInfo);
+                questAdapter.updateQuestList(questInfo);
                 questAdapter.notifyDataSetChanged();
                 //scaleAdapter.notifyDataSetChanged();
                 Log.i(logMessages.VOLLEY, "QuestFragment: handleNewQuests : questAdapter contains : " + questAdapter.getItemCount());
@@ -171,6 +171,13 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
     public void fragmentInView() {
         super.fragmentInView();
         Log.i("UI", "QuestFragment : fragmentInView");
-        volleyRequester.requestQuests(this);
+        if(questAdapter == null){
+            volleyRequester.requestQuests(this);
+        }else if(questAdapter.getQuestList() == null){
+            volleyRequester.requestQuests(this);
+        }
+        else if(questAdapter.getQuestList().size() == 0) {
+            volleyRequester.requestQuests(this);
+        }
     }
 }

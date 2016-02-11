@@ -226,14 +226,7 @@ public class VolleyRequester {
                         ArrayList<Quest> quests = new ArrayList<>();
                         try {
                             JSONArray responseArr = response.getJSONArray("content");
-                            for(int i = 0; i<responseArr.length(); i++){
-                                if(isJSONValid(responseArr.getString(i))){
-                                    Log.i(logMessages.VOLLEY, "requestQuests : response is valid json = : " + responseArr.getString(i));
-                                    longLog(responseArr.getString(i));
-                                }else{
-                                    Log.i(logMessages.VOLLEY, "requestQuests : response is not a valid json = : " + responseArr.getString(i));
-                                }
-                            }
+                            Log.i(logMessages.VOLLEY, "requestQuests : length of responseArr is: " + responseArr.length());
 
                             try {
                                 for (int i = 0; i < responseArr.length(); i++) {
@@ -251,6 +244,7 @@ public class VolleyRequester {
                         }
 
                         Log.i(logMessages.VOLLEY, "requestQuests : response string = : " + responseString);
+                        Log.i(logMessages.VOLLEY, "requestQuests : length of quests is: " + quests.size());
                         callerFragment.handleNewQuests(quests);
                     }
                 },
@@ -269,30 +263,4 @@ public class VolleyRequester {
         MyApplication.getInstance().getRequestQueue().add(request);
     }
 
-    public boolean isJSONValid(String test) {
-        try {
-            new JSONObject(test);
-        } catch (JSONException ex) {
-            // edited, to include @Arthur's comment
-            // e.g. in case JSONArray is valid as well...
-            try {
-                new JSONArray(test);
-            } catch (JSONException ex1) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static void longLog(String str) {
-        if (str.length() > 4000) {
-
-            String string = str.substring(0, 4000);
-            if(string.contains("lng")){
-                Log.d("longLog", str.substring(0, 4000));
-            }
-            longLog(str.substring(4000));
-        } else
-            Log.d("longLog", str);
-    }
 }
