@@ -12,7 +12,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_weight="21"
+        android:layout_weight="20"
         android:layout_height="0dp">
 
         <RelativeLayout
@@ -37,7 +37,7 @@
     <LinearLayout
         android:id="@+id/lin_layout_card_root"
         android:orientation="vertical"
-        android:layout_weight="9"
+        android:layout_weight="10"
         android:background="@drawable/clue_bg"
         android:padding="10dp"
         android:layout_gravity="bottom"

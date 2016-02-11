@@ -7,13 +7,18 @@
     android:id="@+id/clue_view_front"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
+
+
+
     <RelativeLayout
+        android:id="@+id/layout_clue_text"
         android:layout_width="fill_parent"
-        android:layout_toRightOf="@+id/btn_show_hint"
+        android:paddingBottom="20dp"
         android:layout_height="match_parent">
 
         <ScrollView
             android:layout_width="fill_parent"
+            android:layout_above="@+id/rel_layout_found_it"
             android:layout_height="fill_parent">
 
                 <TextView
@@ -30,54 +35,90 @@
 
 
         <RelativeLayout
+            android:id="@+id/rel_layout_found_it"
             android:layout_width="match_parent"
             android:layout_alignParentBottom="true"
             android:padding="10dp"
             android:layout_height="wrap_content"
             >
-            <Button
-                android:id="@+id/btn_found_location"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:background="@drawable/rounded_corner_button_bg"
-                android:textColor="@color/windowBackground"
-                android:text="Found it!"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                />
-
-
 
         </RelativeLayout>
 
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/btn_show_hint"
-        android:text="HINT"
-        android:padding="10dp"
-        android:background="@color/transparent"
-        android:gravity="top"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:textColor="@color/colorAccent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
 
-    <TextView
-        android:id="@+id/txt_clue_number"
-        android:padding="10dp"
-        android:layout_width="wrap_content"
-        android:textSize="@dimen/abc_text_size_medium_material"
-        android:textColor="@color/windowBackground"
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:paddingBottom="25dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
+    <Button
+        android:id="@+id/btn_found_location"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/rounded_corner_button_bg"
+        android:textColor="@color/windowBackground"
+        android:text="Found it!"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        />
 
+
+        <TextView
+            android:id="@+id/txt_clue_number"
+            android:padding="10dp"
+            android:layout_width="wrap_content"
+            android:textSize="@dimen/abc_text_size_medium_material"
+            android:textColor="@color/windowBackground"
+            android:layout_alignParentRight="true"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btn_show_hint"
+            android:text="HINT"
+            android:padding="10dp"
+            android:background="@color/transparent"
+            android:gravity="center"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:textColor="@color/colorAccent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <SlidingDrawer
+        android:id="@+id/front_drawer"
+        android:layout_width="match_parent"
+        android:handle="@+id/lin_layout_handle_front"
+        android:layout_alignParentBottom="true"
+        android:content="@+id/img_clue_image_front"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:id="@+id/lin_layout_handle_front"
+            android:background="@color/colorPrimaryDarkSlightlyTransparent"
+            android:orientation="vertical"
+            android:layout_height="20dp">
+
+            <TextView
+                android:text="VIEW IMAGE CLUE"
+                android:textColor="@color/colorAccent"
+                android:layout_width="match_parent"
+                android:gravity="center_horizontal"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/img_clue_image_front"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </SlidingDrawer>
 
 </RelativeLayout>

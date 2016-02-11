@@ -34,6 +34,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
     private LinearLayoutManager questLayoutManager;
     private QuestAdapter questAdapter;
     private int screenWidth;
+    private TextView txtInfo;
     //private ScaleInAnimationAdapter scaleAdapter;
 
     private Button btnTryAgain;
@@ -53,7 +54,8 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         /*Button for user to try getting quests again if the app was unable
         to get them from the server
          */
-       /* btnTryAgain = (Button) view.findViewById(R.id.btn_try_again);
+        btnTryAgain = (Button) view.findViewById(R.id.btn_try_getting_quests);
+        txtInfo = (TextView) view.findViewById(R.id.txt_request_quests);
         btnTryAgain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,7 +63,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
                 txtInfo.setText(getString(R.string.retrieving_quests));
                 fragmentInView();
             }
-        });*/
+        });
 
         //builds RecyclerViews to display quests
         buildRecyclerViews();
@@ -111,7 +113,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         quests.setLayoutManager(questLayoutManager);
 
 
-        questAdapter = new QuestAdapter(questInfo, this, screenWidth);
+        questAdapter = new QuestAdapter(questInfo, this, screenWidth, metrics.heightPixels);
 
         //RecyclerView animation
         /*scaleAdapter = new ScaleInAnimationAdapter(questAdapter);
@@ -141,18 +143,13 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
 
                 questInfo = newQuests;
 
-                //TODO:remove
-                questInfo.addAll(newQuests);
-                questInfo.addAll(newQuests);
-                questInfo.addAll(newQuests);
-                questInfo.addAll(newQuests);
                 questAdapter.updateQuests(questInfo);
                 questAdapter.notifyDataSetChanged();
                 //scaleAdapter.notifyDataSetChanged();
                 Log.i(logMessages.VOLLEY, "QuestFragment: handleNewQuests : questAdapter contains : " + questAdapter.getItemCount());
             } else {
                 if (questInfo == null) {
-                    //txtInfo.setText(getString(R.string.no_quests_retrieved));
+                    txtInfo.setText(getString(R.string.no_quests_retrieved));
                     btnTryAgain.setVisibility(View.VISIBLE);
                 }
             }

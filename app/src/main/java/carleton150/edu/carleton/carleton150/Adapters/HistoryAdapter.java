@@ -175,7 +175,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         /**
          */
         public void setImage(int resId, String encodedImage, int screenWidth, int screenHeight) {
-            byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
 
             int w = 10, h = 10;
 

@@ -5,45 +5,75 @@ package carleton150.edu.carleton.carleton150.POJO.Quests;
  */
 public class Waypoint {
 
-    private Geofence geofence;
+    private double lat;
+    private double lng;
+    private double rad;
 
-    private String clue;
 
-    private String hint;
+    private Clue clue;
 
-    public Geofence getGeofence ()
-    {
-        return geofence;
-    }
+    private Hint hint;
 
-    public void setGeofence (Geofence geofence)
-    {
-        this.geofence = geofence;
-    }
+    private Completion completion;
 
-    public String getClue ()
+
+    public Clue getClue ()
     {
         return clue;
     }
 
-    public void setClue (String clue)
+    public void setClue (Clue clue)
     {
         this.clue = clue;
     }
 
-    public String getHint ()
+    public Hint getHint ()
     {
         return hint;
     }
 
-    public void setHint (String hint)
+    public void setHint (Hint hint)
     {
         this.hint = hint;
+    }
+
+
+
+    public Completion getCompletion() {
+        return completion;
+    }
+
+    public void setCompletion(Completion completion) {
+        this.completion = completion;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
+    }
+
+    public double getRad() {
+        return rad;
+    }
+
+    public void setRad(double rad) {
+        this.rad = rad;
     }
 
     @Override
     public String toString()
     {
-        return "ClassPojo [geofence = "+geofence+", clue = "+clue+", hint = "+hint+"]";
+        return "ClassPojo [geofence = "+lat + lng+", clue = "+clue.getText()+", hint = "+hint.getText()+"]";
     }
 }

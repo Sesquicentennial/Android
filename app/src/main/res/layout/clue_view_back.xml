@@ -38,4 +38,35 @@
 
     </ScrollView>
 
+    <SlidingDrawer
+        android:id="@+id/drawer_hint"
+        android:layout_width="match_parent"
+        android:handle="@+id/lin_layout_handle_back"
+        android:layout_alignParentBottom="true"
+        android:content="@+id/img_hint_img_back"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:id="@+id/lin_layout_handle_back"
+            android:background="@color/colorPrimaryDarkSlightlyTransparent"
+            android:orientation="vertical"
+            android:layout_height="20dp">
+
+            <TextView
+                android:text="VIEW IMAGE HINT"
+                android:textColor="@color/colorAccent"
+                android:layout_width="match_parent"
+                android:gravity="center_horizontal"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/img_hint_img_back"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </SlidingDrawer>
+
+
 </RelativeLayout>
