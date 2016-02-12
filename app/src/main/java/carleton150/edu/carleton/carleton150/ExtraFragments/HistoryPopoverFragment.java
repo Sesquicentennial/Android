@@ -133,7 +133,15 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
 
     @Override
     public void recyclerViewStoppedScrolling() {
-        txtTimelineDate.setVisibility(View.GONE);
+
+        //this could be called after view changed, so have to make sure that txtTimelineDate
+        //still exists
+        try {
+            txtTimelineDate.setVisibility(View.GONE);
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -145,7 +153,6 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         historyAdapter = null;
         btnClose = null;
         txtTimelineDate = null;
-
         geofenceInfoObject = null;
     }
 }
