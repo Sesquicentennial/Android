@@ -45,7 +45,7 @@
                     android:id="@+id/btn_request_geofences"
                     android:text="Try again"
                     android:visibility="gone"
-                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
