@@ -145,12 +145,16 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
 
                 questAdapter.updateQuestList(questInfo);
                 questAdapter.notifyDataSetChanged();
+                quests.setVisibility(View.VISIBLE);
                 //scaleAdapter.notifyDataSetChanged();
                 Log.i(logMessages.VOLLEY, "QuestFragment: handleNewQuests : questAdapter contains : " + questAdapter.getItemCount());
             } else {
                 if (questInfo == null) {
                     txtInfo.setText(getString(R.string.no_quests_retrieved));
                     btnTryAgain.setVisibility(View.VISIBLE);
+                    if(quests != null){
+                        quests.setVisibility(View.GONE);
+                    }
                 }
             }
         }catch (IllegalStateException e){

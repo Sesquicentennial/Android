@@ -130,10 +130,6 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         //starts the mainActivity monitoring geofences
         mainActivity.getGeofenceMonitor().startGeofenceMonitoring();
 
-        if(txtRequestGeofences != null) {
-            txtRequestGeofences.setVisibility(View.GONE);
-        }
-
         //Button to transition to and from debug mode
         btnToggle = (Button) view.findViewById(R.id.btn_debug_toggle);
         monitorDebugToggle();
@@ -246,6 +242,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         if(mainActivity.isConnectedToNetwork()) {
             setUpMapIfNeeded();
         }
+        fragmentInView();
     }
 
 
@@ -482,6 +479,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
 
                         btnRequestGeofences.setVisibility(View.VISIBLE);
                         txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
+                    txtRequestGeofences.setVisibility(View.VISIBLE);
                 }
             }
         }catch (IllegalStateException e){
