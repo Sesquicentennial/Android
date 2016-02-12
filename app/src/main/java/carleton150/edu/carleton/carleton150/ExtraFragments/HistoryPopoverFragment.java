@@ -91,7 +91,8 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
     private void removeCurrentFragment(){
         FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
         fm.setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
-        fm.remove(this).commit();
+        fm.detach(this).remove(this).commit();
+
     }
 
     /**
@@ -116,8 +117,6 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         scaleInAnimationAdapter.setFirstOnly(false);
         scaleInAnimationAdapter.setInterpolator(new OvershootInterpolator());
 
-
-
         historyInfoObjects.setAdapter(scaleInAnimationAdapter);
     }
 
@@ -137,4 +136,16 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         txtTimelineDate.setVisibility(View.GONE);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        view = null;
+        historyInfoObjects = null;
+        historyLayoutManager = null;
+        historyAdapter = null;
+        btnClose = null;
+        txtTimelineDate = null;
+
+        geofenceInfoObject = null;
+    }
 }

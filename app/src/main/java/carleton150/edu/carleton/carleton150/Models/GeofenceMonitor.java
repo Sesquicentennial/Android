@@ -48,6 +48,7 @@ public class GeofenceMonitor{
 
     private MainActivity activity;
     private LogMessages logMessages = new LogMessages();
+    private boolean googlePlayConnected = false;
 
     public GeofenceMonitor(MainActivity activity) {
         this.activity = activity;
@@ -292,6 +293,12 @@ public class GeofenceMonitor{
 
     }
 
+    public void startMonitoringGeofencesAfterPause(){
+        if(googlePlayConnected) {
+            removeAllGeofences();
+            addGeofences();
+        }
+    }
 
     /**
      * Adds geofences, which sets alerts to be notified when the device enters or exits one of the
@@ -325,6 +332,7 @@ public class GeofenceMonitor{
      * Requests new geofences.
      */
     public void googlePlayServicesConnected() {
+        googlePlayConnected = true;
         if(currentLocation!=null) {
             getNewGeofences();
         }

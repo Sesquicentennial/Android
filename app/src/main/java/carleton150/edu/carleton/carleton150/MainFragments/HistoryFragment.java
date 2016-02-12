@@ -125,9 +125,14 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
             }
         });
 
+
+
         //starts the mainActivity monitoring geofences
         mainActivity.getGeofenceMonitor().startGeofenceMonitoring();
 
+        if(txtRequestGeofences != null) {
+            txtRequestGeofences.setVisibility(View.GONE);
+        }
 
         //Button to transition to and from debug mode
         btnToggle = (Button) view.findViewById(R.id.btn_debug_toggle);
@@ -137,6 +142,8 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         if(mainActivity.isConnectedToNetwork()) {
             setUpMapIfNeeded(); // For setting up the MapFragment
         }
+
+        drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
         return view;
     }
 
@@ -373,7 +380,9 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
 
         GeofenceInfoContent[] sortedContent = sortByDate(geofenceInfoObject);
 
-        FragmentManager fm = getFragmentManager();
+
+
+        FragmentManager fm = getActivity().getSupportFragmentManager();
         HistoryPopoverFragment historyPopoverFragment = HistoryPopoverFragment.newInstance(sortedContent);
 
         // Transaction start
@@ -513,11 +522,20 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         }
         Log.i("UI", "HistoryFragment : fragmentInView");
 
-        boolean gotGeofences = mainActivity.getGeofenceMonitor().getNewGeofences();
-        if(!gotGeofences){
-            btnRequestGeofences.setVisibility(View.VISIBLE);
-            txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
+        if(mainActivity.getGeofenceMonitor().allGeopointsByName.size() == 0){
+            boolean gotGeofences = mainActivity.getGeofenceMonitor().getNewGeofences();
+            if(!gotGeofences){
+                btnRequestGeofences.setVisibility(View.VISIBLE);
+                txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
+            }
+        }else{
+            mainActivity.getGeofenceMonitor().startMonitoringGeofencesAfterPause();
+
+            if(txtRequestGeofences != null) {
+                txtRequestGeofences.setVisibility(View.GONE);
+            }
         }
+
     }
 
     public void showTooltip(GeofenceInfoContent[] object){
