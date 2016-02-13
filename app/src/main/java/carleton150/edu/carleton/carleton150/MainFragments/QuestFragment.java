@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import carleton150.edu.carleton.carleton150.Adapters.QuestAdapter;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
+import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.R;
 import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
@@ -69,6 +70,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         //builds RecyclerViews to display quests
         buildRecyclerViews();
         //requests quests from server
+
         fragmentInView();
         return view;
     }
