@@ -29,6 +29,30 @@ public class GeofenceInfoContent
 
     private String type;
 
+
+    /*
+    These are for the Memories only
+     */
+
+    private String timestamp;
+
+    private String uploader;
+
+    private String image;
+
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public String getUploader() {
+        return uploader;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
     public String getSummary ()
     {
         return summary;

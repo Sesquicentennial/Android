@@ -27,28 +27,33 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public static RecyclerViewScrolledListener scrolledListener;
     public int screenWidth;
     public int screenHeight;
+    public boolean isMemories;
 
     public HistoryAdapter(GeofenceInfoContent[] historyList,
                           RecyclerViewClickListener clickListener, RecyclerView recyclerView,
-                          RecyclerViewScrolledListener scrolledListener, int screenWidth, int screenHeight) {
+                          RecyclerViewScrolledListener scrolledListener, int screenWidth, int screenHeight, boolean isMemories) {
         this.historyList = historyList;
         this.clickListener = clickListener;
         this.scrolledListener = scrolledListener;
         this.screenHeight = screenHeight;
         this.screenWidth = screenWidth;
-        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if(newState == recyclerView.SCROLL_STATE_IDLE){
-                    clearDate();
-                }else {
-                    LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
-                    displayDate(lm);
-                }
+        this.isMemories = isMemories;
 
-            }
-        });
+        if (!isMemories) {
+            recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+                    if (newState == recyclerView.SCROLL_STATE_IDLE) {
+                        clearDate();
+                    } else {
+                        LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
+                        displayDate(lm);
+                    }
+
+                }
+            });
+        }
     }
 
     private void displayDate(LinearLayoutManager lm){
@@ -67,6 +72,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      */
     @Override
     public int getItemViewType(int position) {
+        if(isMemories){
+            return 0;
+        }
         if(historyList[position].getType().equals(historyList[position].TYPE_IMAGE)){
             return 0;
         } if(historyList[position].getType().equals(historyList[position].TYPE_TEXT)){
@@ -116,9 +124,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ((HistoryViewHolderText) holder).setTxtMedia(geofenceInfoContent.getData());
             ((HistoryViewHolderText) holder).setTxtDate(geofenceInfoContent.getYear());
         }else if(holder instanceof HistoryViewHolderImage){
-            ((HistoryViewHolderImage) holder).setImage(position, geofenceInfoContent.getData(), screenWidth, screenHeight);
-            ((HistoryViewHolderImage) holder).setTxtDate(geofenceInfoContent.getYear());
-            ((HistoryViewHolderImage) holder).setTxtCaption(geofenceInfoContent.getCaption());
+            if(!isMemories) {
+                ((HistoryViewHolderImage) holder).setImage(position, geofenceInfoContent.getData(), screenWidth, screenHeight);
+                ((HistoryViewHolderImage) holder).setTxtDate(geofenceInfoContent.getYear());
+                ((HistoryViewHolderImage) holder).setTxtCaption(geofenceInfoContent.getCaption());
+            }else{
+                ((HistoryViewHolderImage) holder).setImage(position, geofenceInfoContent.getImage(), screenWidth, screenHeight);
+                ((HistoryViewHolderImage) holder).setTxtDate(geofenceInfoContent.getTimestamp());
+                ((HistoryViewHolderImage) holder).setTxtCaption(geofenceInfoContent.getCaption());
+            }
         }
     }
 

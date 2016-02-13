@@ -297,6 +297,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
+    public Location getLastLocation(){
+        return mLastLocation;
+    }
+
     /**
      * Overridden to use custom fonts using Calligraphy
      * @param newBase
