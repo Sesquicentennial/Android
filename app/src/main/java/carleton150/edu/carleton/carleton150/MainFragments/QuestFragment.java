@@ -176,13 +176,6 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
     public void fragmentInView() {
         super.fragmentInView();
         Log.i("UI", "QuestFragment : fragmentInView");
-        if(questAdapter == null){
-            volleyRequester.requestQuests(this);
-        }else if(questAdapter.getQuestList() == null){
-            volleyRequester.requestQuests(this);
-        }
-        else if(questAdapter.getQuestList().size() == 0) {
-            volleyRequester.requestQuests(this);
-        }
+        volleyRequester.requestQuests(this);
     }
 }
