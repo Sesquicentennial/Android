@@ -1,5 +1,6 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.DisplayMetrics;

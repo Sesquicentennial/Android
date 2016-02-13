@@ -1,6 +1,8 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.AnimationDrawable;
@@ -30,6 +32,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import carleton150.edu.carleton.carleton150.FlipAnimation;
 import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
+import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.Models.BitmapWorkerTask;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Waypoint;
@@ -60,6 +63,8 @@ public class QuestInProgressFragment extends MapMainFragment {
     private ImageView imgHint;
     private int screenWidth;
     private int screenHeight;
+    private static final String QUEST_STARTED = "You already started this quest. " +
+            "Would you like to Resume it or Start Over?";
 
     View rootLayout;
     View cardFace;
@@ -115,6 +120,10 @@ public class QuestInProgressFragment extends MapMainFragment {
         slidingDrawerHint = (SlidingDrawer) v.findViewById(R.id.drawer_hint);
         imgHint = (ImageView) v.findViewById(R.id.img_hint_img_back);
         imgClue = (ImageView) v.findViewById(R.id.img_clue_image_front);
+
+
+       checkIfQuestStarted();
+
 
         DisplayMetrics metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -370,9 +379,15 @@ public class QuestInProgressFragment extends MapMainFragment {
     public void clueCompleted() {
         Log.i(logMessages.GEOFENCE_MONITORING, "QuestInProgressFragment: clueCompleted");
         numClue += 1;
+
+        //saves the quest progress into SharedPreferences
+        SharedPreferences.Editor sharedPrefsEditor = mainActivity.getPersistentQuestStorage().edit();
+        sharedPrefsEditor.putInt(quest.getName(), numClue);
+        sharedPrefsEditor.commit();
+
+
         boolean completedQuest = updateCurrentWaypoint();
         if (completedQuest){
-
             showCompletedQuestMessage();
         }
 
@@ -467,5 +482,43 @@ public class QuestInProgressFragment extends MapMainFragment {
             imageView.setImageDrawable(asyncDrawable);
             task.execute();
 
+    }
+
+    private void checkIfQuestStarted(){
+        SharedPreferences sharedPreferences = mainActivity.getPersistentQuestStorage();
+        int curClue = sharedPreferences.getInt(quest.getName(), 0);
+        if(curClue != 0){
+            showOptionToResumeQuest();
+        }
+    }
+
+    private void showOptionToResumeQuest(){
+        mainActivity.showAlertDialogNoNeutralButton(new AlertDialog.Builder(mainActivity)
+                .setMessage(QUEST_STARTED)
+                .setPositiveButton("Resume", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        resumeQuest();
+                    }
+                })
+                .setNegativeButton("Start Over", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                })
+                .create());
+    }
+
+    private void resumeQuest(){
+        int curClue = mainActivity.getPersistentQuestStorage().getInt(quest.getName(), 0);
+        if(curClue != 0){
+            numClue = curClue;
+        }
+
+        boolean completedQuest = updateCurrentWaypoint();
+        if (completedQuest){
+            showCompletedQuestMessage();
+        }
     }
 }
