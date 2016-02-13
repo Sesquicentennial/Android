@@ -14,12 +14,14 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import carleton150.edu.carleton.carleton150.ExtraFragments.HistoryPopoverFragment;
 import carleton150.edu.carleton.carleton150.LogMessages;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
 import carleton150.edu.carleton.carleton150.MyApplication;
 import carleton150.edu.carleton.carleton150.POJO.EventObject.Events;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.MemoriesContent;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoRequestObject.GeofenceInfoRequestObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObject;
@@ -258,6 +260,58 @@ public class VolleyRequester {
                         Log.i(logMessages.VOLLEY, "requestQuests : error : " + error.toString());
                         if(callerFragment!=null) {
                             callerFragment.handleNewQuests(null);
+                        }
+                    }
+                }
+        );
+        MyApplication.getInstance().getRequestQueue().add(request);
+    }
+
+
+    /**
+     * Method to request new geofences to monitor. When it receives the new geofences,
+     * calls a method in the mainActivity to handle the new geofences
+     *
+     * @param latitude user's latitude
+     * @param longitude user's longitude
+     * @param callerFragment
+     */
+    public void requestMemories(double latitude, double longitude, double radius, final HistoryPopoverFragment callerFragment) {
+        final Gson gson = new Gson();
+        //Creates request object
+        JSONObject memoriesRequest = new JSONObject();
+        try {
+            memoriesRequest.put("lng", longitude);
+            memoriesRequest.put("lat", latitude);
+            memoriesRequest.put("rad", radius);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/memories", memoriesRequest,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String responseString = response.toString();
+                        Log.i(logMessages.VOLLEY, "requestEvents : response string = : " + responseString);
+                        try {
+                            MemoriesContent responseObject = gson.fromJson(responseString, MemoriesContent.class);
+                            callerFragment.handleNewMemories(responseObject);
+                        }catch (Exception e){
+                            Log.i(logMessages.VOLLEY, "requestEvents : unable to parse result");
+                        }
+                    }
+                },
+
+                new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.i(logMessages.VOLLEY, "requestEvents : error : " + error.toString());
+                        if(callerFragment!=null) {
+                            callerFragment.handleNewMemories(null);
                         }
                     }
                 }

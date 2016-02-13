@@ -47,7 +47,7 @@ public class MapMainFragment extends MainFragment {
     private int Y_MAX_TILING = 23715;
 
     protected boolean zoomCamera = true;
-    protected GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    public GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
 
     //This is a variable and not a function

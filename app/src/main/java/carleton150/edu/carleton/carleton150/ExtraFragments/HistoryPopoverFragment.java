@@ -2,6 +2,7 @@ package carleton150.edu.carleton.carleton150.ExtraFragments;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -24,7 +25,11 @@ import carleton150.edu.carleton.carleton150.Adapters.HistoryAdapter;
 import carleton150.edu.carleton.carleton150.Adapters.MyScaleInAnimationAdapter;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewScrolledListener;
+import carleton150.edu.carleton.carleton150.MainActivity;
+import carleton150.edu.carleton.carleton150.MainFragments.HistoryFragment;
+import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.MemoriesContent;
 import carleton150.edu.carleton.carleton150.POJO.HistoryContentObjectDummy;
 import carleton150.edu.carleton.carleton150.R;
 
@@ -42,6 +47,9 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
     private Button btnClose;
     private TextView txtTimelineDate;
     private static boolean isMemories = false;
+    private int screenWidth;
+    private int screenHeight;
+    private TextView txtErrorGettingMemories;
 
     //TODO: If memories from server can be GeofenceInfoContent[] then great
     //TODO: otherwise, I should probably subclass this or something....
@@ -72,6 +80,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
                 inflate(R.layout.fragment_history_popover, new LinearLayout(getActivity()), false);
         TextView txtTitle = (TextView) view.findViewById(R.id.txt_title);
         txtTimelineDate = (TextView) view.findViewById(R.id.txt_timeline_date);
+        txtErrorGettingMemories = (TextView) view.findViewById(R.id.txt_error_getting_memories);
         btnClose = (Button) view.findViewById(R.id.btn_exit_popup);
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,7 +102,11 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
 
             txtTitle.setText(name);
         }
-        else{txtTitle.setText("Nearby Memories");}
+        else{
+            txtTitle.setText("Nearby Memories");
+            txtErrorGettingMemories.setVisibility(View.VISIBLE);
+            txtErrorGettingMemories.setText("Getting nearby memories...");
+        }
 
         //builds RecyclerViews to display info
         buildRecyclerViews();
@@ -121,12 +134,12 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
             historyInfoObjects.setLayoutManager(historyLayoutManager);
             DisplayMetrics metrics = new DisplayMetrics();
             getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
-            int screenWidth = metrics.widthPixels;
-            int screenHeight = metrics.heightPixels;
+            screenWidth = metrics.widthPixels;
+            screenHeight = metrics.heightPixels;
 
             //if it is memories, we don't have data yet...
             if(!isMemories) {
-                historyAdapter = new HistoryAdapter(geofenceInfoObject, this, historyInfoObjects, this, screenWidth, screenHeight);
+                historyAdapter = new HistoryAdapter(geofenceInfoObject, this, historyInfoObjects, this, screenWidth, screenHeight, isMemories);
 
                 //RecyclerView animation
                 MyScaleInAnimationAdapter scaleInAnimationAdapter = new MyScaleInAnimationAdapter(historyAdapter);
@@ -134,6 +147,16 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
                 scaleInAnimationAdapter.setInterpolator(new OvershootInterpolator());
 
                 historyInfoObjects.setAdapter(scaleInAnimationAdapter);
+            }else{
+                VolleyRequester volleyRequester = new VolleyRequester();
+                MainActivity activity = (MainActivity) getActivity();
+                Location location = activity.getLastLocation();
+                if(location != null) {
+                    volleyRequester.requestMemories(location.getLatitude(), location.getLongitude(), 1000, this);
+                }else{
+                    txtErrorGettingMemories.setVisibility(View.VISIBLE);
+                    txtErrorGettingMemories.setText("We do not currently have a location. Please try again soon");
+                }
             }
 
     }
@@ -172,5 +195,29 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         btnClose = null;
         txtTimelineDate = null;
         geofenceInfoObject = null;
+    }
+
+    public void handleNewMemories(MemoriesContent memories){
+        if(memories != null) {
+            if(memories.getContent().length == 0){
+                txtErrorGettingMemories.setVisibility(View.VISIBLE);
+                txtErrorGettingMemories.setText("No nearby memories. Please try again soon");
+            }else{
+                txtErrorGettingMemories.setVisibility(View.GONE);
+            }
+            historyAdapter = new HistoryAdapter(memories.getContent(), this, historyInfoObjects, this, screenWidth, screenHeight, isMemories);
+
+            //RecyclerView animation
+            MyScaleInAnimationAdapter scaleInAnimationAdapter = new MyScaleInAnimationAdapter(historyAdapter);
+            scaleInAnimationAdapter.setFirstOnly(false);
+            scaleInAnimationAdapter.setInterpolator(new OvershootInterpolator());
+
+            historyInfoObjects.setAdapter(scaleInAnimationAdapter);
+            historyAdapter.notifyDataSetChanged();
+        }else{
+            txtErrorGettingMemories.setVisibility(View.VISIBLE);
+            txtErrorGettingMemories.setText("New memories are null");
+            //TODO: add appropriate error handling to this...
+        }
     }
 }
