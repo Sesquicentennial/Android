@@ -14,6 +14,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.TileOverlay;
+import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
 import com.google.android.gms.maps.model.UrlTileProvider;
 
@@ -219,4 +220,24 @@ public class MapMainFragment extends MainFragment {
         }
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        drawTiles();
+
+    }
+
+    public void drawTiles(){
+        if (mMap != null) {
+            setUpMap();
+        }
+        setUpMapIfNeeded();
+        if(mMap != null) {
+            TileOverlay baseTileOverlay = mMap.addTileOverlay(new TileOverlayOptions()
+                    .tileProvider(baseTileProvider));
+            baseTileOverlay.setZIndex(0);
+            TileOverlay labelTileOverlay = mMap.addTileOverlay(new TileOverlayOptions()
+                    .tileProvider(labelTileProvider));
+            labelTileOverlay.setZIndex(2);
+        }
+    }
 }

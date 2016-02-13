@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,23 +17,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.TileOverlay;
-import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.android.gms.maps.model.TileProvider;
-import com.google.android.gms.maps.model.UrlTileProvider;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.Locale;
 
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -156,11 +144,13 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
                     if (mMap != null) {
                         mMap.clear();
                         drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
+                        drawTiles();
                     }
                 } else {
                     try {
                         drawGeofences(mainActivity.getGeofenceMonitor().geofencesBeingMonitored);
                         drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
+                        drawTiles();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -209,26 +199,6 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         // dot to show user's location
         //TODO: the move to my location button is behind the toolbar -- fix it
         mMap.setMyLocationEnabled(true);
-    }
-
-    /**
-     * Sets up the map
-     *
-     * @param view
-     * @param savedInstanceState
-     */
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        if (mMap != null)
-            setUpMap();
-        setUpMapIfNeeded();
-        TileOverlay baseTileOverlay = mMap.addTileOverlay(new TileOverlayOptions()
-                .tileProvider(baseTileProvider));
-        baseTileOverlay.setZIndex(0);
-        TileOverlay labelTileOverlay = mMap.addTileOverlay(new TileOverlayOptions()
-                .tileProvider(labelTileProvider));
-        labelTileOverlay.setZIndex(2);
-        this.tileOverlay = tileOverlay;
     }
 
 

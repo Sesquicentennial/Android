@@ -104,7 +104,6 @@ public class QuestInProgressFragment extends MapMainFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_quest_in_progress, container, false);
-
         txtClue = (TextView) v.findViewById(R.id.txt_clue);
         btnFoundIt = (Button) v.findViewById(R.id.btn_found_location);
         txtHint = (TextView) v.findViewById(R.id.txt_hint);
@@ -234,6 +233,7 @@ public class QuestInProgressFragment extends MapMainFragment {
         if(mainActivity.mLastLocation != null){
             drawLocationMarker(mainActivity.mLastLocation);
         }
+        drawTiles();
     }
 
     /**
@@ -459,6 +459,9 @@ public class QuestInProgressFragment extends MapMainFragment {
         if(mainActivity.mLastLocation != null){
             Log.i(logMessages.LOCATION, "QuestInProgressFragment : fragmentInView : last location not null, drawing marker");
             drawLocationMarker(mainActivity.mLastLocation);
+        }
+        if(this.isResumed()) {
+            drawTiles();
         }
         setCamera();
     }
