@@ -1,5 +1,6 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -7,9 +8,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.AnimationDrawable;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.text.method.ScrollingMovementMethod;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -378,6 +381,7 @@ public class QuestInProgressFragment extends MapMainFragment {
      */
     public void clueCompleted() {
         Log.i(logMessages.GEOFENCE_MONITORING, "QuestInProgressFragment: clueCompleted");
+        showClueCompletedMessage();
         numClue += 1;
 
         //saves the quest progress into SharedPreferences
@@ -398,15 +402,44 @@ public class QuestInProgressFragment extends MapMainFragment {
      * completed
      */
     private void showCompletedQuestMessage(){
-        relLayoutQuestCompleted.setVisibility(View.VISIBLE);
+
+        imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(mainActivity, R.drawable.anim_quest_completed));
         txtQuestCompleted.setText("Message is : " + quest.getCompMsg());
         txtQuestCompleted.setMovementMethod(new ScrollingMovementMethod());
-
+        imgQuestCompleted.setVisibility(View.VISIBLE);
+        relLayoutQuestCompleted.setVisibility(View.VISIBLE);
         ((AnimationDrawable) imgQuestCompleted.getBackground()).start();
         btnDoneWithQuest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 goBackToQuestSelectionScreen();
+            }
+        });
+    }
+
+    /**
+     * Shows the message stored with the quest when the quest has been
+     * completed
+     */
+    private void showClueCompletedMessage(){
+        ;
+        txtQuestCompleted.setText("Message is : " + quest.getWaypoints()[numClue].getCompletion().getText());
+        txtQuestCompleted.setMovementMethod(new ScrollingMovementMethod());
+
+        if(quest.getWaypoints()[numClue].getCompletion().getImage() != null){
+            setImage(quest.getWaypoints()[numClue].getCompletion().getImage(),
+                    screenWidth, screenHeight, imgQuestCompleted);
+        }else{
+            imgQuestCompleted.setVisibility(View.GONE);
+        }
+
+        relLayoutQuestCompleted.setVisibility(View.VISIBLE);
+
+        btnDoneWithQuest.setText("Continue to Next Hint");
+        btnDoneWithQuest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                relLayoutQuestCompleted.setVisibility(View.GONE);
             }
         });
     }
