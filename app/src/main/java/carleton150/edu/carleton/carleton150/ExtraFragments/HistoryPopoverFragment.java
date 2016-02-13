@@ -41,6 +41,11 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
     private HistoryAdapter historyAdapter;
     private Button btnClose;
     private TextView txtTimelineDate;
+    private static boolean isMemories = false;
+
+    //TODO: If memories from server can be GeofenceInfoContent[] then great
+    //TODO: otherwise, I should probably subclass this or something....
+    //TODO: make method to get the server response with new memories and fill them in here...
 
     private static GeofenceInfoContent[] geofenceInfoObject;
     public HistoryPopoverFragment()
@@ -50,6 +55,13 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
     public static HistoryPopoverFragment newInstance(GeofenceInfoContent[] object) {
         HistoryPopoverFragment f = new HistoryPopoverFragment();
         geofenceInfoObject = object;
+        isMemories = false;
+        return f;
+    }
+
+    public static HistoryPopoverFragment newInstance(){
+        HistoryPopoverFragment f = new HistoryPopoverFragment();
+        isMemories = true;
         return f;
     }
 
@@ -68,17 +80,20 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
             }
         });
 
-        String name = null;
-        int i = 0;
-        while(name == null && i<geofenceInfoObject.length){
+        if(!isMemories) {
+            String name = null;
+            int i = 0;
+            while (name == null && i < geofenceInfoObject.length) {
 
-            if(geofenceInfoObject[i].getName() != null){
-                name = geofenceInfoObject[i].getName();
+                if (geofenceInfoObject[i].getName() != null) {
+                    name = geofenceInfoObject[i].getName();
+                }
+                i++;
             }
-            i++;
-        }
 
-        txtTitle.setText(name);
+            txtTitle.setText(name);
+        }
+        else{txtTitle.setText("Nearby Memories");}
 
         //builds RecyclerViews to display info
         buildRecyclerViews();
@@ -100,24 +115,27 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
      */
     private void buildRecyclerViews(){
 
-        historyInfoObjects = (RecyclerView) view.findViewById(R.id.lst_history_items);
-        historyLayoutManager = new LinearLayoutManager(getActivity());
-        historyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        historyInfoObjects.setLayoutManager(historyLayoutManager);
-        DisplayMetrics metrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int screenWidth = metrics.widthPixels;
-        int screenHeight = metrics.heightPixels;
+            historyInfoObjects = (RecyclerView) view.findViewById(R.id.lst_history_items);
+            historyLayoutManager = new LinearLayoutManager(getActivity());
+            historyLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            historyInfoObjects.setLayoutManager(historyLayoutManager);
+            DisplayMetrics metrics = new DisplayMetrics();
+            getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            int screenWidth = metrics.widthPixels;
+            int screenHeight = metrics.heightPixels;
 
+            //if it is memories, we don't have data yet...
+            if(!isMemories) {
+                historyAdapter = new HistoryAdapter(geofenceInfoObject, this, historyInfoObjects, this, screenWidth, screenHeight);
 
-        historyAdapter = new HistoryAdapter(geofenceInfoObject, this, historyInfoObjects, this, screenWidth, screenHeight);
+                //RecyclerView animation
+                MyScaleInAnimationAdapter scaleInAnimationAdapter = new MyScaleInAnimationAdapter(historyAdapter);
+                scaleInAnimationAdapter.setFirstOnly(false);
+                scaleInAnimationAdapter.setInterpolator(new OvershootInterpolator());
 
-        //RecyclerView animation
-        MyScaleInAnimationAdapter scaleInAnimationAdapter = new MyScaleInAnimationAdapter(historyAdapter);
-        scaleInAnimationAdapter.setFirstOnly(false);
-        scaleInAnimationAdapter.setInterpolator(new OvershootInterpolator());
+                historyInfoObjects.setAdapter(scaleInAnimationAdapter);
+            }
 
-        historyInfoObjects.setAdapter(scaleInAnimationAdapter);
     }
 
     @Override

@@ -67,6 +67,8 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
     private boolean debugMode = false;
     private Button btnToggle;
 
+    private Button btnGetNearbyMemories;
+
     public HistoryFragment() {
         // Required empty public constructor
     }
@@ -95,6 +97,14 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         queryResult = (TextView) view.findViewById(R.id.txt_query_result);
         txtRequestGeofences = (TextView) view.findViewById(R.id.txt_try_getting_geofences);
         btnRequestGeofences = (Button) view.findViewById(R.id.btn_request_geofences);
+        btnGetNearbyMemories = (Button) view.findViewById(R.id.btn_get_nearby_memories);
+
+        btnGetNearbyMemories.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showMemoriesPopover();
+            }
+        });
 
 
         //buildRecyclerViews();
@@ -549,4 +559,19 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         lstImages.setAdapter(historyCardAdapter);
 
     }*/
+
+    private void showMemoriesPopover(){
+
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        HistoryPopoverFragment historyPopoverFragment = HistoryPopoverFragment.newInstance();
+
+        // Transaction start
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+        fragmentTransaction.setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom,
+                R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
+        fragmentTransaction.add(R.id.fragment_container, historyPopoverFragment, "HistoryPopoverFragment");
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
 }
