@@ -481,11 +481,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         if(adapter.getCurFragment() instanceof QuestInProgressFragment) {
 
-                            if (adapter.getCurFragment() instanceof QuestInProgressFragment) {
-                                adapter.replaceFragment();
-                            }
-                        }
-                   else{
+            if (adapter.getCurFragment() instanceof QuestInProgressFragment) {
+                adapter.replaceFragment();
+            }
+        }
+        else{
             super.onBackPressed();
         }
     }
