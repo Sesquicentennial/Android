@@ -33,8 +33,11 @@ public class MapMainFragment extends MainFragment {
     private double MIN_LONGITUDE = -93.161333;
     private double MAX_LATITUDE = 44.488045;
     private double MIN_LATITUDE = 44.458869;
+    private int PROVIDER_NUMBER = 256;
     private int MAX_ZOOM_TILING = 5000;
     private int MIN_ZOOM_TILING = -5000;
+    private int DEFAULT_ZOOM = 15;
+    private int DEFAULT_BEARING = 0;
 
     private int DEFAULT_MAX_ZOOM = 13;
 
@@ -51,7 +54,7 @@ public class MapMainFragment extends MainFragment {
 
 
     //This is a variable and not a function
-    public TileProvider baseTileProvider = new UrlTileProvider(256, 256) {
+    public TileProvider baseTileProvider = new UrlTileProvider(PROVIDER_NUMBER, PROVIDER_NUMBER) {
         @Override
         public URL getTileUrl(int x, int y, int zoom) {
 
@@ -86,7 +89,7 @@ public class MapMainFragment extends MainFragment {
     //end of tileProvider
 
     //This is a variable and not a function
-    public TileProvider labelTileProvider = new UrlTileProvider(256, 256) {
+    public TileProvider labelTileProvider = new UrlTileProvider(PROVIDER_NUMBER, PROVIDER_NUMBER) {
         @Override
         public URL getTileUrl(int x, int y, int zoom) {
 
@@ -206,15 +209,15 @@ public class MapMainFragment extends MainFragment {
             zoomCamera = false;
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(mainActivity.getGeofenceMonitor().currentLocation.getLatitude(), mainActivity.getGeofenceMonitor().currentLocation.getLongitude()))
-                    .zoom(15)
-                    .bearing(0)
+                    .zoom(DEFAULT_ZOOM)
+                    .bearing(DEFAULT_BEARING)
                     .build();
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }if(mainActivity.getGeofenceMonitor().currentLocation == null){
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(CENTER_CAMPUS.latitude, CENTER_CAMPUS.longitude))
-                    .zoom(15)
-                    .bearing(0)
+                    .zoom(DEFAULT_ZOOM)
+                    .bearing(DEFAULT_BEARING)
                     .build();
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }

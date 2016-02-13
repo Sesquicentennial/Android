@@ -29,4 +29,9 @@
     <string name="requesting_events">Requesting events. Please wait...</string>
     <string name="no_events_retrieved">Unable to retrieve events. Please check your network and try again.</string>
     <string name = "quest_will_not_be_saved">Are you sure you want to go back to the quest selection screen? Your current quest will not be saved.</string>
+    <string name = "nearby_memories_title">Nearby Memories</string>
+    <string name="getting_nearby_memories">Getting nearby memories...</string>
+    <string name="no_current_location">We do not currently have a location. Please try again soon</string>
+    <string name="no_nearby_memories">No nearby memories. Please try again soon</string>
+    <string name="memories_null">New memories are null</string>
 </resources>

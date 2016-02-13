@@ -50,6 +50,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
     private int screenWidth;
     private int screenHeight;
     private TextView txtErrorGettingMemories;
+    private int MEMORIES_RADIUS = 1000;
 
     //TODO: If memories from server can be GeofenceInfoContent[] then great
     //TODO: otherwise, I should probably subclass this or something....
@@ -103,9 +104,9 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
             txtTitle.setText(name);
         }
         else{
-            txtTitle.setText("Nearby Memories");
+            txtTitle.setText(getString(R.string.nearby_memories_title));
             txtErrorGettingMemories.setVisibility(View.VISIBLE);
-            txtErrorGettingMemories.setText("Getting nearby memories...");
+            txtErrorGettingMemories.setText(R.string.getting_nearby_memories);
         }
 
         //builds RecyclerViews to display info
@@ -152,10 +153,10 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
                 MainActivity activity = (MainActivity) getActivity();
                 Location location = activity.getLastLocation();
                 if(location != null) {
-                    volleyRequester.requestMemories(location.getLatitude(), location.getLongitude(), 1000, this);
+                    volleyRequester.requestMemories(location.getLatitude(), location.getLongitude(), MEMORIES_RADIUS, this);
                 }else{
                     txtErrorGettingMemories.setVisibility(View.VISIBLE);
-                    txtErrorGettingMemories.setText("We do not currently have a location. Please try again soon");
+                    txtErrorGettingMemories.setText(getString(R.string.no_current_location));
                 }
             }
 
@@ -201,7 +202,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         if(memories != null) {
             if(memories.getContent().length == 0){
                 txtErrorGettingMemories.setVisibility(View.VISIBLE);
-                txtErrorGettingMemories.setText("No nearby memories. Please try again soon");
+                txtErrorGettingMemories.setText(getString(R.string.no_nearby_memories));
             }else{
                 txtErrorGettingMemories.setVisibility(View.GONE);
             }
@@ -216,7 +217,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
             historyAdapter.notifyDataSetChanged();
         }else{
             txtErrorGettingMemories.setVisibility(View.VISIBLE);
-            txtErrorGettingMemories.setText("New memories are null");
+            txtErrorGettingMemories.setText(getString(R.string.memories_null));
             //TODO: add appropriate error handling to this...
         }
     }
