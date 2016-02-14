@@ -280,16 +280,20 @@ public class VolleyRequester {
         final Gson gson = new Gson();
         //Creates request object
         JSONObject memoriesRequest = new JSONObject();
+
         try {
-            memoriesRequest.put("lng", longitude);
-            memoriesRequest.put("lat", latitude);
-            memoriesRequest.put("rad", radius);
+            memoriesRequest.put("lat", 44.461319);
+            memoriesRequest.put("lng", -93.156094);
+            memoriesRequest.put("rad", 0.1);
+            //memoriesRequest.put("lng", longitude);
+           // memoriesRequest.put("lat", latitude);
+           // memoriesRequest.put("rad", radius);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
 
-        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/memories", memoriesRequest,
+        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/memories_fetch", memoriesRequest,
                 new Response.Listener<JSONObject>() {
 
                     @Override

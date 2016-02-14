@@ -40,7 +40,6 @@ import carleton150.edu.carleton.carleton150.R;
 public class HistoryPopoverFragment extends Fragment implements RecyclerViewClickListener, RecyclerViewScrolledListener{
 
     private View view;
-
     private RecyclerView historyInfoObjects;
     private LinearLayoutManager historyLayoutManager;
     private HistoryAdapter historyAdapter;
@@ -51,6 +50,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
     private int screenHeight;
     private TextView txtErrorGettingMemories;
     private int MEMORIES_RADIUS = 1000;
+
 
     //TODO: If memories from server can be GeofenceInfoContent[] then great
     //TODO: otherwise, I should probably subclass this or something....
@@ -196,6 +196,8 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         btnClose = null;
         txtTimelineDate = null;
         geofenceInfoObject = null;
+        txtErrorGettingMemories = null;
+
     }
 
     public void handleNewMemories(MemoriesContent memories){
