@@ -7,6 +7,7 @@
 
 
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="vertical"
@@ -15,7 +16,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_weight="17"
+            android:layout_weight="20"
             android:layout_height="0dp">
 
             <fragment
@@ -45,7 +46,7 @@
                     android:id="@+id/btn_request_geofences"
                     android:text="Try again"
                     android:visibility="gone"
-                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -87,10 +88,21 @@
                     android:paddingLeft="10dp"
                     android:paddingTop="10dp" />
 
+                <Button
+                    android:id="@+id/btn_get_nearby_memories"
+                    android:layout_width="match_parent"
+                    android:layout_margin="20dp"
+                    android:background="@drawable/bg_color_primary_btn"
+                    android:textColor="@color/colorAccent"
+                    android:padding="10dp"
+                    android:text="Get Nearby Memories"
+                    android:layout_alignParentBottom="true"
+                    android:layout_height="wrap_content" />
+
             </LinearLayout>
         </RelativeLayout>
 
-        <android.support.v7.widget.RecyclerView
+       <!-- <android.support.v7.widget.RecyclerView
             android:id="@+id/lst_images"
             android:background="@color/colorPrimaryDark"
             android:layout_weight="3"
@@ -98,9 +110,13 @@
             android:padding="3dp"
             android:scrollbars="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="0dp"/>
+            android:layout_height="0dp"/>-->
+
+
 
     </LinearLayout>
+
+
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/fragment_container"

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:visibility="gone"
+    android:id="@+id/clue_view_back"
+    android:background="@drawable/clue_bg"
+    android:layout_height="match_parent">
+
+
+    <Button
+        android:id="@+id/btn_show_clue"
+        android:text="CLUE"
+        android:padding="10dp"
+        android:background="@color/transparent"
+        android:gravity="top"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textColor="@color/colorAccent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_toRightOf="@id/btn_show_clue"
+        android:layout_height="fill_parent">
+
+        <TextView
+            android:id="@+id/txt_hint"
+            android:layout_width="fill_parent"
+            android:text="hint here"
+            android:padding="10dp"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:visibility="visible"
+            android:textSize="@dimen/abc_text_size_medium_material"
+            android:textColor="@color/windowBackground"
+            android:layout_height="wrap_content" />
+
+    </ScrollView>
+
+    <SlidingDrawer
+        android:id="@+id/drawer_hint"
+        android:layout_width="match_parent"
+        android:handle="@+id/lin_layout_handle_back"
+        android:layout_alignParentBottom="true"
+        android:content="@+id/img_hint_img_back"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:id="@+id/lin_layout_handle_back"
+            android:background="@color/colorPrimaryDarkSlightlyTransparent"
+            android:orientation="vertical"
+            android:layout_height="20dp">
+
+            <TextView
+                android:text="VIEW IMAGE HINT"
+                android:textColor="@color/colorAccent"
+                android:layout_width="match_parent"
+                android:gravity="center_horizontal"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/img_hint_img_back"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </SlidingDrawer>
+
+
+</RelativeLayout>

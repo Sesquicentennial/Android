@@ -2,13 +2,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="16dp"
     android:background="@color/transparent"
     android:orientation="vertical"
     tools:context="carleton150.edu.carleton.carleton150.ExtraFragments.HistoryPopoverFragment">
 
+    <View
+        android:layout_width="match_parent"
+        android:background="@color/windowBackground"
+        android:layout_height="10dp">
+    </View>
     <RelativeLayout
         android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
         android:background="@color/colorPrimaryDarkSlightlyTransparent"
         android:layout_height="match_parent">
 
@@ -82,7 +87,7 @@
             android:visibility="gone"
             android:background="@drawable/scroll_year_bg"
             android:textSize="50sp"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/windowBackground"
             android:layout_centerInParent="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

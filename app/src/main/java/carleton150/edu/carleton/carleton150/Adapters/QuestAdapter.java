@@ -1,18 +1,25 @@
 package carleton150.edu.carleton.carleton150.Adapters;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
+import carleton150.edu.carleton.carleton150.Models.BitmapWorkerTask;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.R;
 import jp.wasabeef.recyclerview.animators.holder.AnimateViewHolder;
@@ -23,15 +30,17 @@ import jp.wasabeef.recyclerview.animators.holder.AnimateViewHolder;
  */
 public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHolder> {
 
-    private ArrayList<Quest> questList = null;
+    private ArrayList<Quest> questList = new ArrayList<>();
     public static RecyclerViewClickListener clickListener;
     private int screenWidth;
+    private int screenHeight;
     private View itemView;
 
-    public QuestAdapter(ArrayList<Quest> questList, RecyclerViewClickListener clickListener, int screenWidth) {
+    public QuestAdapter(ArrayList<Quest> questList, RecyclerViewClickListener clickListener, int screenWidth, int screenHeight) {
         this.questList = questList;
         this.clickListener = clickListener;
         this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
     }
 
     @Override
@@ -46,12 +55,12 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
     public void onBindViewHolder(QuestViewHolder holder, int position) {
         Quest qi = questList.get(position);
         holder.setTitle(qi.getName());
+        holder.setWidth((int) (screenWidth));
+        holder.setDescription(qi.getDesc());
+        holder.setLayoutRatings(4);
 
-        //TODO: get a good width...
-        holder.setWidth((int) (screenWidth/1.5));
+        holder.setImage(position, qi.getImage(), screenWidth, screenHeight);
 
-        //TODO:make this background come from qi
-        holder.setBackground();
     }
 
     @Override
@@ -63,18 +72,8 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
         }
     }
 
-    public void updateQuests(ArrayList<Quest> newQuests){
-        if(questList != null){
-            for(int i = 0; i<questList.size(); i++){
-                removeItem(0);
-            }
-        }else{
-            questList = new ArrayList<>();
-        }
-        for(int i = 0; i<newQuests.size(); i++){
-           addItem(newQuests.get(i), i);
-        }
-
+    public void updateQuestList(ArrayList<Quest> newQuests){
+        questList = newQuests;
     }
 
     public void removeItem(int position) {
@@ -96,17 +95,37 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
         private TextView title;
         private ImageView image;
         private TextView creator;
+        private TextView description;
+        private LinearLayout layoutRatings;
+        private Button btnBeginQuest;
+
 
         public QuestViewHolder(View itemView) {
             super(itemView);
-            itemView.setOnClickListener(this);
 
             title = (TextView) itemView.findViewById(R.id.txtTitle);
             image = (ImageView) itemView.findViewById(R.id.img_quest);
+            description = (TextView) itemView.findViewById(R.id.txt_quest_description);
+            layoutRatings = (LinearLayout) itemView.findViewById(R.id.lin_layout_ratings);
+            btnBeginQuest = (Button) itemView.findViewById(R.id.btn_start_quest);
 
-
+            btnBeginQuest.setOnClickListener(this);
         }
 
+
+        public void setDescription(String description) {
+            this.description.setText(description);
+        }
+
+        public void setLayoutRatings(int ratings) {
+            for(int i = 0; i < ratings; i++){
+                ImageView imageView = (ImageView) this.layoutRatings.getChildAt(i);
+                imageView.setImageResource(R.drawable.ic_yellow_star);
+            }for(int i = ratings; i<5; i++){
+                ImageView imageView = (ImageView) this.layoutRatings.getChildAt(i);
+                imageView.setImageResource(R.drawable.ic_cream_star);
+            }
+        }
 
         /**
          * @return title
@@ -131,10 +150,63 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
 
         /**
          */
-        public void setBackground() {
-            image.setImageResource(R.drawable.test_image1);
-            image.setColorFilter(R.color.blackSemiTransparent);
+        public void setImage(int resId, String encodedImage, int screenWidth, int screenHeight) {
+            if(encodedImage == null) {
+                image.setImageResource(R.drawable.test_image1);
+                image.setColorFilter(R.color.blackSemiTransparent);
+            }else {
 
+
+                byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+
+                int w = 10, h = 10;
+
+                Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+                Bitmap mPlaceHolderBitmap = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
+
+
+                if (cancelPotentialWork(resId, image)) {
+
+                    //TODO: find better formula than dividing by 2
+                    final BitmapWorkerTask task = new BitmapWorkerTask(image, encodedImage
+                            , screenWidth / 2, screenHeight / 2);
+                    final BitmapWorkerTask.AsyncDrawable asyncDrawable =
+                            new BitmapWorkerTask.AsyncDrawable(mPlaceHolderBitmap, task);
+                    image.setImageDrawable(asyncDrawable);
+                    task.execute(resId);
+                }
+
+            }
+        }
+
+        public static boolean cancelPotentialWork(int data, ImageView imageView) {
+            final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
+
+            if (bitmapWorkerTask != null) {
+                final int bitmapData = bitmapWorkerTask.data;
+                // If bitmapData is not yet set or it differs from the new data
+                if (bitmapData == 0 || bitmapData != data) {
+                    // Cancel previous task
+                    bitmapWorkerTask.cancel(true);
+                } else {
+                    // The same work is already in progress
+                    return false;
+                }
+            }
+            // No task associated with the ImageView, or an existing task was cancelled
+            return true;
+        }
+
+
+        private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) {
+            if (imageView != null) {
+                final Drawable drawable = imageView.getDrawable();
+                if (drawable instanceof BitmapWorkerTask.AsyncDrawable) {
+                    final BitmapWorkerTask.AsyncDrawable asyncDrawable = (BitmapWorkerTask.AsyncDrawable) drawable;
+                    return asyncDrawable.getBitmapWorkerTask();
+                }
+            }
+            return null;
         }
 
         /**

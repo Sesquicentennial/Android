@@ -87,7 +87,9 @@ public class VolleyRequester {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
                         callerFragment.handleResult(null);
+                        callerFragment.printMessageToast(error.getMessage());
                     }
                 }
         );
@@ -123,7 +125,8 @@ public class VolleyRequester {
             e.printStackTrace();
         }
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://carl150.carleton.edu/geofences", jsonObjectrequest,
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://carl150.carleton.edu/geofences",
+                jsonObjectrequest,
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -155,6 +158,7 @@ public class VolleyRequester {
                     }
                 }
         );
+        //TODO: check what request object is to make sure it isn't GET
         MyApplication.getInstance().getRequestQueue().add(request);
     }
 
@@ -215,7 +219,7 @@ public class VolleyRequester {
     public void requestQuests(final MainFragment callerFragment){
         final Gson gson = new Gson();
         JSONObject emptyRequest = new JSONObject();
-        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/quest", emptyRequest,
+        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/quest_re", emptyRequest,
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -224,6 +228,8 @@ public class VolleyRequester {
                         ArrayList<Quest> quests = new ArrayList<>();
                         try {
                             JSONArray responseArr = response.getJSONArray("content");
+                            Log.i(logMessages.VOLLEY, "requestQuests : length of responseArr is: " + responseArr.length());
+
                             try {
                                 for (int i = 0; i < responseArr.length(); i++) {
                                     Quest responseQuest = gson.fromJson(responseArr.getString(i), Quest.class);
@@ -232,12 +238,15 @@ public class VolleyRequester {
                                 }
                             }catch (Exception e) {
                                 Log.i(logMessages.VOLLEY, "requestQuests : unable to parse result");
+                                e.getMessage();
+                                e.printStackTrace();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
                         Log.i(logMessages.VOLLEY, "requestQuests : response string = : " + responseString);
+                        Log.i(logMessages.VOLLEY, "requestQuests : length of quests is: " + quests.size());
                         callerFragment.handleNewQuests(quests);
                     }
                 },
@@ -255,4 +264,5 @@ public class VolleyRequester {
         );
         MyApplication.getInstance().getRequestQueue().add(request);
     }
+
 }

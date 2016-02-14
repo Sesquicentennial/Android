@@ -102,6 +102,11 @@ public class MainFragment extends Fragment{
 
     }
 
+    public void printMessageToast(String message){
+        Toast toast = Toast.makeText(mainActivity, message, Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
 }
 
 

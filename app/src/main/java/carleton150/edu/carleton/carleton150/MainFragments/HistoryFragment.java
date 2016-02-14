@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,23 +17,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.TileOverlay;
-import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.android.gms.maps.model.TileProvider;
-import com.google.android.gms.maps.model.UrlTileProvider;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.Locale;
 
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -79,53 +67,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
     private boolean debugMode = false;
     private Button btnToggle;
 
-
-    //This is a variable and not a function
-    public TileProvider tileProvider = new UrlTileProvider(256, 256) {
-        @Override
-        public URL getTileUrl(int x, int y, int zoom) {
-
-    /* Define the URL pattern for the tile images */
-            String s = String.format(" https://www.carleton.edu/global_stock/images/campus_map/tiles/base/16_%d_%d.png",
-                    x, y);
-
-            if (!checkTileExists(x, y, zoom)) {
-                return null;
-            }
-
-            try {
-                return new URL(s);
-            } catch (MalformedURLException e) {
-                throw new AssertionError(e);
-            }
-        }
-
-        /*
-         * Check that the tile server supports the requested x, y and zoom.
-         * Complete this stub according to the tile range you support.
-         * If you support a limited range of tiles at different zoom levels, then you
-         * need to define the supported x, y range at each zoom level.
-         */
-        private boolean checkTileExists(int x, int y, int zoom) {
-            int minZoom = -5000;
-            int maxZoom = 5000;
-
-            //here we'll put the range and domain of the tiles
-            if (x<15807 || x>15813 || y>23713 || y<23713){
-                return false;
-            }
-
-            if ((zoom < minZoom || zoom > maxZoom)) {
-                return false;
-            }
-
-            return true;
-        }
-    };
-    //end of tileProvider
-
-    public TileOverlay tileOverlay;
-
+    private Button btnGetNearbyMemories;
 
     public HistoryFragment() {
         // Required empty public constructor
@@ -155,9 +97,19 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         queryResult = (TextView) view.findViewById(R.id.txt_query_result);
         txtRequestGeofences = (TextView) view.findViewById(R.id.txt_try_getting_geofences);
         btnRequestGeofences = (Button) view.findViewById(R.id.btn_request_geofences);
+        btnGetNearbyMemories = (Button) view.findViewById(R.id.btn_get_nearby_memories);
+
+        btnGetNearbyMemories.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showMemoriesPopover();
+            }
+        });
 
 
-        buildRecyclerViews();
+        //buildRecyclerViews();
+
+
         /*If geofences weren't retrieved (likely due to network error), shows button for user
         to try requesting geofences again. If it is clicked, calls fragmentInView() to get new
         geofences and draw the necessary map markers
@@ -171,9 +123,10 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
             }
         });
 
+
+
         //starts the mainActivity monitoring geofences
         mainActivity.getGeofenceMonitor().startGeofenceMonitoring();
-
 
         //Button to transition to and from debug mode
         btnToggle = (Button) view.findViewById(R.id.btn_debug_toggle);
@@ -183,6 +136,8 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         if(mainActivity.isConnectedToNetwork()) {
             setUpMapIfNeeded(); // For setting up the MapFragment
         }
+
+        drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
         return view;
     }
 
@@ -199,11 +154,13 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
                     if (mMap != null) {
                         mMap.clear();
                         drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
+                        drawTiles();
                     }
                 } else {
                     try {
                         drawGeofences(mainActivity.getGeofenceMonitor().geofencesBeingMonitored);
                         drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
+                        drawTiles();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -254,22 +211,6 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         mMap.setMyLocationEnabled(true);
     }
 
-    /**
-     * Sets up the map
-     *
-     * @param view
-     * @param savedInstanceState
-     */
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        if (mMap != null)
-            setUpMap();
-        setUpMapIfNeeded();
-        TileOverlay tileOverlay = mMap.addTileOverlay(new TileOverlayOptions()
-                .tileProvider(tileProvider));
-        this.tileOverlay = tileOverlay;
-    }
-
 
     /**
      * Lifecycle method overridden to set up the map and check for internet connectivity
@@ -281,6 +222,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         if(mainActivity.isConnectedToNetwork()) {
             setUpMapIfNeeded();
         }
+        fragmentInView();
     }
 
 
@@ -319,6 +261,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
 
             }
         }
+        Log.i(logMessages.GEOFENCE_MONITORING, "drawGeofenceMapMarker : done drawing markers");
     }
 
     /**
@@ -365,8 +308,8 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
             try {
                 //Gives information to the infoWindowAdapter for displaying info windows
                 myInfoWindowAdapter.setCurrentGeopoints(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
-                historyCardAdapter.updateGeofences(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
-                historyCardAdapter.notifyDataSetChanged();
+               // historyCardAdapter.updateGeofences(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
+               // historyCardAdapter.notifyDataSetChanged();
 
                 //sets text to display current geofences
                 displayGeofenceInfo();
@@ -412,8 +355,12 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
      */
     private void showPopup(GeofenceInfoContent[] geofenceInfoObject){
 
-        FragmentManager fm = getFragmentManager();
-        HistoryPopoverFragment historyPopoverFragment = HistoryPopoverFragment.newInstance(geofenceInfoObject);
+        GeofenceInfoContent[] sortedContent = sortByDate(geofenceInfoObject);
+
+
+
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        HistoryPopoverFragment historyPopoverFragment = HistoryPopoverFragment.newInstance(sortedContent);
 
         // Transaction start
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
@@ -423,6 +370,32 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         fragmentTransaction.add(R.id.fragment_container, historyPopoverFragment, "HistoryPopoverFragment");
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+    }
+
+    /**
+     * Uses bubble sort to sort geofenceInfoContents by date
+     *
+     * @param geofenceInfoContents
+     * @return
+     */
+    private GeofenceInfoContent[] sortByDate(GeofenceInfoContent[] geofenceInfoContents){
+        GeofenceInfoContent infoContent = null;
+        for(int j = 0; j < geofenceInfoContents.length; j++) {
+            for (int i = 0; i < geofenceInfoContents.length; i++) {
+                infoContent = geofenceInfoContents[i];
+                if (i < geofenceInfoContents.length - 1) {
+                    String year1 = infoContent.getYear();
+                    String year2 = geofenceInfoContents[i + 1].getYear();
+                    int year1Int = Integer.parseInt(year1);
+                    int year2Int = Integer.parseInt(year2);
+                    if (year1Int > year2Int) {
+                        geofenceInfoContents[i] = geofenceInfoContents[i + 1];
+                        geofenceInfoContents[i + 1] = infoContent;
+                    }
+                }
+            }
+        }
+        return geofenceInfoContents;
     }
 
     /**
@@ -486,6 +459,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
 
                         btnRequestGeofences.setVisibility(View.VISIBLE);
                         txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
+                    txtRequestGeofences.setVisibility(View.VISIBLE);
                 }
             }
         }catch (IllegalStateException e){
@@ -526,11 +500,20 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         }
         Log.i("UI", "HistoryFragment : fragmentInView");
 
-        boolean gotGeofences = mainActivity.getGeofenceMonitor().getNewGeofences();
-        if(!gotGeofences){
-            btnRequestGeofences.setVisibility(View.VISIBLE);
-            txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
+        if(mainActivity.getGeofenceMonitor().allGeopointsByName.size() == 0){
+            boolean gotGeofences = mainActivity.getGeofenceMonitor().getNewGeofences();
+            if(!gotGeofences){
+                btnRequestGeofences.setVisibility(View.VISIBLE);
+                txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
+            }
+        }else{
+            mainActivity.getGeofenceMonitor().startMonitoringGeofencesAfterPause();
+
+            if(txtRequestGeofences != null) {
+                txtRequestGeofences.setVisibility(View.GONE);
+            }
         }
+
     }
 
     public void showTooltip(GeofenceInfoContent[] object){
@@ -563,7 +546,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
     /**
      * Builds the views for the quests
      */
-    private void buildRecyclerViews(){
+   /* private void buildRecyclerViews(){
         DisplayMetrics metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         screenWidth = metrics.widthPixels;
@@ -575,5 +558,20 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         historyCardAdapter = new HistoryCardAdapter(mainActivity.getGeofenceMonitor().curGeofenceInfoMap, this, screenWidth, getResources());
         lstImages.setAdapter(historyCardAdapter);
 
+    }*/
+
+    private void showMemoriesPopover(){
+
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        HistoryPopoverFragment historyPopoverFragment = HistoryPopoverFragment.newInstance();
+
+        // Transaction start
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+        fragmentTransaction.setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom,
+                R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
+        fragmentTransaction.add(R.id.fragment_container, historyPopoverFragment, "HistoryPopoverFragment");
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 }

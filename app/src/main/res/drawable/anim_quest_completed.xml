@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim1"/>
+
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim2"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim3"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim4"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim5"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim6"/>
+
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim7"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim8"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim9"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim10"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim11"/>
+
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim12"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim13"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim14"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim15"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim16"/>
+
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim17"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim18"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim19"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim20"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim21"/>
+
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim22"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim23"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim24"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim25"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim26"/>
+
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim25"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim26"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim25"/>
+    <item
+        android:duration="100"
+        android:drawable="@drawable/qanim26"/>
+
+
+
+</animation-list>

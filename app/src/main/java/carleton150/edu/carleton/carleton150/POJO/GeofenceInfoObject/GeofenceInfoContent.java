@@ -121,7 +121,7 @@ public class GeofenceInfoContent
     public String toString()
     {
         try {
-            return "Content [summary = " + summary + ", geofence_id = " + geofence_id + ", data = " + data + ", geofences = " + name + ", type = " + type + "]";
+            return "Content [summary = " + summary + ", geofence_id = " + geofence_id + ", data = data"  + ", geofences = " + name + ", type = " + type + "]";
         } catch(NullPointerException e){
             e.printStackTrace();
             return "null content";

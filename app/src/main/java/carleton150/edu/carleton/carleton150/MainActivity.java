@@ -3,6 +3,7 @@ package carleton150.edu.carleton.carleton150;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.net.ConnectivityManager;
@@ -31,6 +32,7 @@ import com.google.android.gms.location.LocationServices;
 
 
 import java.util.ArrayList;
+import java.util.prefs.Preferences;
 
 import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     //things for location
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
+    private final static String QUEST_PREFERENCES_KEY = "QuestPreferences";
     public Location mLastLocation = null;
     // Google client to interact with Google API
     public GoogleApiClient mGoogleApiClient;
@@ -110,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         tabLayout.addTab(tabLayout.newTab().setText("Events"));
         tabLayout.addTab(tabLayout.newTab().setText("Quests"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        final NoSwipeViewPager viewPager = (NoSwipeViewPager) findViewById(R.id.pager);
         adapter = new MyFragmentPagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
@@ -414,6 +417,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
+    public void showAlertDialogNoNeutralButton(AlertDialog dialog){
+
+        dialog.show();
+    }
+
     /**
      * Method called from VolleyRequester when new geofences are retrieved
      * from server. Calls a function on whatever fragment is currently in view to
@@ -472,23 +480,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onBackPressed() {
 
         if(adapter.getCurFragment() instanceof QuestInProgressFragment) {
-            showAlertDialog(getString(R.string.quest_will_not_be_saved), new AlertDialog.Builder(MainActivity.this)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (adapter.getCurFragment() instanceof QuestInProgressFragment) {
-                                adapter.replaceFragment();
-                            }
-                        }
-                    })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    })
-                    .create());
-        }else{
+
+            if (adapter.getCurFragment() instanceof QuestInProgressFragment) {
+                adapter.replaceFragment();
+            }
+        }
+        else{
             super.onBackPressed();
         }
     }
@@ -513,6 +510,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
             }
         }
+    }
+
+    /**
+     * Reterns the Preferences for the information stored about the user's
+     * progress in a quest. This method is so the user can resume quests even
+     * after killing the app or going back to the quest selection screen
+     */
+    public SharedPreferences getPersistentQuestStorage(){
+        return getSharedPreferences(QUEST_PREFERENCES_KEY, 0);
+
     }
 
 }

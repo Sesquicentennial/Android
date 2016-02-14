@@ -99,7 +99,7 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
     public void replaceFragment(MainFragment fragment) {
         if(tab3 != null){
             FragmentTransaction ft = fragmentManager.beginTransaction();
-            ft.remove(tab3).commit();
+            ft.remove(tab3).detach(tab3).commit();
             tab3 = fragment;
             curFragment = tab3;
             notifyDataSetChanged();
@@ -113,7 +113,7 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
     public void replaceFragment(){
         if(tab3 != null){
             FragmentTransaction ft = fragmentManager.beginTransaction();
-            ft.remove(tab3).commit();
+            ft.remove(tab3).detach(tab3).commit();
             tab3 = new QuestFragment();
             curFragment = tab3;
             tab3.fragmentInView();
