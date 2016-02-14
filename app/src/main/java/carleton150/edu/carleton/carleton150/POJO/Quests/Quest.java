@@ -12,9 +12,13 @@ public class Quest
 
     private String name;
 
-    private Image image;
+    private String creator;
 
-    private HashMap<String, Waypoint> waypoints;
+    private String rating;
+
+    private String image;
+
+    private Waypoint[] waypoints;
 
     public String getDesc ()
     {
@@ -46,20 +50,20 @@ public class Quest
         this.name = name;
     }
 
-    public HashMap<String, Waypoint> getWaypoints ()
+    public Waypoint[] getWaypoints ()
     {
         return waypoints;
     }
 
-    public Image getImage() {
+    public String getImage() {
         return image;
     }
 
-    public void setImage(Image image) {
+    public void setImage(String image) {
         this.image = image;
     }
 
-    public void setWaypoints (HashMap<String, Waypoint> waypoints)
+    public void setWaypoints (Waypoint[] waypoints)
     {
         this.waypoints = waypoints;
     }

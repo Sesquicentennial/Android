@@ -48,6 +48,7 @@ public class GeofenceMonitor{
 
     private MainActivity activity;
     private LogMessages logMessages = new LogMessages();
+    private boolean googlePlayConnected = false;
 
     public GeofenceMonitor(MainActivity activity) {
         this.activity = activity;
@@ -292,37 +293,10 @@ public class GeofenceMonitor{
 
     }
 
-    /**
-     * Adds a geofence to be monitored for the quest. Note that this is only called if the
-     * QuestInProgressFragment is in view
-     *
-     * @param geofence
-     */
-    public void addQuestGeofence(carleton150.edu.carleton.carleton150.POJO.Quests.Geofence geofence){
-        if(geofence != null) {
+    public void startMonitoringGeofencesAfterPause(){
+        if(googlePlayConnected) {
             removeAllGeofences();
-            Log.i(logMessages.VOLLEY, "addQuestGeofences : geofence is: " + geofence.toString());
-            String lat = geofence.getLat();
-            String lng = geofence.getLng();
-            String rad = geofence.getRad();
-            double latitude = Double.parseDouble(lat);
-            double longitude = Double.parseDouble(lng);
-            int radius = Integer.parseInt(rad);
-            String name = "Geofence";
-            mGeofenceList.add(new Geofence.Builder()
-                    // Set the request ID of the geofence to identify the geofence
-                    .setRequestId(name)
-                            // Set the circular region of this geofence.
-                    .setCircularRegion(
-                            latitude,
-                            longitude,
-                            radius
-                    )
-                            // Set the expiration duration of the geofence to never expire
-                    .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                            // Set the transition types of interest to track entry and exit transitions in this sample.
-                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-                    .build());
+            addGeofences();
         }
     }
 
@@ -358,6 +332,7 @@ public class GeofenceMonitor{
      * Requests new geofences.
      */
     public void googlePlayServicesConnected() {
+        googlePlayConnected = true;
         if(currentLocation!=null) {
             getNewGeofences();
         }

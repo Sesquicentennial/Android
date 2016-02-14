@@ -1,33 +1,44 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.AnimationDrawable;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
+import android.text.method.ScrollingMovementMethod;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.SlidingDrawer;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import carleton150.edu.carleton.carleton150.FlipAnimation;
+import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
 import carleton150.edu.carleton.carleton150.MainActivity;
-import carleton150.edu.carleton.carleton150.POJO.Quests.Geofence;
+import carleton150.edu.carleton.carleton150.Models.BitmapWorkerTask;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
+import carleton150.edu.carleton.carleton150.POJO.Quests.Waypoint;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
@@ -40,10 +51,28 @@ public class QuestInProgressFragment extends MapMainFragment {
     private int numClue = 0;
     private TextView txtClue;
     private Button btnFoundIt;
-    private Button btnShowHint;
     private TextView txtHint;
     private TextView txtClueNumber;
     private ImageButton btnReturnToMyLocation;
+    private Button btnFlipCardToHint;
+    private Button btnFlipCardToClue;
+    private RelativeLayout relLayoutQuestCompleted;
+    private TextView txtQuestCompleted;
+    private ImageView imgQuestCompleted;
+    private Button btnDoneWithQuest;
+    private SlidingDrawer slidingDrawerClue;
+    private SlidingDrawer slidingDrawerHint;
+    private ImageView imgClue;
+    private ImageView imgHint;
+    private int screenWidth;
+    private int screenHeight;
+    private static final String QUEST_STARTED = "You already started this quest. " +
+            "Would you like to Resume it or Start Over?";
+
+    View rootLayout;
+    View cardFace;
+    View cardBack;
+
 
     private SupportMapFragment mapFragment;
 
@@ -75,13 +104,80 @@ public class QuestInProgressFragment extends MapMainFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_quest_in_progress, container, false);
-
         txtClue = (TextView) v.findViewById(R.id.txt_clue);
         btnFoundIt = (Button) v.findViewById(R.id.btn_found_location);
-        btnShowHint = (Button) v.findViewById(R.id.btn_show_hint);
         txtHint = (TextView) v.findViewById(R.id.txt_hint);
         txtClueNumber = (TextView) v.findViewById(R.id.txt_clue_number);
         btnReturnToMyLocation = (ImageButton) v.findViewById(R.id.btn_return_to_my_location);
+        rootLayout = v.findViewById(R.id.lin_layout_card_root);
+        cardFace = v.findViewById(R.id.clue_view_front);
+        cardBack = v.findViewById(R.id.clue_view_back);
+        btnFlipCardToClue = (Button) v.findViewById(R.id.btn_show_clue);
+        btnFlipCardToHint = (Button) v.findViewById(R.id.btn_show_hint);
+        relLayoutQuestCompleted = (RelativeLayout) v.findViewById(R.id.rel_layout_quest_completed);
+        txtQuestCompleted = (TextView) v.findViewById(R.id.txt_completion_message);
+        imgQuestCompleted = (ImageView) v.findViewById(R.id.img_animation_quest_completed);
+        btnDoneWithQuest = (Button) v.findViewById(R.id.btn_done_with_quest);
+        slidingDrawerClue = (SlidingDrawer) v.findViewById(R.id.front_drawer);
+        slidingDrawerHint = (SlidingDrawer) v.findViewById(R.id.drawer_hint);
+        imgHint = (ImageView) v.findViewById(R.id.img_hint_img_back);
+        imgClue = (ImageView) v.findViewById(R.id.img_clue_image_front);
+
+
+       checkIfQuestStarted();
+
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        screenWidth = metrics.widthPixels;
+        screenHeight = metrics.heightPixels;
+
+        btnFlipCardToHint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                flipCard();
+            }
+        });
+
+        btnFlipCardToClue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                flipCard();
+            }
+        });
+
+        Waypoint[] waypoints = quest.getWaypoints();
+        String hint = waypoints[numClue].getHint().getText();
+
+        String image = null;
+        String hintImage = null;
+        if(waypoints[numClue].getHint().getImage() != null) {
+            hintImage = waypoints[numClue].getHint().getImage().getImage();
+        }if(waypoints[numClue].getClue().getImage() != null){
+            image = waypoints[numClue].getClue().getImage().getImage();
+        }
+
+
+        if(hint == null || hint.equals("")) {
+            txtHint.setText(getResources().getString(R.string.no_hint_available));
+        } else {
+            txtHint.setText(waypoints[numClue].getHint().getText());
+        }
+
+
+        if (image != null){
+            slidingDrawerClue.setVisibility(View.VISIBLE);
+            setImage(image, screenWidth, screenHeight, imgClue);
+        }else{
+            slidingDrawerClue.setVisibility(View.GONE);
+        }
+
+        if (hintImage != null){
+            slidingDrawerHint.setVisibility(View.VISIBLE);
+            setImage(hintImage, screenWidth, screenHeight, imgHint);
+        }else{
+            slidingDrawerHint.setVisibility(View.GONE);
+        }
 
         btnReturnToMyLocation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,29 +186,11 @@ public class QuestInProgressFragment extends MapMainFragment {
             }
         });
 
-        btnShowHint.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(quest.getWaypoints().get(String.valueOf(numClue)) != null) {
-                    btnShowHint.setVisibility(View.GONE);
-                    String hint = quest.getWaypoints().get(String.valueOf(numClue)).getHint();
-                    if(hint.equals("")){
-                        txtHint.setText(getResources().getString(R.string.no_hint_available));
-                    }else {
-                        txtHint.setText(quest.getWaypoints().get(String.valueOf(numClue)).getHint());
-                    }
-                //If quest is completed, sets the hint to blank
-                }else{
-                    txtHint.setText("");
-                }
-                txtHint.setVisibility(View.VISIBLE);
-            }
-        });
-
         btnFoundIt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 checkIfClueFound();
+
             }
         });
         updateCurrentWaypoint();
@@ -155,6 +233,7 @@ public class QuestInProgressFragment extends MapMainFragment {
         if(mainActivity.mLastLocation != null){
             drawLocationMarker(mainActivity.mLastLocation);
         }
+        drawTiles();
     }
 
     /**
@@ -164,10 +243,10 @@ public class QuestInProgressFragment extends MapMainFragment {
     private void checkIfClueFound(){
         Location curLocation = mainActivity.mLastLocation;
         if(curLocation != null) {
-            Geofence hintGeofence = quest.getWaypoints().get(String.valueOf(numClue)).getGeofence();
-            double lat = Double.valueOf(hintGeofence.getLat());
-            double lon = Double.valueOf(hintGeofence.getLng());
-            double rad = Double.valueOf(hintGeofence.getRad());
+            Waypoint curWaypoint = quest.getWaypoints()[numClue];
+            double lat = curWaypoint.getLat();
+            double lon = curWaypoint.getLng();
+            double rad = curWaypoint.getRad();
             float[] results = new float[1];
 
             Location.distanceBetween(curLocation.getLatitude(), curLocation.getLongitude(),
@@ -187,7 +266,7 @@ public class QuestInProgressFragment extends MapMainFragment {
             }
         }else{
             Log.i(logMessages.LOCATION, "QuestInProgressFragment: checkIfClueFound: location is null");
-            //TODO: this shouln't happen. Handle it better...
+            //: this shouln't happen. Handle it better...
         }
     }
 
@@ -250,16 +329,45 @@ public class QuestInProgressFragment extends MapMainFragment {
      * @return boolean, true if quest is finished, false otherwise
      */
     public boolean updateCurrentWaypoint(){
-        String currentClue = String.valueOf(numClue);
         boolean finished = false;
+        Waypoint[] waypoints = quest.getWaypoints();
         try {
-            if (quest.getWaypoints().get(currentClue) == null &&
-                    quest.getWaypoints().get(String.valueOf(numClue - 1)) != null) {
+            if (waypoints[numClue] == null &&
+                    waypoints[numClue - 1] != null) {
                 finished = true;
                 return finished;
             }
-            txtClue.setText(quest.getWaypoints().get(currentClue).getClue());
-            txtClueNumber.setText((numClue + 1) + "/" + quest.getWaypoints().size());
+            txtClue.setText(waypoints[numClue].getClue().getText());
+            txtClueNumber.setText((numClue + 1) + "/" + quest.getWaypoints().length);
+            if(txtHint != null || !txtHint.equals("")){
+                txtHint.setText(waypoints[numClue].getHint().getText());
+            }else{
+                txtHint.setText(getResources().getString(R.string.no_hint_available));
+            }
+
+
+            String image = null;
+            String hintImage = null;
+            if(waypoints[numClue].getHint().getImage() != null) {
+                hintImage = waypoints[numClue].getHint().getImage().getImage();
+            }if(waypoints[numClue].getClue().getImage() != null){
+                image = waypoints[numClue].getClue().getImage().getImage();
+            }
+             if (image != null){
+                  slidingDrawerClue.setVisibility(View.VISIBLE);
+                  setImage(image, screenWidth, screenHeight, imgClue);
+             }else{
+                  slidingDrawerClue.setVisibility(View.GONE);
+              }
+
+            if (hintImage != null){
+                slidingDrawerHint.setVisibility(View.VISIBLE);
+                setImage(hintImage, screenWidth, screenHeight, imgHint);
+            }else{
+                slidingDrawerHint.setVisibility(View.GONE);
+            }
+
+
             return finished;
         } catch (NullPointerException e){
             e.printStackTrace();
@@ -273,12 +381,20 @@ public class QuestInProgressFragment extends MapMainFragment {
      */
     public void clueCompleted() {
         Log.i(logMessages.GEOFENCE_MONITORING, "QuestInProgressFragment: clueCompleted");
+        showClueCompletedMessage();
         numClue += 1;
+
+        //saves the quest progress into SharedPreferences
+        SharedPreferences.Editor sharedPrefsEditor = mainActivity.getPersistentQuestStorage().edit();
+        sharedPrefsEditor.putInt(quest.getName(), numClue);
+        sharedPrefsEditor.commit();
+
+
         boolean completedQuest = updateCurrentWaypoint();
         if (completedQuest){
-
             showCompletedQuestMessage();
         }
+
     }
 
     /**
@@ -286,10 +402,46 @@ public class QuestInProgressFragment extends MapMainFragment {
      * completed
      */
     private void showCompletedQuestMessage(){
-        btnShowHint.setVisibility(View.GONE);
-        btnFoundIt.setVisibility(View.GONE);
-        txtClue.setText(getResources().getString(R.string.quest_completed_show_message) + quest.getCompMsg());
-        txtHint.setVisibility(View.GONE);
+
+        imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(mainActivity, R.drawable.anim_quest_completed));
+        txtQuestCompleted.setText("Message is : " + quest.getCompMsg());
+        txtQuestCompleted.setMovementMethod(new ScrollingMovementMethod());
+        imgQuestCompleted.setVisibility(View.VISIBLE);
+        relLayoutQuestCompleted.setVisibility(View.VISIBLE);
+        ((AnimationDrawable) imgQuestCompleted.getBackground()).start();
+        btnDoneWithQuest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goBackToQuestSelectionScreen();
+            }
+        });
+    }
+
+    /**
+     * Shows the message stored with the quest when the quest has been
+     * completed
+     */
+    private void showClueCompletedMessage(){
+        ;
+        txtQuestCompleted.setText("Message is : " + quest.getWaypoints()[numClue].getCompletion().getText());
+        txtQuestCompleted.setMovementMethod(new ScrollingMovementMethod());
+
+        if(quest.getWaypoints()[numClue].getCompletion().getImage() != null){
+            setImage(quest.getWaypoints()[numClue].getCompletion().getImage(),
+                    screenWidth, screenHeight, imgQuestCompleted);
+        }else{
+            imgQuestCompleted.setVisibility(View.GONE);
+        }
+
+        relLayoutQuestCompleted.setVisibility(View.VISIBLE);
+
+        btnDoneWithQuest.setText("Continue to Next Hint");
+        btnDoneWithQuest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                relLayoutQuestCompleted.setVisibility(View.GONE);
+            }
+        });
     }
 
     /**
@@ -308,6 +460,9 @@ public class QuestInProgressFragment extends MapMainFragment {
             Log.i(logMessages.LOCATION, "QuestInProgressFragment : fragmentInView : last location not null, drawing marker");
             drawLocationMarker(mainActivity.mLastLocation);
         }
+        if(this.isResumed()) {
+            drawTiles();
+        }
         setCamera();
     }
 
@@ -325,5 +480,81 @@ public class QuestInProgressFragment extends MapMainFragment {
     public void onSaveInstanceState(Bundle outState) {
         mMap = null;
         super.onSaveInstanceState(outState);
+    }
+
+    private void goBackToQuestSelectionScreen(){
+        QuestFragment fr=new QuestFragment();
+        FragmentChangeListener fc=(FragmentChangeListener)getActivity();
+        fc.replaceFragment(fr);
+    }
+
+    private void flipCard()
+    {
+
+        FlipAnimation flipAnimation = new FlipAnimation(cardFace, cardBack);
+
+        if (cardFace.getVisibility() == View.GONE)
+        {
+            flipAnimation.reverse();
+        }
+        rootLayout.startAnimation(flipAnimation);
+    }
+
+    /**
+     */
+    public void setImage(String encodedImage, int screenWidth, int screenHeight, ImageView imageView) {
+
+        int w = 10, h = 10;
+
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+        Bitmap mPlaceHolderBitmap = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
+
+
+
+            final BitmapWorkerTask task = new BitmapWorkerTask(imageView,  encodedImage
+                    , screenWidth/2, screenHeight/2);
+            final BitmapWorkerTask.AsyncDrawable asyncDrawable =
+                    new BitmapWorkerTask.AsyncDrawable(mPlaceHolderBitmap, task);
+            imageView.setImageDrawable(asyncDrawable);
+            task.execute();
+
+    }
+
+    private void checkIfQuestStarted(){
+        SharedPreferences sharedPreferences = mainActivity.getPersistentQuestStorage();
+        int curClue = sharedPreferences.getInt(quest.getName(), 0);
+        if(curClue != 0){
+            showOptionToResumeQuest();
+        }
+    }
+
+    private void showOptionToResumeQuest(){
+        mainActivity.showAlertDialogNoNeutralButton(new AlertDialog.Builder(mainActivity)
+                .setMessage(QUEST_STARTED)
+                .setPositiveButton("Resume", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        resumeQuest();
+                    }
+                })
+                .setNegativeButton("Start Over", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                })
+                .create());
+    }
+
+    private void resumeQuest(){
+        int curClue = mainActivity.getPersistentQuestStorage().getInt(quest.getName(), 0);
+        if(curClue != 0){
+            numClue = curClue;
+        }
+
+        boolean completedQuest = updateCurrentWaypoint();
+        if (completedQuest){
+            showCompletedQuestMessage();
+        }
     }
 }
