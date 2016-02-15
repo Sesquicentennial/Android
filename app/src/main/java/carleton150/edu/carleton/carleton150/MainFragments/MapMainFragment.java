@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.model.UrlTileProvider;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
@@ -128,6 +130,7 @@ public class MapMainFragment extends MainFragment {
 
     /***** Sets up the map if it is possible to do so *****/
     public boolean setUpMapIfNeeded() {
+        MainActivity mainActivity = (MainActivity) getActivity();
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
@@ -206,21 +209,26 @@ public class MapMainFragment extends MainFragment {
      * Otherwise, the camera target is the center of campus.
      */
     protected void setCamera(){
-        if(mainActivity.getGeofenceMonitor().currentLocation != null && zoomCamera) {
-            zoomCamera = false;
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(mainActivity.getGeofenceMonitor().currentLocation.getLatitude(), mainActivity.getGeofenceMonitor().currentLocation.getLongitude()))
-                    .zoom(DEFAULT_ZOOM)
-                    .bearing(DEFAULT_BEARING)
-                    .build();
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        }if(mainActivity.getGeofenceMonitor().currentLocation == null){
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(CENTER_CAMPUS.latitude, CENTER_CAMPUS.longitude))
-                    .zoom(DEFAULT_ZOOM)
-                    .bearing(DEFAULT_BEARING)
-                    .build();
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if(mainActivity != null) {
+
+            if (mainActivity.getGeofenceMonitor().currentLocation != null && zoomCamera) {
+                zoomCamera = false;
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(mainActivity.getGeofenceMonitor().currentLocation.getLatitude(), mainActivity.getGeofenceMonitor().currentLocation.getLongitude()))
+                        .zoom(DEFAULT_ZOOM)
+                        .bearing(DEFAULT_BEARING)
+                        .build();
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            }
+            if (mainActivity.getGeofenceMonitor().currentLocation == null) {
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(CENTER_CAMPUS.latitude, CENTER_CAMPUS.longitude))
+                        .zoom(DEFAULT_ZOOM)
+                        .bearing(DEFAULT_BEARING)
+                        .build();
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            }
         }
     }
 
@@ -231,7 +239,8 @@ public class MapMainFragment extends MainFragment {
     }
 
     public void drawTiles(){
-        if(mainActivity.getMemoryClass() > 300) {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if(mainActivity.getMemoryClass() > 150) {
 
             if (mMap != null) {
                 setUpMap();
@@ -247,5 +256,10 @@ public class MapMainFragment extends MainFragment {
             }
         }
     }
-    
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mMap = null;
+    }
 }

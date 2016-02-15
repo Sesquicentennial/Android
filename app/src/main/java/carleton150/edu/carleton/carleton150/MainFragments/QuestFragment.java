@@ -30,16 +30,11 @@ import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
  */
 public class QuestFragment extends MainFragment implements RecyclerViewClickListener {
 
-    private static View view;
-    private RecyclerViewPager quests;
     private ArrayList<Quest> questInfo;
     private LinearLayoutManager questLayoutManager;
     private QuestAdapter questAdapter;
     private int screenWidth;
-    private TextView txtInfo;
-    //private ScaleInAnimationAdapter scaleAdapter;
-
-    private Button btnTryAgain;
+    private View view;
 
 
     public QuestFragment() {
@@ -50,6 +45,9 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        RecyclerViewPager quests;
+        final TextView txtInfo;
+        final Button btnTryAgain;
         view =  inflater.inflate(R.layout.fragment_quest, container, false);
 
 
@@ -107,7 +105,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         DisplayMetrics metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         screenWidth = metrics.widthPixels;
-        quests = (RecyclerViewPager) view.findViewById(R.id.lst_quests);
+        RecyclerViewPager quests = (RecyclerViewPager) view.findViewById(R.id.lst_quests);
         questLayoutManager = new LinearLayoutManager(getActivity());
 
 
@@ -138,6 +136,9 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
          */
 
         try {
+            RecyclerViewPager quests = (RecyclerViewPager) view.findViewById(R.id.lst_quests);
+            TextView txtInfo = (TextView) view.findViewById(R.id.txt_request_quests);
+            Button btnTryAgain = (Button) view.findViewById(R.id.btn_try_getting_quests);
 
             super.handleNewQuests(newQuests);
             if (newQuests != null) {
@@ -148,11 +149,13 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
 
                 questAdapter.updateQuestList(questInfo);
                 questAdapter.notifyDataSetChanged();
+
                 quests.setVisibility(View.VISIBLE);
                 //scaleAdapter.notifyDataSetChanged();
                 Log.i(logMessages.VOLLEY, "QuestFragment: handleNewQuests : questAdapter contains : " + questAdapter.getItemCount());
             } else {
                 if (questInfo == null) {
+
                     txtInfo.setText(getString(R.string.no_quests_retrieved));
                     btnTryAgain.setVisibility(View.VISIBLE);
                     if(quests != null){
@@ -179,5 +182,14 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         super.fragmentInView();
         Log.i("UI", "QuestFragment : fragmentInView");
         volleyRequester.requestQuests(this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        view = null;
+        questAdapter = null;
+        questLayoutManager = null;
+        questInfo = null;
     }
 }

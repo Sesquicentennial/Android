@@ -49,29 +49,15 @@ public class QuestInProgressFragment extends MapMainFragment {
 
     private Quest quest = null;
     private int numClue = 0;
-    private TextView txtClue;
-    private Button btnFoundIt;
-    private TextView txtHint;
-    private TextView txtClueNumber;
-    private ImageButton btnReturnToMyLocation;
-    private Button btnFlipCardToHint;
-    private Button btnFlipCardToClue;
-    private RelativeLayout relLayoutQuestCompleted;
-    private TextView txtQuestCompleted;
-    private ImageView imgQuestCompleted;
-    private Button btnDoneWithQuest;
-    private SlidingDrawer slidingDrawerClue;
-    private SlidingDrawer slidingDrawerHint;
-    private ImageView imgClue;
-    private ImageView imgHint;
     private int screenWidth;
     private int screenHeight;
     private static final String QUEST_STARTED = "You already started this quest. " +
             "Would you like to Resume it or Start Over?";
 
-    View rootLayout;
-    View cardFace;
-    View cardBack;
+    private View rootLayout;
+    private View cardFace;
+    private View cardBack;
+    private View v;
 
 
     private SupportMapFragment mapFragment;
@@ -103,25 +89,19 @@ public class QuestInProgressFragment extends MapMainFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_quest_in_progress, container, false);
-        txtClue = (TextView) v.findViewById(R.id.txt_clue);
-        btnFoundIt = (Button) v.findViewById(R.id.btn_found_location);
-        txtHint = (TextView) v.findViewById(R.id.txt_hint);
-        txtClueNumber = (TextView) v.findViewById(R.id.txt_clue_number);
-        btnReturnToMyLocation = (ImageButton) v.findViewById(R.id.btn_return_to_my_location);
+        v = inflater.inflate(R.layout.fragment_quest_in_progress, container, false);
+        Button btnFoundIt = (Button) v.findViewById(R.id.btn_found_location);
+        TextView txtHint = (TextView) v.findViewById(R.id.txt_hint);
+        ImageButton btnReturnToMyLocation = (ImageButton) v.findViewById(R.id.btn_return_to_my_location);
         rootLayout = v.findViewById(R.id.lin_layout_card_root);
         cardFace = v.findViewById(R.id.clue_view_front);
         cardBack = v.findViewById(R.id.clue_view_back);
-        btnFlipCardToClue = (Button) v.findViewById(R.id.btn_show_clue);
-        btnFlipCardToHint = (Button) v.findViewById(R.id.btn_show_hint);
-        relLayoutQuestCompleted = (RelativeLayout) v.findViewById(R.id.rel_layout_quest_completed);
-        txtQuestCompleted = (TextView) v.findViewById(R.id.txt_completion_message);
-        imgQuestCompleted = (ImageView) v.findViewById(R.id.img_animation_quest_completed);
-        btnDoneWithQuest = (Button) v.findViewById(R.id.btn_done_with_quest);
-        slidingDrawerClue = (SlidingDrawer) v.findViewById(R.id.front_drawer);
-        slidingDrawerHint = (SlidingDrawer) v.findViewById(R.id.drawer_hint);
-        imgHint = (ImageView) v.findViewById(R.id.img_hint_img_back);
-        imgClue = (ImageView) v.findViewById(R.id.img_clue_image_front);
+        Button btnFlipCardToClue = (Button) v.findViewById(R.id.btn_show_clue);
+        Button btnFlipCardToHint = (Button) v.findViewById(R.id.btn_show_hint);
+        SlidingDrawer slidingDrawerClue = (SlidingDrawer) v.findViewById(R.id.front_drawer);
+        SlidingDrawer slidingDrawerHint = (SlidingDrawer) v.findViewById(R.id.drawer_hint);
+        ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_img_back);
+        ImageView imgClue = (ImageView) v.findViewById(R.id.img_clue_image_front);
 
 
        checkIfQuestStarted();
@@ -229,6 +209,7 @@ public class QuestInProgressFragment extends MapMainFragment {
     @Override
     public void onResume() {
         super.onResume();
+        MainActivity mainActivity = (MainActivity) getActivity();
         setUpMapIfNeeded();
         if(mainActivity.mLastLocation != null){
             drawLocationMarker(mainActivity.mLastLocation);
@@ -241,6 +222,7 @@ public class QuestInProgressFragment extends MapMainFragment {
      * (both the radius and waypoint are specified in the quest object)
      */
     private void checkIfClueFound(){
+        MainActivity mainActivity = (MainActivity) getActivity();
         Location curLocation = mainActivity.mLastLocation;
         if(curLocation != null) {
             Waypoint curWaypoint = quest.getWaypoints()[numClue];
@@ -257,6 +239,7 @@ public class QuestInProgressFragment extends MapMainFragment {
             } else {
                 //String to display if hint is not already showing
                 String alertString = getActivity().getResources().getString(R.string.location_not_found_hint);
+                TextView txtHint = (TextView) v.findViewById(R.id.txt_hint);
                 if (txtHint.getVisibility() == View.VISIBLE) {
                     //String to display if hint is already showing
                     alertString = getActivity().getResources().getString(R.string.location_not_found);
@@ -295,7 +278,7 @@ public class QuestInProgressFragment extends MapMainFragment {
         super.handleLocationChange(newLocation);
         setCamera();
         drawLocationMarker(newLocation);
-
+        MainActivity mainActivity = (MainActivity) getActivity();
         if(mainActivity.getGeofenceMonitor().currentLocation != null) {
             setUpMapIfNeeded();
         }
@@ -336,8 +319,15 @@ public class QuestInProgressFragment extends MapMainFragment {
                 finished = true;
                 return finished;
             }
+            TextView txtClue = (TextView) v.findViewById(R.id.txt_clue);
+            TextView txtClueNumber = (TextView) v.findViewById(R.id.txt_clue_number);
+            TextView txtHint = (TextView) v.findViewById(R.id.txt_hint);
+            SlidingDrawer slidingDrawerClue = (SlidingDrawer) v.findViewById(R.id.front_drawer);
+            SlidingDrawer slidingDrawerHint = (SlidingDrawer) v.findViewById(R.id.drawer_hint);
             txtClue.setText(waypoints[numClue].getClue().getText());
             txtClueNumber.setText((numClue + 1) + "/" + quest.getWaypoints().length);
+            ImageView imgClue = (ImageView) v.findViewById(R.id.img_clue_image_front);
+            ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_img_back);
             if(txtHint != null || !txtHint.equals("")){
                 txtHint.setText(waypoints[numClue].getHint().getText());
             }else{
@@ -384,6 +374,7 @@ public class QuestInProgressFragment extends MapMainFragment {
         numClue += 1;
 
         //saves the quest progress into SharedPreferences
+        MainActivity mainActivity = (MainActivity) getActivity();
         SharedPreferences.Editor sharedPrefsEditor = mainActivity.getPersistentQuestStorage().edit();
         sharedPrefsEditor.putInt(quest.getName(), numClue);
         sharedPrefsEditor.commit();
@@ -401,7 +392,11 @@ public class QuestInProgressFragment extends MapMainFragment {
      * completed
      */
     private void showCompletedQuestMessage(){
-
+        ImageView imgQuestCompleted = (ImageView) v.findViewById(R.id.img_animation_quest_completed);
+        TextView txtQuestCompleted = (TextView) v.findViewById(R.id.txt_completion_message);
+        RelativeLayout relLayoutQuestCompleted = (RelativeLayout) v.findViewById(R.id.rel_layout_quest_completed);
+        Button btnDoneWithQuest = (Button) v.findViewById(R.id.btn_done_with_quest);
+        MainActivity mainActivity = (MainActivity) getActivity();
         imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(mainActivity, R.drawable.anim_quest_completed));
         txtQuestCompleted.setText("Message is : " + quest.getCompMsg());
         txtQuestCompleted.setMovementMethod(new ScrollingMovementMethod());
@@ -421,7 +416,10 @@ public class QuestInProgressFragment extends MapMainFragment {
      * completed
      */
     private void showClueCompletedMessage(){
-        ;
+        ImageView imgQuestCompleted = (ImageView) v.findViewById(R.id.img_animation_quest_completed);
+        TextView txtQuestCompleted = (TextView) v.findViewById(R.id.txt_completion_message);
+        final RelativeLayout relLayoutQuestCompleted = (RelativeLayout) v.findViewById(R.id.rel_layout_quest_completed);
+        Button btnDoneWithQuest = (Button) v.findViewById(R.id.btn_done_with_quest);
         txtQuestCompleted.setText("Message is : " + quest.getWaypoints()[numClue].getCompletion().getText());
         txtQuestCompleted.setMovementMethod(new ScrollingMovementMethod());
 
@@ -455,6 +453,7 @@ public class QuestInProgressFragment extends MapMainFragment {
     public void fragmentInView() {
         Log.i(logMessages.LOCATION, "QuestInProgressFragment : fragmentInView : called");
         updateCurrentWaypoint();
+        MainActivity mainActivity = (MainActivity) getActivity();
         if(mainActivity.mLastLocation != null){
             Log.i(logMessages.LOCATION, "QuestInProgressFragment : fragmentInView : last location not null, drawing marker");
             drawLocationMarker(mainActivity.mLastLocation);
@@ -520,6 +519,7 @@ public class QuestInProgressFragment extends MapMainFragment {
     }
 
     private void checkIfQuestStarted(){
+        MainActivity mainActivity = (MainActivity) getActivity();
         SharedPreferences sharedPreferences = mainActivity.getPersistentQuestStorage();
         int curClue = sharedPreferences.getInt(quest.getName(), 0);
         if(curClue != 0){
@@ -528,6 +528,7 @@ public class QuestInProgressFragment extends MapMainFragment {
     }
 
     private void showOptionToResumeQuest(){
+        MainActivity mainActivity = (MainActivity) getActivity();
         mainActivity.showAlertDialogNoNeutralButton(new AlertDialog.Builder(mainActivity)
                 .setMessage(QUEST_STARTED)
                 .setPositiveButton("Resume", new DialogInterface.OnClickListener() {
@@ -546,6 +547,7 @@ public class QuestInProgressFragment extends MapMainFragment {
     }
 
     private void resumeQuest(){
+        MainActivity mainActivity = (MainActivity) getActivity();
         int curClue = mainActivity.getPersistentQuestStorage().getInt(quest.getName(), 0);
         if(curClue != 0){
             numClue = curClue;
@@ -555,5 +557,14 @@ public class QuestInProgressFragment extends MapMainFragment {
         if (completedQuest){
             showCompletedQuestMessage();
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        rootLayout = null;
+        cardFace = null;
+        cardBack = null;
+        v = null;
     }
 }
