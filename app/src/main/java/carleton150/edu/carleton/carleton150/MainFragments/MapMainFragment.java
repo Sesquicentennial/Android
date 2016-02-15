@@ -1,5 +1,6 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -230,17 +231,20 @@ public class MapMainFragment extends MainFragment {
     }
 
     public void drawTiles(){
-        if (mMap != null) {
-            setUpMap();
-        }
-        setUpMapIfNeeded();
-        if(mMap != null) {
-            TileOverlay baseTileOverlay = mMap.addTileOverlay(new TileOverlayOptions()
-                    .tileProvider(baseTileProvider));
-            baseTileOverlay.setZIndex(0);
-            TileOverlay labelTileOverlay = mMap.addTileOverlay(new TileOverlayOptions()
-                    .tileProvider(labelTileProvider));
-            labelTileOverlay.setZIndex(2);
+        if(mainActivity.getMemoryClass() > 20) {
+
+            if (mMap != null) {
+                setUpMap();
+            }
+            setUpMapIfNeeded();
+            if (mMap != null) {
+                TileOverlay baseTileOverlay = mMap.addTileOverlay(new TileOverlayOptions()
+                        .tileProvider(baseTileProvider));
+                baseTileOverlay.setZIndex(0);
+                TileOverlay labelTileOverlay = mMap.addTileOverlay(new TileOverlayOptions()
+                        .tileProvider(labelTileProvider));
+                labelTileOverlay.setZIndex(2);
+            }
         }
     }
 }

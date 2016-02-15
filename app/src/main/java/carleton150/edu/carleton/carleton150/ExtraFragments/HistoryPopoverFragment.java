@@ -1,7 +1,5 @@
 package carleton150.edu.carleton.carleton150.ExtraFragments;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -17,20 +15,14 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.Random;
-
 import carleton150.edu.carleton.carleton150.Adapters.HistoryAdapter;
 import carleton150.edu.carleton.carleton150.Adapters.MyScaleInAnimationAdapter;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewScrolledListener;
 import carleton150.edu.carleton.carleton150.MainActivity;
-import carleton150.edu.carleton.carleton150.MainFragments.HistoryFragment;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.MemoriesContent;
-import carleton150.edu.carleton.carleton150.POJO.HistoryContentObjectDummy;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
@@ -50,11 +42,6 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
     private int screenHeight;
     private TextView txtErrorGettingMemories;
     private int MEMORIES_RADIUS = 1000;
-
-
-    //TODO: If memories from server can be GeofenceInfoContent[] then great
-    //TODO: otherwise, I should probably subclass this or something....
-    //TODO: make method to get the server response with new memories and fill them in here...
 
     private static GeofenceInfoContent[] geofenceInfoObject;
     public HistoryPopoverFragment()

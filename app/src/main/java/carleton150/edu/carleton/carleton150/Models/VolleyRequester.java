@@ -2,6 +2,7 @@ package carleton150.edu.carleton.carleton150.Models;
 
 import android.util.Log;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -285,7 +286,7 @@ public class VolleyRequester {
             memoriesRequest.put("lat", 44.461319);
             memoriesRequest.put("lng", -93.156094);
             memoriesRequest.put("rad", 0.1);
-            //memoriesRequest.put("lng", longitude);
+//            memoriesRequest.put("lng", longitude);
            // memoriesRequest.put("lat", latitude);
            // memoriesRequest.put("rad", radius);
         } catch (JSONException e) {
@@ -299,12 +300,12 @@ public class VolleyRequester {
                     @Override
                     public void onResponse(JSONObject response) {
                         String responseString = response.toString();
-                        Log.i(logMessages.VOLLEY, "requestEvents : response string = : " + responseString);
+                        Log.i(logMessages.VOLLEY, "requestMemories : response string = : " + responseString);
                         try {
                             MemoriesContent responseObject = gson.fromJson(responseString, MemoriesContent.class);
                             callerFragment.handleNewMemories(responseObject);
                         }catch (Exception e){
-                            Log.i(logMessages.VOLLEY, "requestEvents : unable to parse result");
+                            Log.i(logMessages.VOLLEY, "requestMemories : unable to parse result");
                         }
                     }
                 },
@@ -313,13 +314,19 @@ public class VolleyRequester {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.i(logMessages.VOLLEY, "requestEvents : error : " + error.toString());
+                        Log.i(logMessages.VOLLEY, "requestMemories : error : " + error.toString());
                         if(callerFragment!=null) {
                             callerFragment.handleNewMemories(null);
                         }
                     }
                 }
         );
+
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
         MyApplication.getInstance().getRequestQueue().add(request);
     }
 
