@@ -35,6 +35,7 @@ import com.google.android.gms.location.LocationServices;
 import java.util.ArrayList;
 import java.util.prefs.Preferences;
 
+import carleton150.edu.carleton.carleton150.ExtraFragments.AddMemoryFragment;
 import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
 import carleton150.edu.carleton.carleton150.Adapters.MyFragmentPagerAdapter;
@@ -476,6 +477,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void replaceFragment(MainFragment fragment) {
         adapter.replaceFragment(fragment);
     }
+
 
     /**
      * If QuestInProgressFragment is the current fragment,

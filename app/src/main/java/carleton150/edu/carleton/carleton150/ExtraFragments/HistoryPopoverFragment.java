@@ -3,6 +3,7 @@ package carleton150.edu.carleton.carleton150.ExtraFragments;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,12 +18,16 @@ import android.widget.TextView;
 
 import carleton150.edu.carleton.carleton150.Adapters.HistoryAdapter;
 import carleton150.edu.carleton.carleton150.Adapters.MyScaleInAnimationAdapter;
+import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewScrolledListener;
 import carleton150.edu.carleton.carleton150.MainActivity;
+import carleton150.edu.carleton.carleton150.MainFragments.HistoryFragment;
+import carleton150.edu.carleton.carleton150.MainFragments.QuestInProgressFragment;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.MemoriesContent;
+import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
@@ -42,6 +47,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
     private int screenHeight;
     private TextView txtErrorGettingMemories;
     private int MEMORIES_RADIUS = 1000;
+    private static HistoryFragment parentFragment;
 
     private static GeofenceInfoContent[] geofenceInfoObject;
     public HistoryPopoverFragment()
@@ -55,9 +61,10 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         return f;
     }
 
-    public static HistoryPopoverFragment newInstance(){
+    public static HistoryPopoverFragment newInstance(HistoryFragment mParentFragment){
         HistoryPopoverFragment f = new HistoryPopoverFragment();
         isMemories = true;
+        parentFragment = mParentFragment;
         return f;
     }
 
@@ -70,6 +77,18 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         txtTimelineDate = (TextView) view.findViewById(R.id.txt_timeline_date);
         txtErrorGettingMemories = (TextView) view.findViewById(R.id.txt_error_getting_memories);
         btnClose = (Button) view.findViewById(R.id.btn_exit_popup);
+        Button btnAddMemory = (Button) view.findViewById(R.id.btn_add_memory);
+        if(isMemories){
+            btnAddMemory.setVisibility(View.VISIBLE);
+            btnAddMemory.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showAddMemoriesFragment();
+                }
+            });
+        }else{
+            btnAddMemory.setVisibility(View.GONE);
+        }
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -184,6 +203,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         txtTimelineDate = null;
         geofenceInfoObject = null;
         txtErrorGettingMemories = null;
+        parentFragment = null;
 
     }
 
@@ -210,4 +230,11 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
             //TODO: add appropriate error handling to this...
         }
     }
+
+
+    private void showAddMemoriesFragment(){
+
+        parentFragment.showAddMemoriesPopover();
+
+        }
 }

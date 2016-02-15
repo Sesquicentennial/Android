@@ -1,0 +1,23 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDarkSlightlyTransparent"
+    tools:context="carleton150.edu.carleton.carleton150.ExtraFragments.AddMemoryFragment">
+
+
+
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:orientation="vertical"
+           android:weightSum="30"
+           android:layout_height="match_parent">
+       <ImageView
+           android:id="@+id/img_memory_view"
+           android:layout_width="match_parent"
+           android:layout_weight="20"
+           android:layout_height="0dp" />
+
+       </LinearLayout>
+
+
+</FrameLayout>

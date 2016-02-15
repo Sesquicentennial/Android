@@ -32,6 +32,7 @@ import java.util.Map;
 
 import carleton150.edu.carleton.carleton150.Adapters.HistoryCardAdapter;
 import carleton150.edu.carleton.carleton150.Adapters.MyInfoWindowAdapter;
+import carleton150.edu.carleton.carleton150.ExtraFragments.AddMemoryFragment;
 import carleton150.edu.carleton.carleton150.ExtraFragments.HistoryPopoverFragment;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.MainActivity;
@@ -483,9 +484,11 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
     public void handleGeofenceChange(ArrayList<GeofenceObjectContent> currentGeofences) {
         super.handleGeofenceChange(currentGeofences);
         MainActivity mainActivity = (MainActivity) getActivity();
-        if(mainActivity.isConnectedToNetwork()) {
-            Log.i(logMessages.VOLLEY, "handleGeofenceChange : about to query database : " + currentGeofences.toString());
-            volleyRequester.request(this, currentGeofences);
+        if(mainActivity != null) {
+            if (mainActivity.isConnectedToNetwork()) {
+                Log.i(logMessages.VOLLEY, "handleGeofenceChange : about to query database : " + currentGeofences.toString());
+                volleyRequester.request(this, currentGeofences);
+            }
         }
     }
 
@@ -578,7 +581,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
     private void showMemoriesPopover(){
 
         FragmentManager fm = getActivity().getSupportFragmentManager();
-        HistoryPopoverFragment historyPopoverFragment = HistoryPopoverFragment.newInstance();
+        HistoryPopoverFragment historyPopoverFragment = HistoryPopoverFragment.newInstance(this);
 
         // Transaction start
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
@@ -587,6 +590,21 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
                 R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
         fragmentTransaction.add(R.id.fragment_container, historyPopoverFragment, "HistoryPopoverFragment");
         fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    public void showAddMemoriesPopover(){
+        Log.i(logMessages.MEMORY_MONITORING, "HistoryFragment : showAddMemoriesPopover called");
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        AddMemoryFragment addMemoryFragment = AddMemoryFragment.newInstance();
+
+        // Transaction start
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+        fragmentTransaction.setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom,
+                R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
+        fragmentTransaction.replace(R.id.fragment_container, addMemoryFragment, "AddMemoriesFragment");
+
         fragmentTransaction.commit();
     }
 

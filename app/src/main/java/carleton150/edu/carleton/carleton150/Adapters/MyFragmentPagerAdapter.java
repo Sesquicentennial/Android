@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.view.ViewGroup;
 
+import carleton150.edu.carleton.carleton150.ExtraFragments.AddMemoryFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.EventsFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.HistoryFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
