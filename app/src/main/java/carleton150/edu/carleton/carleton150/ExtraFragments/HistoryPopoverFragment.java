@@ -63,7 +63,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+        super.onCreateView(inflater, container, savedInstanceState);
         view = getActivity().getLayoutInflater().
                 inflate(R.layout.fragment_history_popover, new LinearLayout(getActivity()), false);
         TextView txtTitle = (TextView) view.findViewById(R.id.txt_title);
