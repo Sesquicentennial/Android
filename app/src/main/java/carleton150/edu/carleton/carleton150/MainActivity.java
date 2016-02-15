@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         tabLayout.addTab(tabLayout.newTab().setText("Quests"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
         final NoSwipeViewPager viewPager = (NoSwipeViewPager) findViewById(R.id.pager);
+        viewPager.setOffscreenPageLimit(1);
         adapter = new MyFragmentPagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);

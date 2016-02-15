@@ -231,7 +231,7 @@ public class MapMainFragment extends MainFragment {
     }
 
     public void drawTiles(){
-        if(mainActivity.getMemoryClass() > 20) {
+        if(mainActivity.getMemoryClass() > 300) {
 
             if (mMap != null) {
                 setUpMap();
@@ -247,4 +247,5 @@ public class MapMainFragment extends MainFragment {
             }
         }
     }
+    
 }

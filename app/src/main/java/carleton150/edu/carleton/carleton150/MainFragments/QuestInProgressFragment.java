@@ -332,8 +332,7 @@ public class QuestInProgressFragment extends MapMainFragment {
         boolean finished = false;
         Waypoint[] waypoints = quest.getWaypoints();
         try {
-            if (waypoints[numClue] == null &&
-                    waypoints[numClue - 1] != null) {
+            if(numClue == waypoints.length) {
                 finished = true;
                 return finished;
             }
