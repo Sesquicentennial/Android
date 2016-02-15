@@ -1,5 +1,6 @@
 package carleton150.edu.carleton.carleton150.Interfaces;
 
+import carleton150.edu.carleton.carleton150.ExtraFragments.AddMemoryFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
 
 /**
