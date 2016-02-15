@@ -1,5 +1,6 @@
 package carleton150.edu.carleton.carleton150;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -524,6 +525,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public SharedPreferences getPersistentQuestStorage(){
         return getSharedPreferences(QUEST_PREFERENCES_KEY, 0);
 
+    }
+
+    public int getMemoryClass(){
+        ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        int memoryClass = am.getMemoryClass();
+        Log.v(logMessages.MEMORY_MONITORING, "memoryClass:" + Integer.toString(memoryClass));
+        return memoryClass;
     }
 
 }

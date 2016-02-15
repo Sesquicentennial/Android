@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -129,6 +130,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 ((HistoryViewHolderImage) holder).setTxtDate(geofenceInfoContent.getYear());
                 ((HistoryViewHolderImage) holder).setTxtCaption(geofenceInfoContent.getCaption());
             }else{
+                Log.i("HistoryAdapter", "Image string for memory is: " + geofenceInfoContent.getImage());
                 ((HistoryViewHolderImage) holder).setImage(position, geofenceInfoContent.getImage(), screenWidth, screenHeight);
                 ((HistoryViewHolderImage) holder).setTxtDate(geofenceInfoContent.getTimestamp());
                 ((HistoryViewHolderImage) holder).setTxtCaption(geofenceInfoContent.getCaption());

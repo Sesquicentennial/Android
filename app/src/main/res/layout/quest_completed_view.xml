@@ -64,6 +64,7 @@
             android:background="@drawable/rounded_corner_button_bg"
             android:textColor="@color/windowBackground"
             android:gravity="center"
+            android:padding="10dp"
             android:layout_gravity="center_horizontal"
             android:text="Done"
             android:layout_height="wrap_content" />
