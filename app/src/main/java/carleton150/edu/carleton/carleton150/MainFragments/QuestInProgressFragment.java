@@ -58,6 +58,7 @@ public class QuestInProgressFragment extends MapMainFragment {
     private View cardFace;
     private View cardBack;
     private View v;
+    private boolean inView = false;
 
 
     private SupportMapFragment mapFragment;
@@ -132,8 +133,10 @@ public class QuestInProgressFragment extends MapMainFragment {
         ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_img_back);
         ImageView imgClue = (ImageView) v.findViewById(R.id.img_clue_image_front);
 
-
-       checkIfQuestStarted();
+        if(inView) {
+            checkIfQuestStarted();
+            Log.i("CHECK QUEST", "onCreateView, checking if quest is started");
+        }
 
 
         DisplayMetrics metrics = new DisplayMetrics();
@@ -496,6 +499,11 @@ public class QuestInProgressFragment extends MapMainFragment {
             drawLocationMarker(mainActivity.mLastLocation);
         }
         if(this.isResumed()) {
+            if(!inView) {
+                Log.i("CHECK QUEST", "fragmentInView : fragment added to view, checking if quest is started");
+                checkIfQuestStarted();
+                inView = true;
+            }
             drawTiles();
         }
         setCamera();
@@ -530,6 +538,7 @@ public class QuestInProgressFragment extends MapMainFragment {
         ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_img_back);
         ImageView imgQuestCompleted = (ImageView) v.findViewById(R.id.img_animation_quest_completed);
         imgQuestCompleted.setImageDrawable(null);
+        inView = false;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             imgQuestCompleted.setBackground(getResources().getDrawable(R.drawable.ic_cream_star));
         }
