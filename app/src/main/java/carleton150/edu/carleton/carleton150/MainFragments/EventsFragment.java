@@ -10,6 +10,8 @@ import android.widget.ExpandableListView;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 
+import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
@@ -37,10 +39,16 @@ public class EventsFragment extends MainFragment {
     List<EventContent> childList;
     ExpandableListView eventsListView;
 
-    private Button btn_date;
-    private ArrayList<EventContent> eventsByDate = new ArrayList();
+    // Commented ArrayList below because doing hashmap
+    //private ArrayList<EventContent> eventsByDate = new ArrayList();
     HorizontalScrollView datesScrollView;
     private String strDate;
+
+    // RecyclerView Pager
+    private static View v;
+    private RecyclerViewPager dates;
+    private LinkedHashMap<String, List<EventContent>> eventsMapByDate;
+    private List<EventContent> tempEventContentLst = new ArrayList<EventContent>();
 
     public EventsFragment() {
         // Required empty public constructor
@@ -50,9 +58,12 @@ public class EventsFragment extends MainFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_events, container, false);
-        txtTryAgain = (TextView) v.findViewById(R.id.txt_request_events);
+        v = inflater.inflate(R.layout.fragment_events, container, false);
         btnTryAgain = (Button) v.findViewById(R.id.btn_try_getting_events);
+        txtTryAgain = (TextView) v.findViewById(R.id.txt_request_events);
+
+
+        // The following commented code is moved in QuestFragments into separate fns, so do same here
 
         //requests events from server
         requestEvents();
@@ -65,7 +76,9 @@ public class EventsFragment extends MainFragment {
 
         datesScrollView = (HorizontalScrollView) v.findViewById(R.id.scroll_dates);
         //eventsListAdapter = new EventsListAdapter(getActivity(), eventsByDate);
-        
+
+
+
         /*If no events were retrieved, displays this button so the user can click
         to try again once the network is connected
          */
@@ -77,6 +90,15 @@ public class EventsFragment extends MainFragment {
                 requestEvents();
             }
         });
+
+        // Before buildRecyclerViews is called, we need to grab all events and put key for each date in a hashmap
+        // Request events
+        requestEvents();
+
+        // Build RecyclerViews to display date tabs
+        //buildRecyclerViews();
+
+        // Request dates from server (or events? needed if dates already served?)
 
         return v;
     }
@@ -116,6 +138,17 @@ public class EventsFragment extends MainFragment {
                     // eventContents[i].getStartTime();
                     // if equal to button date, then go ahead and add
                     this.events.add(eventContents[i]);
+
+                    // Begin battle
+                    String completeDate = eventContents[i].getStartTime();
+                    String[] completeDateArray = completeDate.split("T");
+                    String dateByDay = completeDateArray[0];
+                    Log.d(dateByDay, " = date without hours/mins/sec");
+
+                    /*// If key already there, replace current List<EventContent>
+                    if (eventsMapByDate.containsKey(dateByDay)) {
+
+                    }*/
                 }
                 txtTryAgain.setVisibility(View.GONE);
                 btnTryAgain.setVisibility(View.GONE);
