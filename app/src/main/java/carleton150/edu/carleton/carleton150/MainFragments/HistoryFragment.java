@@ -56,6 +56,8 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
     private View view;
     private int screenWidth;
 
+    ArrayList<GeofenceObjectContent> currentGeofences;
+
 
     ArrayList<Marker> currentGeofenceMarkers = new ArrayList<Marker>();
     private boolean debugMode = false;
@@ -303,7 +305,31 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
 
             MainActivity mainActivity = (MainActivity) getActivity();
             if(mainActivity != null) {
+                final Button btnRequestInfo = (Button) view.findViewById(R.id.btn_request_info);
+                final TextView txtRequestGeofences = (TextView) view.findViewById(txt_try_getting_geofences);
 
+                if(result == null){
+                    if(currentGeofences != null){
+                        if(currentGeofences.size() != 0){
+
+                            btnRequestInfo.setVisibility(View.VISIBLE);
+                            txtRequestGeofences.setText(getResources().getString(R.string.no_info_retrieved));
+                            txtRequestGeofences.setVisibility(View.VISIBLE);
+                            btnRequestInfo.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                            txtRequestGeofences.setText(getResources().getString(R.string.retrieving_info));
+                                    btnRequestInfo.setVisibility(View.GONE);
+                                            handleGeofenceChange(currentGeofences);
+                                        }
+                            });
+                        }
+                    }
+
+
+
+                }
                 mainActivity.getGeofenceMonitor().handleResult(result);
                 if (result != null) {
                     TextView queryResult = (TextView) view.findViewById(R.id.txt_query_result);
@@ -312,6 +338,9 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
                         myInfoWindowAdapter.setCurrentGeopoints(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
                         // historyCardAdapter.updateGeofences(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
                         // historyCardAdapter.notifyDataSetChanged();
+
+                        btnRequestInfo.setVisibility(View.GONE);
+                        txtRequestGeofences.setVisibility(View.GONE);
 
                         //sets text to display current geofences
                         displayGeofenceInfo();
@@ -487,6 +516,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
     public void handleGeofenceChange(ArrayList<GeofenceObjectContent> currentGeofences) {
         super.handleGeofenceChange(currentGeofences);
         MainActivity mainActivity = (MainActivity) getActivity();
+        this.currentGeofences = currentGeofences;
         if(mainActivity != null) {
             if (mainActivity.isConnectedToNetwork()) {
                 Log.i(logMessages.VOLLEY, "handleGeofenceChange : about to query database : " + currentGeofences.toString());

@@ -42,4 +42,6 @@
     <string name="view_image_clue">VIEW IMAGE CLUE</string>
     <string name="hint">HINT</string>
     <string name="found_it">Found it!</string>
+    <string name ="no_info_retrieved">Unable to retrieve info about geofences. Please check your internet connection and try again.</string>
+    <string name="retrieving_info">Retrieving info about current geofences...</string>
 </resources>
