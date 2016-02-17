@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/event_card_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    card_view:cardBackgroundColor="@color/colorPrimarySemiTransparent"
+    card_view:backgroundTintMode="src_over"
+    card_view:backgroundTint="@color/colorAccent"
+    card_view:cardElevation="3dp"
+    card_view:cardCornerRadius="8dp"
+    android:layout_margin="2dp">
+
+    <TextView
+        android:id="@+id/event_date_title"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</android.support.v7.widget.CardView>

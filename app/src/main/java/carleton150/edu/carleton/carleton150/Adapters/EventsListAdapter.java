@@ -172,13 +172,13 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
             if (dateArray.length >= 6) {
                 df = new SimpleDateFormat("MMM dd hh:mm a");
                 newStartTime = new Date(Integer.parseInt(dateArray[0]),
-                        Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2]),
+                        Integer.parseInt(dateArray[1])-1, Integer.parseInt(dateArray[2]),
                         Integer.parseInt(dateArray[3]), Integer.parseInt(dateArray[4]),
                         Integer.parseInt(dateArray[5]));
             } else {
                 df = new SimpleDateFormat("MMM dd");
                 newStartTime = new Date(Integer.parseInt(dateArray[0]),
-                        Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2]));
+                        Integer.parseInt(dateArray[1])-1, Integer.parseInt(dateArray[2]));
             }
 
             // Set display to new formatted startTime
