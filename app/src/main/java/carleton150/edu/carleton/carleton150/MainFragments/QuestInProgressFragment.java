@@ -156,44 +156,47 @@ public class QuestInProgressFragment extends MapMainFragment {
         });
 
         Waypoint[] waypoints = quest.getWaypoints();
-        String hint = waypoints[numClue].getHint().getText();
+        if(numClue != waypoints.length) {
+            String hint = waypoints[numClue].getHint().getText();
 
-        String image = null;
-        String hintImage = null;
-        if(waypoints[numClue].getHint().getImage() != null) {
-            hintImage = waypoints[numClue].getHint().getImage().getImage();
-        }if(waypoints[numClue].getClue().getImage() != null){
-            image = waypoints[numClue].getClue().getImage().getImage();
-        }
-
-
-        if(hint == null || hint.equals("")) {
-            txtHint.setText(getResources().getString(R.string.no_hint_available));
-        } else {
-            txtHint.setText(waypoints[numClue].getHint().getText());
-        }
-
-
-        if (image != null){
-            slidingDrawerClue.setVisibility(View.VISIBLE);
-            setImage(image, screenWidth, screenHeight, imgClue);
-        }else{
-            slidingDrawerClue.setVisibility(View.GONE);
-        }
-
-        if (hintImage != null){
-            slidingDrawerHint.setVisibility(View.VISIBLE);
-            setImage(hintImage, screenWidth, screenHeight, imgHint);
-        }else{
-            slidingDrawerHint.setVisibility(View.GONE);
-        }
-
-        btnReturnToMyLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                returnZoomToUserLocation();
+            String image = null;
+            String hintImage = null;
+            if (waypoints[numClue].getHint().getImage() != null) {
+                hintImage = waypoints[numClue].getHint().getImage().getImage();
             }
-        });
+            if (waypoints[numClue].getClue().getImage() != null) {
+                image = waypoints[numClue].getClue().getImage().getImage();
+            }
+
+
+            if (hint == null || hint.equals("")) {
+                txtHint.setText(getResources().getString(R.string.no_hint_available));
+            } else {
+                txtHint.setText(waypoints[numClue].getHint().getText());
+            }
+
+
+            if (image != null) {
+                slidingDrawerClue.setVisibility(View.VISIBLE);
+                setImage(image, screenWidth, screenHeight, imgClue);
+            } else {
+                slidingDrawerClue.setVisibility(View.GONE);
+            }
+
+            if (hintImage != null) {
+                slidingDrawerHint.setVisibility(View.VISIBLE);
+                setImage(hintImage, screenWidth, screenHeight, imgHint);
+            } else {
+                slidingDrawerHint.setVisibility(View.GONE);
+            }
+
+            btnReturnToMyLocation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    returnZoomToUserLocation();
+                }
+            });
+        }
 
         btnFoundIt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,7 +205,10 @@ public class QuestInProgressFragment extends MapMainFragment {
 
             }
         });
-        updateCurrentWaypoint();
+        boolean completedQuest = updateCurrentWaypoint();
+        if (completedQuest){
+            showCompletedQuestMessage();
+        }
         return v;
     }
 
