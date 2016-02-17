@@ -134,37 +134,38 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         crashing if the user leaves the tab while the app is trying
         to get quests from the server
          */
+        if(view != null) {
+            try {
+                RecyclerViewPager quests = (RecyclerViewPager) view.findViewById(R.id.lst_quests);
+                TextView txtInfo = (TextView) view.findViewById(R.id.txt_request_quests);
+                Button btnTryAgain = (Button) view.findViewById(R.id.btn_try_getting_quests);
 
-        try {
-            RecyclerViewPager quests = (RecyclerViewPager) view.findViewById(R.id.lst_quests);
-            TextView txtInfo = (TextView) view.findViewById(R.id.txt_request_quests);
-            Button btnTryAgain = (Button) view.findViewById(R.id.btn_try_getting_quests);
+                super.handleNewQuests(newQuests);
+                if (newQuests != null) {
 
-            super.handleNewQuests(newQuests);
-            if (newQuests != null) {
+                    //btnTryAgain.setVisibility(View.GONE);
 
-                //btnTryAgain.setVisibility(View.GONE);
+                    questInfo = newQuests;
 
-                questInfo = newQuests;
+                    questAdapter.updateQuestList(questInfo);
+                    questAdapter.notifyDataSetChanged();
 
-                questAdapter.updateQuestList(questInfo);
-                questAdapter.notifyDataSetChanged();
+                    quests.setVisibility(View.VISIBLE);
+                    //scaleAdapter.notifyDataSetChanged();
+                    Log.i(logMessages.VOLLEY, "QuestFragment: handleNewQuests : questAdapter contains : " + questAdapter.getItemCount());
+                } else {
+                    if (questInfo == null) {
 
-                quests.setVisibility(View.VISIBLE);
-                //scaleAdapter.notifyDataSetChanged();
-                Log.i(logMessages.VOLLEY, "QuestFragment: handleNewQuests : questAdapter contains : " + questAdapter.getItemCount());
-            } else {
-                if (questInfo == null) {
-
-                    txtInfo.setText(getString(R.string.no_quests_retrieved));
-                    btnTryAgain.setVisibility(View.VISIBLE);
-                    if(quests != null){
-                        quests.setVisibility(View.GONE);
+                        txtInfo.setText(getString(R.string.no_quests_retrieved));
+                        btnTryAgain.setVisibility(View.VISIBLE);
+                        if (quests != null) {
+                            quests.setVisibility(View.GONE);
+                        }
                     }
                 }
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
             }
-        }catch (IllegalStateException e){
-            e.printStackTrace();
         }
     }
 

@@ -39,4 +39,7 @@
     <string name="please_add_memory_uploader_name">Please add the name of the memory uploader</string>
     <string name="please_add_memory_desc">Please add a description for the memory you are uploading</string>
     <string name="unable_to_get_location">Unable to get your location. Please try again soon.</string>
+    <string name="view_image_clue">VIEW IMAGE CLUE</string>
+    <string name="hint">HINT</string>
+    <string name="found_it">Found it!</string>
 </resources>
