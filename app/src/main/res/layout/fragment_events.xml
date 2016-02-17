@@ -57,7 +57,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
-            <!--<LinearLayout
+            <!-- Eventually phase out dummy LinearLayout below
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal" >
@@ -65,24 +66,24 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="January 31"/>
+                    android:text="February 17, 2016"/>
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Feb 1"/>
+                    android:text="Feb 18, 2016"/>
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Feb 2"/>
+                    android:text="Feb 19, 2016"/>
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Feb 3"/>
+                    android:text="Feb 20, 2016"/>
 
-            </LinearLayout>-->
+            </LinearLayout> -->
         </HorizontalScrollView>
 
         <ExpandableListView
