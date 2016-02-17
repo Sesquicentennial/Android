@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_root"
     android:layout_width="fill_parent"
@@ -45,6 +45,18 @@
             android:layout_marginTop="50dp"
             android:id="@+id/scroll_dates">
 
+            <com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager
+                android:id="@+id/lst_event_dates"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:scrollbars="horizontal"
+                app:rvp_triggerOffset="0.1"
+                android:visibility="gone"
+                app:rvp_singlePageFling="true"
+                android:clipToPadding="false"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
             <!--<LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -82,4 +94,4 @@
     </LinearLayout>
 
 
-</RelativeLayout>
+</FrameLayout>

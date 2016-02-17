@@ -65,14 +65,7 @@ public class EventsFragment extends MainFragment {
 
         datesScrollView = (HorizontalScrollView) v.findViewById(R.id.scroll_dates);
         //eventsListAdapter = new EventsListAdapter(getActivity(), eventsByDate);
-
-        /*btn_date.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                requestEvents();
-            }
-        });
-*/
+        
         /*If no events were retrieved, displays this button so the user can click
         to try again once the network is connected
          */
@@ -84,8 +77,6 @@ public class EventsFragment extends MainFragment {
                 requestEvents();
             }
         });
-
-
 
         return v;
     }
