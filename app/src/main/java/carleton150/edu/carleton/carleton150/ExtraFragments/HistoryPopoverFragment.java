@@ -46,7 +46,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
     private int screenWidth;
     private int screenHeight;
     private TextView txtErrorGettingMemories;
-    private int MEMORIES_RADIUS = 1000;
+    private double MEMORIES_RADIUS = 1.0;
     private static HistoryFragment parentFragment;
 
     private static GeofenceInfoContent[] geofenceInfoObject;

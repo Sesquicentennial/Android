@@ -288,12 +288,12 @@ public class VolleyRequester {
         JSONObject memoriesRequest = new JSONObject();
 
         try {
-            memoriesRequest.put("lat", 44.461319);
-            memoriesRequest.put("lng", -93.156094);
-            memoriesRequest.put("rad", 0.1);
-//            memoriesRequest.put("lng", longitude);
-//            memoriesRequest.put("lat", latitude);
-//            memoriesRequest.put("rad", radius);
+//            memoriesRequest.put("lat", 44.461319);
+//            memoriesRequest.put("lng", -93.156094);
+//            memoriesRequest.put("rad", 0.1);
+            memoriesRequest.put("lat", latitude);
+            memoriesRequest.put("lng", longitude);
+            memoriesRequest.put("rad", radius);
         } catch (JSONException e) {
             e.printStackTrace();
         }

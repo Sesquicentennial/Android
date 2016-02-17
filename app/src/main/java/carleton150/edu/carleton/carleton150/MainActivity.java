@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     // Location updates intervals in milliseconds
     private static int UPDATE_INTERVAL = 30000; // 30 sec
     private static int FASTEST_INTERVAL = 10000; // 10 sec
-    private static int DISPLACEMENT = 10; // 100 meters
+    private static int DISPLACEMENT = 10; // 10 meters
 
     private LogMessages logMessages = new LogMessages();
 
