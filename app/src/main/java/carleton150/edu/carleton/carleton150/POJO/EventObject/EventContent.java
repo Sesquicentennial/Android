@@ -1,9 +1,6 @@
 package carleton150.edu.carleton.carleton150.POJO.EventObject;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import android.util.Log;
 
 public class EventContent
 {
@@ -21,21 +18,24 @@ public class EventContent
 
 
     public String getStartTime () {
-        /*DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SS");
-        DateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd");
-        String newStartTime;
-        try {
-            newStartTime = dateFormat.format(startTime);
-        }
-        catch (ParseException e) {
-            try {
-                newStartTime = dateFormat2.format(startTime);
-            }
-            catch (ParseException e2) {
-                return startTime;
-            }
-        }
-        return newStartTime;*/
+        // DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SS");
+        // DateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd");
+        Log.d(startTime.toString(), " = StartTime");
+        //String[] dates = startTime.split("(-)|(T)|(:)");
+        /*int year = Integer.parseInt(dates[0]);
+        int month = Integer.parseInt(dates[1]);
+        int day = Integer.parseInt(dates[2]);
+        int hour = Integer.parseInt(dates[3]);
+        int minute = Integer.parseInt(dates[4]);
+        int second = Integer.parseInt(dates[5]);*/
+
+        /*for (int i = 0; i < dates.length; i++) {
+            Log.d(dates[i], " Date");
+        }*/
+
+
+        //return newStartTime;
+
         return startTime;
 
         //SimpleDateFormat oldTimeFormat = new SimpleDateFormat("yyyy-MM-dd");
