@@ -281,7 +281,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 //TODO: find better formula than dividing by 2
                 final BitmapWorkerTask task = new BitmapWorkerTask(imgMedia,  encodedImage
-                        , screenWidth/2, screenHeight/2);
+                        , screenWidth/3, screenHeight/2);
                 final BitmapWorkerTask.AsyncDrawable asyncDrawable =
                         new BitmapWorkerTask.AsyncDrawable(mPlaceHolderBitmap, task);
                 imgMedia.setImageDrawable(asyncDrawable);

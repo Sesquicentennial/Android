@@ -51,7 +51,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:paddingBottom="25dp"
+        android:paddingBottom="80dp"
         android:layout_alignParentBottom="true"
         android:layout_height="wrap_content">
     <Button
@@ -63,7 +63,7 @@
         android:layout_centerHorizontal="true"
         android:background="@drawable/rounded_corner_button_bg"
         android:textColor="@color/windowBackground"
-        android:text="Found it!"
+        android:text="@string/found_it"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         />
@@ -80,7 +80,7 @@
 
         <Button
             android:id="@+id/btn_show_hint"
-            android:text="HINT"
+            android:text="@string/hint"
             android:padding="10dp"
             android:background="@color/transparent"
             android:gravity="center"
@@ -104,10 +104,17 @@
             android:id="@+id/lin_layout_handle_front"
             android:background="@color/colorPrimaryDarkSlightlyTransparent"
             android:orientation="vertical"
-            android:layout_height="20dp">
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/img_expand_clue"
+                android:src="@drawable/ic_navigation_expand_less"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <TextView
-                android:text="VIEW IMAGE CLUE"
+                android:text="@string/view_image_clue"
                 android:textColor="@color/colorAccent"
                 android:layout_width="match_parent"
                 android:gravity="center_horizontal"

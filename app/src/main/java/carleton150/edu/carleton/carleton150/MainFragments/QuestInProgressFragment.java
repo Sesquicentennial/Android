@@ -100,6 +100,35 @@ public class QuestInProgressFragment extends MapMainFragment {
         Button btnFlipCardToHint = (Button) v.findViewById(R.id.btn_show_hint);
         SlidingDrawer slidingDrawerClue = (SlidingDrawer) v.findViewById(R.id.front_drawer);
         SlidingDrawer slidingDrawerHint = (SlidingDrawer) v.findViewById(R.id.drawer_hint);
+        final ImageView imgExpandClue = (ImageView) v.findViewById(R.id.img_expand_clue);
+        final ImageView imgExpandHint = (ImageView) v.findViewById(R.id.img_expand_hint);
+
+
+        slidingDrawerClue.setOnDrawerOpenListener(new SlidingDrawer.OnDrawerOpenListener() {
+            @Override
+            public void onDrawerOpened() {
+                imgExpandClue.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_expand_more));
+            }
+        });
+        slidingDrawerHint.setOnDrawerOpenListener(new SlidingDrawer.OnDrawerOpenListener() {
+            @Override
+            public void onDrawerOpened() {
+                imgExpandHint.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_expand_more));
+            }
+        });
+
+        slidingDrawerClue.setOnDrawerCloseListener(new SlidingDrawer.OnDrawerCloseListener() {
+            @Override
+            public void onDrawerClosed() {
+                imgExpandClue.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_expand_less));
+            }
+        });
+        slidingDrawerHint.setOnDrawerCloseListener(new SlidingDrawer.OnDrawerCloseListener() {
+            @Override
+            public void onDrawerClosed() {
+                imgExpandHint.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_expand_less));
+            }
+        });
         ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_img_back);
         ImageView imgClue = (ImageView) v.findViewById(R.id.img_clue_image_front);
 
@@ -326,15 +355,15 @@ public class QuestInProgressFragment extends MapMainFragment {
             SlidingDrawer slidingDrawerHint = (SlidingDrawer) v.findViewById(R.id.drawer_hint);
             txtClue.setText(waypoints[numClue].getClue().getText());
             txtClueNumber.setText((numClue + 1) + "/" + quest.getWaypoints().length);
-            ImageView imgClue = (ImageView) v.findViewById(R.id.img_clue_image_front);
-            ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_img_back);
+
             if(txtHint != null || !txtHint.equals("")){
                 txtHint.setText(waypoints[numClue].getHint().getText());
             }else{
                 txtHint.setText(getResources().getString(R.string.no_hint_available));
             }
 
-
+            ImageView imgClue = (ImageView) v.findViewById(R.id.img_clue_image_front);
+            ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_img_back);
             String image = null;
             String hintImage = null;
             if(waypoints[numClue].getHint().getImage() != null) {
@@ -462,9 +491,39 @@ public class QuestInProgressFragment extends MapMainFragment {
             drawTiles();
         }
         setCamera();
+
+        if(isResumed()) {
+            ImageView imgClue = (ImageView) v.findViewById(R.id.img_clue_image_front);
+            ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_img_back);
+            Waypoint[] waypoints = quest.getWaypoints();
+
+            String image = null;
+            String hintImage = null;
+            if (waypoints[numClue].getHint().getImage() != null) {
+                hintImage = waypoints[numClue].getHint().getImage().getImage();
+                setImage(hintImage, screenWidth, screenHeight, imgHint);
+            }
+            if (waypoints[numClue].getClue().getImage() != null) {
+                image = waypoints[numClue].getClue().getImage().getImage();
+                setImage(image, screenWidth, screenHeight, imgClue);
+            }
+
+
+
+
+
+        }
+
+        }
+
+    @Override
+    public void fragmentOutOfView() {
+        super.fragmentOutOfView();
+        ImageView imgClue = (ImageView) v.findViewById(R.id.img_clue_image_front);
+        ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_img_back);
+        imgClue.setImageDrawable(null);
+        imgHint.setImageDrawable(null);
     }
-
-
 
     /**
      * Map should be set to null in onDestroyView(), but then there is an error
@@ -510,7 +569,7 @@ public class QuestInProgressFragment extends MapMainFragment {
 
 
             final BitmapWorkerTask task = new BitmapWorkerTask(imageView,  encodedImage
-                    , screenWidth/2, screenHeight/2);
+                    , screenWidth/3, screenHeight/6);
             final BitmapWorkerTask.AsyncDrawable asyncDrawable =
                     new BitmapWorkerTask.AsyncDrawable(mPlaceHolderBitmap, task);
             imageView.setImageDrawable(asyncDrawable);
