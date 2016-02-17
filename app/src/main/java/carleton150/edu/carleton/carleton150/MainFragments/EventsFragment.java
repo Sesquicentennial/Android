@@ -47,7 +47,7 @@ public class EventsFragment extends MainFragment {
     // RecyclerView Pager
     private static View v;
     private RecyclerViewPager dates;
-    private LinkedHashMap<String, List<EventContent>> eventsMapByDate;
+    private LinkedHashMap<String, List<EventContent>> eventsMapByDate = new LinkedHashMap<String, List<EventContent>>();
     private List<EventContent> tempEventContentLst = new ArrayList<EventContent>();
 
     public EventsFragment() {
@@ -144,10 +144,20 @@ public class EventsFragment extends MainFragment {
                     String[] completeDateArray = completeDate.split("T");
                     String dateByDay = completeDateArray[0];
                     Log.d(dateByDay, " = date without hours/mins/sec");
+                    Log.d(String.valueOf(tempEventContentLst), " = tempEventContentLst should be empty");
+                    Log.d(String.valueOf(eventsMapByDate), " = eventsMapByDate should be empty and showing");
 
-                    /*// If key already there, replace current List<EventContent>
-                    if (eventsMapByDate.containsKey(dateByDay)) {
-
+                    /*// If key not already there, add from current List<EventContent>
+                    if (eventsMapByDate.get(dateByDay) == null) {
+                        tempEventContentLst.add(eventContents[i]);
+                        eventsMapByDate.put(dateByDay, tempEventContentLst);
+                        //Log.d(String.valueOf(tempEventContentLst), " = tempEventContentLst so far");
+                        //Log.d(String.valueOf(eventsMapByDate), " = eventsMapByDate (all events for each date");
+                    }
+                    else {
+                        tempEventContentLst.add(eventContents[i]);
+                        //Log.d(String.valueOf(tempEventContentLst), " = tempEventContentLst added to");
+                        //Log.d(dateByDay, "Got to the else statement...meaning key hadn't existed?");
                     }*/
                 }
                 txtTryAgain.setVisibility(View.GONE);
