@@ -26,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -176,7 +177,7 @@ public class AddMemoryFragment extends Fragment {
                 if (resultCode != 1) {
                     Bitmap downsizedBitmap = null;
                     try {
-                        downsizedBitmap = decodeUri(getActivity(),Uri.fromFile(new File(path)), 400);
+                        downsizedBitmap = decodeUri(getActivity(),Uri.fromFile(new File(path)), 800);
                         Log.i(new LogMessages().IMAGE_HANDLING, "OnActivityResult : downsized bitmap successfully");
                         imgMemoryView.setImageBitmap(downsizedBitmap);
                         imgMemoryView.setVisibility(View.VISIBLE);
@@ -202,7 +203,7 @@ public class AddMemoryFragment extends Fragment {
         }
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        downsizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+        downsizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
         byte[] byteArray = bos.toByteArray();
         imageString = Base64.encodeToString(byteArray, Base64.DEFAULT);
         Log.i(new LogMessages().MEMORY_MONITORING, "setImageString : imageString is : " + imageString);
@@ -257,8 +258,7 @@ public class AddMemoryFragment extends Fragment {
             String desc = etDesc.getText().toString();
             String uploader = etUploader.getText().toString();
 
-            Calendar c = Calendar.getInstance();
-            String timestamp = c.getTime().toString();
+            String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
 
             Location curLocation = mainActivity.getLastLocation();
             double lat;
