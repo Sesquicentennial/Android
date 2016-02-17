@@ -55,6 +55,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
     private MyInfoWindowAdapter myInfoWindowAdapter;
     private View view;
     private int screenWidth;
+    private boolean needToHandleGeofenceChange = false;
 
     ArrayList<GeofenceObjectContent> currentGeofences;
 
@@ -219,6 +220,10 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         MainActivity mainActivity = (MainActivity) getActivity();
         if(mainActivity.isConnectedToNetwork()) {
             setUpMapIfNeeded();
+            if(currentGeofences != null && needToHandleGeofenceChange){
+                handleGeofenceChange(currentGeofences);
+                needToHandleGeofenceChange = false;
+            }
         }
         fragmentInView();
     }
@@ -354,6 +359,10 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
                         e.printStackTrace();
                         queryResult.setText("the geofence request returned a null content array");
                     }
+                }
+            }else{
+                if(result != null){
+                    boolean needToHandleGeofenceChange = true;
                 }
             }
         }
@@ -542,6 +551,10 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         super.fragmentInView();
         MainActivity mainActivity = (MainActivity) getActivity();
         if(view != null) {
+            if(currentGeofences != null && needToHandleGeofenceChange){
+                handleGeofenceChange(currentGeofences);
+                needToHandleGeofenceChange = false;
+            }
             Button btnRequestGeofences = (Button) view.findViewById(R.id.btn_request_geofences);
             TextView txtRequestGeofences = (TextView) view.findViewById(txt_try_getting_geofences);
             if (mainActivity == null) {
