@@ -33,9 +33,9 @@ public class MyScaleInAnimationAdapter extends AnimationAdapter {
             ObjectAnimator scaleX = ObjectAnimator.ofFloat(view.findViewById(R.id.img_history_info_image), "scaleX", mFrom, 1f);
             ObjectAnimator scaleY = ObjectAnimator.ofFloat(view.findViewById(R.id.img_history_info_image), "scaleY", mFrom, 1f);
             return new ObjectAnimator[] { scaleX, scaleY };
-        }else if(view.findViewById(R.id.txt_txt_media) != null){
-            ObjectAnimator scaleX = ObjectAnimator.ofFloat(view.findViewById(R.id.txt_txt_media), "scaleX", mFrom, 1f);
-            ObjectAnimator scaleY = ObjectAnimator.ofFloat(view.findViewById(R.id.txt_txt_media), "scaleY", mFrom, 1f);
+        }else if(view.findViewById(R.id.txt_txt_summary) != null){
+            ObjectAnimator scaleX = ObjectAnimator.ofFloat(view.findViewById(R.id.txt_txt_summary), "scaleX", mFrom, 1f);
+            ObjectAnimator scaleY = ObjectAnimator.ofFloat(view.findViewById(R.id.txt_txt_summary), "scaleY", mFrom, 1f);
             return new ObjectAnimator[] { scaleX, scaleY };
         }else{
             ObjectAnimator scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1, 1f);

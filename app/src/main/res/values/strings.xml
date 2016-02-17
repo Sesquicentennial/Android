@@ -34,4 +34,9 @@
     <string name="no_current_location">We do not currently have a location. Please try again soon</string>
     <string name="no_nearby_memories">No nearby memories. Please try again soon</string>
     <string name="memories_null">New memories are null</string>
+    <string name="unable_to_decode_image">Please select an image</string>
+    <string name="please_add_memory_title">Please make a title</string>
+    <string name="please_add_memory_uploader_name">Please add the name of the memory uploader</string>
+    <string name="please_add_memory_desc">Please add a description for the memory you are uploading</string>
+    <string name="unable_to_get_location">Unable to get your location. Please try again soon.</string>
 </resources>

@@ -564,7 +564,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
     /**
      * Builds the views for the quests
      */
-   /* private void buildRecyclerViews(){
+   /* private void buildiews(){
         DisplayMetrics metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         screenWidth = metrics.widthPixels;
@@ -601,8 +601,8 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         // Transaction start
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
 
-        fragmentTransaction.setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom,
-                R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
+        fragmentTransaction.setCustomAnimations(R.anim.abc_slide_in_top, R.anim.abc_slide_out_bottom,
+                R.anim.abc_slide_in_top, R.anim.abc_slide_out_bottom);
         fragmentTransaction.replace(R.id.fragment_container, addMemoryFragment, "AddMemoriesFragment");
 
         fragmentTransaction.commit();
