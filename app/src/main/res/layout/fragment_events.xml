@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_root"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent">
 
+    <!-- Ignore: Getting events holder... -->
     <LinearLayout
         android:id="@+id/layout_unable_to_retrieve_events"
         android:layout_width="match_parent"
@@ -30,18 +32,20 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
-
+    <!-- Vertical Layout for date tabs + event item list -->
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
+        <!-- Event list view -->
         <HorizontalScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp">
+            android:layout_marginTop="50dp"
+            android:id="@+id/scroll_dates">
 
-            <LinearLayout
+            <!--<LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal" >
@@ -66,7 +70,7 @@
                     android:layout_height="wrap_content"
                     android:text="Feb 3"/>
 
-            </LinearLayout>
+            </LinearLayout>-->
         </HorizontalScrollView>
 
         <ExpandableListView
@@ -76,10 +80,6 @@
         </ExpandableListView>
 
     </LinearLayout>
-   <!--<ListView
-       android:id="@+id/lst_events"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:padding="16dp" />-->
+
 
 </RelativeLayout>

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -29,11 +30,17 @@ public class EventsFragment extends MainFragment {
     private Button btnTryAgain;
     private TextView txtTryAgain;
     private ArrayList<EventContent> events = new ArrayList<>();
+
     private EventsListAdapter eventsListAdapter;
 
     List<EventContent> groupList;
     List<EventContent> childList;
     ExpandableListView eventsListView;
+
+    private Button btn_date;
+    private ArrayList<EventContent> eventsByDate = new ArrayList();
+    HorizontalScrollView datesScrollView;
+    private String strDate;
 
     public EventsFragment() {
         // Required empty public constructor
@@ -51,16 +58,24 @@ public class EventsFragment extends MainFragment {
         requestEvents();
 
         LinkedHashMap<String, List<String>> eventCollections = createCollection();
-        ArrayList<String> groupList = createGroupList();
 
         eventsListView = (ExpandableListView) v.findViewById(R.id.lst_events);
         eventsListAdapter = new EventsListAdapter(getActivity(), events);
         eventsListView.setAdapter(eventsListAdapter);
 
+        datesScrollView = (HorizontalScrollView) v.findViewById(R.id.scroll_dates);
+        //eventsListAdapter = new EventsListAdapter(getActivity(), eventsByDate);
+
+        /*btn_date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestEvents();
+            }
+        });
+*/
         /*If no events were retrieved, displays this button so the user can click
         to try again once the network is connected
          */
-
         btnTryAgain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,6 +84,8 @@ public class EventsFragment extends MainFragment {
                 requestEvents();
             }
         });
+
+
 
         return v;
     }
@@ -105,11 +122,14 @@ public class EventsFragment extends MainFragment {
             try {
                 EventContent[] eventContents = events.getContent();
                 for (int i = 0; i < eventContents.length; i++) {
+                    // eventContents[i].getStartTime();
+                    // if equal to button date, then go ahead and add
                     this.events.add(eventContents[i]);
                 }
                 txtTryAgain.setVisibility(View.GONE);
                 btnTryAgain.setVisibility(View.GONE);
                 eventsListView.setVisibility(View.VISIBLE);
+                datesScrollView.setVisibility(View.VISIBLE);
                 eventsListAdapter.notifyDataSetChanged();
             } catch (NullPointerException e) {
                 if (this.events.size() == 0) {
@@ -117,6 +137,7 @@ public class EventsFragment extends MainFragment {
                     txtTryAgain.setVisibility(View.VISIBLE);
                     btnTryAgain.setVisibility(View.VISIBLE);
                     eventsListView.setVisibility(View.GONE);
+                    datesScrollView.setVisibility(View.GONE);
                     e.printStackTrace();
                 }
             }

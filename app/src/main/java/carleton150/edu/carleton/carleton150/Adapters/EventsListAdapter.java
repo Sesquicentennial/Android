@@ -18,89 +18,23 @@ import carleton150.edu.carleton.carleton150.R;
 
 *//**
  * Created by nayelymartinez on 2/4/16.
- *//*
-public class EventsListAdapter extends BaseExpandableListAdapter {
-    private Activity context;
-    private Map<String, List<String>> eventCollections;
-    private List<EventContent> events;
-
-    public EventsListAdapter(Activity context, List<EventContent> events){
-        this.events = events;
-        this.context = context;
-    }
-
-    public Object getChild(int groupPosition, int childPosition) {
-        return eventCollections.get(events.get(groupPosition)).get(childPosition);
-    }
-
-    public long getChildId(int groupPosition, int childPosition) {
-        return childPosition;
-    }
-
-    public View getChildView(final int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        final String event = (String) getChild(groupPosition, childPosition);
-        LayoutInflater inflater = context.getLayoutInflater();
-
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.child_item, null);
-        }
-
-        TextView item = (TextView) convertView.findViewById(R.id.event);
-
-        item.setText(event);
-        return convertView;
-    }
-
-    public int getChildrenCount(int groupPosition) {
-        return eventCollections.get(events.get(groupPosition)).size();
-    }
-
-    public Object getGroup(int groupPosition) {
-        return events.get(groupPosition);
-    }
-
-    public int getGroupCount() {
-        return events.size();
-    }
-
-    public long getGroupId(int groupPosition) {
-        return groupPosition;
-    }
-
-    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        String eventName = (String) getGroup(groupPosition);
-        if (convertView == null) {
-            LayoutInflater groupinflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = groupinflater.inflate(R.layout.group_item, null);
-        }
-
-        TextView item = (TextView) convertView.findViewById(R.id.event);
-        item.setTypeface(null, Typeface.BOLD);
-        item.setText(eventName);
-        return convertView;
-    }
-
-    public boolean hasStableIds() {
-        return true;
-    }
-
-    public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return true;
-    }
-}*/
-
+ */
 
 package carleton150.edu.carleton.carleton150.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import carleton150.edu.carleton.carleton150.POJO.EventObject.EventContent;
@@ -120,6 +54,7 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
         TextView txtTitle;
         TextView txtLocation;
         TextView txtDate;
+        //Button btnDate;
         View view;
     }
 
@@ -189,6 +124,7 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
 
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         EventContent eventName = (EventContent) getGroup(groupPosition);
+
         final ViewHolder holder;
 
         if (convertView == null) {
@@ -201,6 +137,7 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
+        //holder.btnDate = (Button) convertView.findViewById(R.id.btn_date);
         holder.txtTitle = (TextView) convertView.findViewById(R.id.txt_title);
         holder.txtLocation = (TextView) convertView.findViewById(R.id.txt_location);
         holder.txtDate = (TextView) convertView.findViewById(R.id.txt_date);
@@ -210,9 +147,43 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
         final EventContent event = events.get(groupPosition);
         //final ViewHolder holder = (ViewHolder) v.getTag();
         if(event != null){
+            //holder.btnDate.setText(event.getStartTime());
             holder.txtTitle.setText(event.getTitle());
-            holder.txtDate.setText(event.getStartTime());
             holder.txtLocation.setText(event.getLocation());
+
+            // Format date string by creating new Date object
+            String startTime = event.getStartTime();
+            String[] dateArray = startTime.split("(-)|(T)|(:)");
+
+            try {
+                Log.d(dateArray[0], " year");
+                Log.d(dateArray[1], " month");
+                Log.d(dateArray[2], " day");
+                Log.d(dateArray[3], " hour");
+                Log.d(dateArray[4], " minute");
+                Log.d(dateArray[5], " second");
+            } catch (IndexOutOfBoundsException e) {
+                Log.i(e.getMessage(), "All-day long event");
+            }
+
+            // Check if hours/minutes/seconds included
+            DateFormat df;
+            Date newStartTime;
+            if (dateArray.length >= 6) {
+                df = new SimpleDateFormat("MMM dd hh:mm a");
+                newStartTime = new Date(Integer.parseInt(dateArray[0]),
+                        Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2]),
+                        Integer.parseInt(dateArray[3]), Integer.parseInt(dateArray[4]),
+                        Integer.parseInt(dateArray[5]));
+            } else {
+                df = new SimpleDateFormat("MMM dd");
+                newStartTime = new Date(Integer.parseInt(dateArray[0]),
+                        Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2]));
+            }
+
+            // Set display to new formatted startTime
+            startTime = df.format(newStartTime);
+            holder.txtDate.setText(startTime);
         }
 
         if (event.isExpanded()) {
