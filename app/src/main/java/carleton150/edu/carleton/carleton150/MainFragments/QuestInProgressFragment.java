@@ -499,6 +499,10 @@ public class QuestInProgressFragment extends MapMainFragment {
 
             String image = null;
             String hintImage = null;
+            if(waypoints.length == numClue){
+                showCompletedQuestMessage();
+                return;
+            }
             if (waypoints[numClue].getHint().getImage() != null) {
                 hintImage = waypoints[numClue].getHint().getImage().getImage();
                 setImage(hintImage, screenWidth, screenHeight, imgHint);
@@ -507,11 +511,6 @@ public class QuestInProgressFragment extends MapMainFragment {
                 image = waypoints[numClue].getClue().getImage().getImage();
                 setImage(image, screenWidth, screenHeight, imgClue);
             }
-
-
-
-
-
         }
 
         }

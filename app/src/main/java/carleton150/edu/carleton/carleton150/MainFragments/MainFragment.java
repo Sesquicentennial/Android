@@ -60,11 +60,11 @@ public class MainFragment extends Fragment{
      * @param result
      */
     public void handleResult(GeofenceInfoObject result){
-        if(result == null){
+        /*if(result == null){
             MainActivity mainActivity = (MainActivity) getActivity();
                 Toast toast = Toast.makeText(mainActivity, "Null info result", Toast.LENGTH_SHORT);
                 toast.show();
-            }
+            }*/
         }
 
 
@@ -105,9 +105,9 @@ public class MainFragment extends Fragment{
     }
 
     public void printMessageToast(String message){
-        MainActivity mainActivity = (MainActivity) getActivity();
+       /* MainActivity mainActivity = (MainActivity) getActivity();
         Toast toast = Toast.makeText(mainActivity, message, Toast.LENGTH_SHORT);
-        toast.show();
+        toast.show();*/
     }
 }
 

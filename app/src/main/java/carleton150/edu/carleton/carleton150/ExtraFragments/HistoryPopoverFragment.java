@@ -46,7 +46,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
     private int screenWidth;
     private int screenHeight;
     private TextView txtErrorGettingMemories;
-    private double MEMORIES_RADIUS = 1.0;
+    private double MEMORIES_RADIUS = 0.1;
     private static HistoryFragment parentFragment;
 
     private static GeofenceInfoContent[] geofenceInfoObject;
@@ -124,6 +124,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
     }
 
     private void removeCurrentFragment(){
+        historyAdapter.closeAdapter();
         FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
         fm.setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
         fm.detach(this).remove(this).commit();

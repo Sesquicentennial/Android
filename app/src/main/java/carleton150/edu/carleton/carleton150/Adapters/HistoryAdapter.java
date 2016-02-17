@@ -67,7 +67,16 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     private void clearDate(){
-        scrolledListener.recyclerViewStoppedScrolling();
+        if(scrolledListener != null) {
+            scrolledListener.recyclerViewStoppedScrolling();
+        }
+    }
+
+    public void closeAdapter(){
+        this.context = null;
+        this.historyList = null;
+        this.clickListener = null;
+        this.scrolledListener = null;
     }
 
     /**
@@ -281,7 +290,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 //TODO: find better formula than dividing by 2
                 final BitmapWorkerTask task = new BitmapWorkerTask(imgMedia,  encodedImage
-                        , screenWidth/3, screenHeight/2);
+                        , screenWidth/2, screenHeight/3);
                 final BitmapWorkerTask.AsyncDrawable asyncDrawable =
                         new BitmapWorkerTask.AsyncDrawable(mPlaceHolderBitmap, task);
                 imgMedia.setImageDrawable(asyncDrawable);
