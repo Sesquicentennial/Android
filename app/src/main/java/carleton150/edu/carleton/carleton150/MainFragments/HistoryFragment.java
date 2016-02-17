@@ -299,30 +299,33 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         crashing if the user leaves the tab while the app is trying
         to get quests from the server
          */
-        if(this.isDetached()){
-            return;
-        }
-        MainActivity mainActivity = (MainActivity) getActivity();
-        mainActivity.getGeofenceMonitor().handleResult(result);
-        if (result != null){
-            TextView queryResult = (TextView) view.findViewById(R.id.txt_query_result);
-            try {
-                //Gives information to the infoWindowAdapter for displaying info windows
-                myInfoWindowAdapter.setCurrentGeopoints(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
-               // historyCardAdapter.updateGeofences(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
-               // historyCardAdapter.notifyDataSetChanged();
+        if(this.isResumed()) {
 
-                //sets text to display current geofences
-                displayGeofenceInfo();
-                drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
+            MainActivity mainActivity = (MainActivity) getActivity();
+            if(mainActivity != null) {
 
-                if (!debugMode) {
-                    queryResult.setVisibility(View.GONE);
+                mainActivity.getGeofenceMonitor().handleResult(result);
+                if (result != null) {
+                    TextView queryResult = (TextView) view.findViewById(R.id.txt_query_result);
+                    try {
+                        //Gives information to the infoWindowAdapter for displaying info windows
+                        myInfoWindowAdapter.setCurrentGeopoints(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
+                        // historyCardAdapter.updateGeofences(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
+                        // historyCardAdapter.notifyDataSetChanged();
+
+                        //sets text to display current geofences
+                        displayGeofenceInfo();
+                        drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
+
+                        if (!debugMode) {
+                            queryResult.setVisibility(View.GONE);
+                        }
+                        queryResult.setText(result.toString());
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                        queryResult.setText("the geofence request returned a null content array");
+                    }
                 }
-                queryResult.setText(result.toString());
-            }catch (NullPointerException e){
-                e.printStackTrace();
-                queryResult.setText("the geofence request returned a null content array");
             }
         }
     }

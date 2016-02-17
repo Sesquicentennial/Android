@@ -426,7 +426,9 @@ public class QuestInProgressFragment extends MapMainFragment {
         RelativeLayout relLayoutQuestCompleted = (RelativeLayout) v.findViewById(R.id.rel_layout_quest_completed);
         Button btnDoneWithQuest = (Button) v.findViewById(R.id.btn_done_with_quest);
         MainActivity mainActivity = (MainActivity) getActivity();
-        imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(mainActivity, R.drawable.anim_quest_completed));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            imgQuestCompleted.setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.anim_quest_completed));
+        }
         txtQuestCompleted.setText("Message is : " + quest.getCompMsg());
         txtQuestCompleted.setMovementMethod(new ScrollingMovementMethod());
         imgQuestCompleted.setVisibility(View.VISIBLE);
@@ -520,6 +522,11 @@ public class QuestInProgressFragment extends MapMainFragment {
         super.fragmentOutOfView();
         ImageView imgClue = (ImageView) v.findViewById(R.id.img_clue_image_front);
         ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_img_back);
+        ImageView imgQuestCompleted = (ImageView) v.findViewById(R.id.img_animation_quest_completed);
+        imgQuestCompleted.setImageDrawable(null);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            imgQuestCompleted.setBackground(getResources().getDrawable(R.drawable.ic_cream_star));
+        }
         imgClue.setImageDrawable(null);
         imgHint.setImageDrawable(null);
     }

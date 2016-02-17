@@ -74,9 +74,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public void closeAdapter(){
         this.context = null;
-        this.historyList = null;
         this.clickListener = null;
-        this.scrolledListener = null;
     }
 
     /**
