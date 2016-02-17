@@ -1,7 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDarkSlightlyTransparent"
+    android:background="@color/windowBackground"
     tools:context="carleton150.edu.carleton.carleton150.ExtraFragments.AddMemoryFragment">
 
 
@@ -11,11 +11,114 @@
            android:orientation="vertical"
            android:weightSum="30"
            android:layout_height="match_parent">
+
+           <RelativeLayout
+               android:id="@+id/layout_title"
+               android:layout_width="match_parent"
+               android:background="@color/colorPrimaryDarkSlightlyTransparent"
+               android:layout_height="wrap_content">
+               <Button
+                   android:id="@+id/btn_exit_popup"
+                   android:background="@color/transparent"
+                   android:text="X"
+                   android:textSize="@dimen/abc_text_size_large_material"
+                   android:layout_alignParentTop="true"
+                   android:layout_alignParentRight="true"
+                   android:textColor="@color/colorAccent"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content" />
+
+               <TextView
+                   android:id="@+id/txt_title"
+                   android:textSize="@dimen/abc_text_size_large_material"
+                   android:textColor="@color/windowBackground"
+                   android:padding="15dp"
+                   android:layout_toLeftOf="@+id/btn_exit_popup"
+                   android:gravity="center_horizontal"
+                   android:layout_alignParentTop="true"
+                   android:layout_gravity="center_horizontal"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   />
+           </RelativeLayout>
+
+           <View
+               android:layout_width="match_parent"
+               android:background="@color/windowBackground"
+               android:layout_height="10dp">
+           </View>
+           <RelativeLayout
+               android:layout_width="match_parent"
+               android:layout_height="0dp"
+               android:layout_weight="10">
+           <Button
+               android:id="@+id/btn_select_image"
+               android:layout_width="wrap_content"
+               android:layout_centerInParent="true"
+               android:text="Select an Image"
+               android:paddingTop="10dp"
+               android:textColor="@color/windowBackground"
+               android:padding="10dp"
+               android:background="@drawable/scroll_year_bg"
+               android:layout_height="wrap_content" />
        <ImageView
+           android:layout_marginTop="10dp"
            android:id="@+id/img_memory_view"
            android:layout_width="match_parent"
-           android:layout_weight="20"
-           android:layout_height="0dp" />
+           android:layout_height="match_parent" />
+
+           </RelativeLayout>
+
+           <ScrollView
+               android:layout_width="match_parent"
+               android:layout_weight="20"
+               android:layout_height="0dp">
+
+
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:orientation="vertical"
+               android:padding="10dp"
+               android:layout_height="match_parent">
+
+              <EditText
+                  android:id="@+id/et_memory_title"
+                  android:hint="Memory Title"
+                  android:textColor="@color/colorPrimaryDark"
+                  android:textColorHint="@color/colorPrimaryDarkSlightlyTransparent"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content" />
+
+               <EditText
+                   android:id="@+id/et_memory_description"
+                   android:hint="Memory Description"
+                   android:lines="3"
+                   android:textColor="@color/colorPrimaryDark"
+                   android:textColorHint="@color/colorPrimaryDarkSlightlyTransparent"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content" />
+
+               <EditText
+                   android:id="@+id/et_memory_uploader"
+                   android:hint="Uploader Name"
+                   android:textColor="@color/colorPrimaryDark"
+                   android:textColorHint="@color/colorPrimaryDarkSlightlyTransparent"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content" />
+
+               <Button
+                   android:id="@+id/btn_submit_memory"
+                   android:layout_width="wrap_content"
+                   android:padding="10dp"
+                   android:layout_gravity="center_horizontal"
+                   android:background="@drawable/scroll_year_bg"
+                   android:textColor="@color/windowBackground"
+                   android:layout_marginTop="20dp"
+                   android:text="Submit"
+                   android:layout_height="wrap_content" />
+
+           </LinearLayout>
+           </ScrollView>
 
        </LinearLayout>
 

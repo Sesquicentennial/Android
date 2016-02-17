@@ -11,4 +11,5 @@ public class LogMessages {
     public String PERMISSIONS_INCORRECT = "IncorrectPermissions";
     public String LOCATION = "Location";
     public String MEMORY_MONITORING = "MemoryMonitoring";
+    public String IMAGE_HANDLING = "ImageHandling";
 }

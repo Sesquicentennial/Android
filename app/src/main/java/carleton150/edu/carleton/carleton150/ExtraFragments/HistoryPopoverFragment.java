@@ -146,7 +146,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
 
             //if it is memories, we don't have data yet...
             if(!isMemories) {
-                historyAdapter = new HistoryAdapter(geofenceInfoObject, this, historyInfoObjects, this, screenWidth, screenHeight, isMemories);
+                historyAdapter = new HistoryAdapter(getActivity(), geofenceInfoObject, this, historyInfoObjects, this, screenWidth, screenHeight, isMemories);
 
                 //RecyclerView animation
                 MyScaleInAnimationAdapter scaleInAnimationAdapter = new MyScaleInAnimationAdapter(historyAdapter);
@@ -215,7 +215,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
             }else{
                 txtErrorGettingMemories.setVisibility(View.GONE);
             }
-            historyAdapter = new HistoryAdapter(memories.getContent(), this, historyInfoObjects, this, screenWidth, screenHeight, isMemories);
+            historyAdapter = new HistoryAdapter(getActivity(), memories.getContent(), this, historyInfoObjects, this, screenWidth, screenHeight, isMemories);
 
             //RecyclerView animation
             MyScaleInAnimationAdapter scaleInAnimationAdapter = new MyScaleInAnimationAdapter(historyAdapter);

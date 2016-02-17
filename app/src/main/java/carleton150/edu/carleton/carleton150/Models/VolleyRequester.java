@@ -1,6 +1,8 @@
 package carleton150.edu.carleton.carleton150.Models;
 
+import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -13,6 +15,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import carleton150.edu.carleton.carleton150.ExtraFragments.HistoryPopoverFragment;
@@ -287,8 +292,8 @@ public class VolleyRequester {
             memoriesRequest.put("lng", -93.156094);
             memoriesRequest.put("rad", 0.1);
 //            memoriesRequest.put("lng", longitude);
-           // memoriesRequest.put("lat", latitude);
-           // memoriesRequest.put("rad", radius);
+//            memoriesRequest.put("lat", latitude);
+//            memoriesRequest.put("rad", radius);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -329,5 +334,85 @@ public class VolleyRequester {
 
         MyApplication.getInstance().getRequestQueue().add(request);
     }
+
+    public void addMemory(String image, String title, String uploader, String desc, String timestamp, double lat, double lng){
+        final Gson gson = new Gson();
+        //Creates request object
+        JSONObject addMemoryRequest = new JSONObject();
+        JSONObject location = new JSONObject();
+
+
+
+
+        try {
+            addMemoryRequest.put("title", title);
+            addMemoryRequest.put("desc", desc);
+            addMemoryRequest.put("timestamp", timestamp);
+            addMemoryRequest.put("uploader", uploader);
+            location.put("lat", lat);
+            location.put("lng", lng);
+            addMemoryRequest.put("location", location);
+            addMemoryRequest.put("image", image);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.i(logMessages.MEMORY_MONITORING, "addMemory: JsonObject is: " + addMemoryRequest.toString());
+
+        //createFile("memoryRequest1", addMemoryRequest.toString());
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://carl150.carleton.edu/memories_add", addMemoryRequest,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        String responseString = response.toString();
+                        Log.i(logMessages.MEMORY_MONITORING, "addMemory : response string = : " + responseString);
+                    }
+                },
+
+                new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.i(logMessages.MEMORY_MONITORING, "addMemory : error : " + error.toString());
+
+                    }
+                }
+        );
+
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        MyApplication.getInstance().getRequestQueue().add(request);
+    }
+
+
+    public void createFile(String sFileName, String sBody){
+        try
+        {
+
+            File root = new File(Environment.getExternalStorageDirectory(), "Notes");
+
+            Log.i(logMessages.MEMORY_MONITORING, "createFile: path : " + Environment.getExternalStorageDirectory().getPath());
+
+            if (!root.exists()) {
+                root.mkdirs();
+            }
+            File gpxfile = new File(root, sFileName);
+            FileWriter writer = new FileWriter(gpxfile);
+            writer.append(sBody);
+            writer.flush();
+            writer.close();
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+
+        }
+    }
+
 
 }

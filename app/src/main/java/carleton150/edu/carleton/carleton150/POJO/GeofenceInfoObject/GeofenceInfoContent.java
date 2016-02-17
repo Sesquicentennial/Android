@@ -29,6 +29,8 @@ public class GeofenceInfoContent
 
     private String type;
 
+    private boolean expanded = false;
+
 
     /*
     These are for the Memories only
@@ -139,6 +141,14 @@ public class GeofenceInfoContent
     public void setType (String type)
     {
         this.type = type;
+    }
+
+    public boolean isExpanded() {
+        return expanded;
+    }
+
+    public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
     }
 
     @Override
