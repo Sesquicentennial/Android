@@ -141,7 +141,16 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
                 Button btnTryAgain = (Button) view.findViewById(R.id.btn_try_getting_quests);
 
                 super.handleNewQuests(newQuests);
-                if (newQuests != null) {
+                if(newQuests == null){
+
+                    txtInfo.setText(getString(R.string.no_quests_retrieved));
+                    btnTryAgain.setVisibility(View.VISIBLE);
+                    if (quests != null) {
+                        quests.setVisibility(View.GONE);
+                    }
+                    return;
+                }
+                else if (newQuests != null) {
 
                     //btnTryAgain.setVisibility(View.GONE);
 
@@ -153,7 +162,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
                     quests.setVisibility(View.VISIBLE);
                     //scaleAdapter.notifyDataSetChanged();
                     Log.i(logMessages.VOLLEY, "QuestFragment: handleNewQuests : questAdapter contains : " + questAdapter.getItemCount());
-                } else {
+                }
                     if (questInfo == null) {
 
                         txtInfo.setText(getString(R.string.no_quests_retrieved));
@@ -161,7 +170,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
                         if (quests != null) {
                             quests.setVisibility(View.GONE);
                         }
-                    }
+
                 }
             } catch (IllegalStateException e) {
                 e.printStackTrace();
