@@ -1,6 +1,5 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -33,7 +32,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import carleton150.edu.carleton.carleton150.FlipAnimation;
 import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.Models.BitmapWorkerTask;
@@ -92,6 +90,7 @@ public class QuestInProgressFragment extends MapMainFragment {
                              Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_quest_in_progress, container, false);
         Button btnFoundIt = (Button) v.findViewById(R.id.btn_found_location);
+        Button btnFoundItHint = (Button) v.findViewById(R.id.btn_found_location_hint);
         TextView txtHint = (TextView) v.findViewById(R.id.txt_hint);
         ImageButton btnReturnToMyLocation = (ImageButton) v.findViewById(R.id.btn_return_to_my_location);
         rootLayout = v.findViewById(R.id.lin_layout_card_root);
@@ -100,7 +99,7 @@ public class QuestInProgressFragment extends MapMainFragment {
         Button btnFlipCardToClue = (Button) v.findViewById(R.id.btn_show_clue);
         Button btnFlipCardToHint = (Button) v.findViewById(R.id.btn_show_hint);
         SlidingDrawer slidingDrawerClue = (SlidingDrawer) v.findViewById(R.id.front_drawer);
-        SlidingDrawer slidingDrawerHint = (SlidingDrawer) v.findViewById(R.id.drawer_hint);
+        SlidingDrawer slidingDrawerHint = (SlidingDrawer) v.findViewById(R.id.back_drawer);
         final ImageView imgExpandClue = (ImageView) v.findViewById(R.id.img_expand_clue);
         final ImageView imgExpandHint = (ImageView) v.findViewById(R.id.img_expand_hint);
 
@@ -130,7 +129,7 @@ public class QuestInProgressFragment extends MapMainFragment {
                 imgExpandHint.setImageDrawable(getResources().getDrawable(R.drawable.ic_navigation_expand_less));
             }
         });
-        ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_img_back);
+        ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_image_back);
         ImageView imgClue = (ImageView) v.findViewById(R.id.img_clue_image_front);
 
         if(inView) {
@@ -208,10 +207,21 @@ public class QuestInProgressFragment extends MapMainFragment {
 
             }
         });
+
+
+
+        btnFoundItHint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkIfClueFound();
+            }
+        });
+
         boolean completedQuest = updateCurrentWaypoint();
         if (completedQuest){
             showCompletedQuestMessage();
         }
+
         return v;
     }
 
@@ -359,11 +369,13 @@ public class QuestInProgressFragment extends MapMainFragment {
             }
             TextView txtClue = (TextView) v.findViewById(R.id.txt_clue);
             TextView txtClueNumber = (TextView) v.findViewById(R.id.txt_clue_number);
+            TextView txtClueNumberBack = (TextView) v.findViewById(R.id.txt_clue_number_hint);
             TextView txtHint = (TextView) v.findViewById(R.id.txt_hint);
             SlidingDrawer slidingDrawerClue = (SlidingDrawer) v.findViewById(R.id.front_drawer);
-            SlidingDrawer slidingDrawerHint = (SlidingDrawer) v.findViewById(R.id.drawer_hint);
+            SlidingDrawer slidingDrawerHint = (SlidingDrawer) v.findViewById(R.id.back_drawer);
             txtClue.setText(waypoints[numClue].getClue().getText());
             txtClueNumber.setText((numClue + 1) + "/" + quest.getWaypoints().length);
+            txtClueNumberBack.setText((numClue + 1) + "/" + quest.getWaypoints().length);
 
             if(txtHint != null || !txtHint.equals("")){
                 txtHint.setText(waypoints[numClue].getHint().getText());
@@ -372,7 +384,7 @@ public class QuestInProgressFragment extends MapMainFragment {
             }
 
             ImageView imgClue = (ImageView) v.findViewById(R.id.img_clue_image_front);
-            ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_img_back);
+            ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_image_back);
             String image = null;
             String hintImage = null;
             if(waypoints[numClue].getHint().getImage() != null) {
@@ -510,7 +522,7 @@ public class QuestInProgressFragment extends MapMainFragment {
 
         if(isResumed()) {
             ImageView imgClue = (ImageView) v.findViewById(R.id.img_clue_image_front);
-            ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_img_back);
+            ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_image_back);
             Waypoint[] waypoints = quest.getWaypoints();
 
             String image = null;
@@ -535,7 +547,7 @@ public class QuestInProgressFragment extends MapMainFragment {
     public void fragmentOutOfView() {
         super.fragmentOutOfView();
         ImageView imgClue = (ImageView) v.findViewById(R.id.img_clue_image_front);
-        ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_img_back);
+        ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_image_back);
         ImageView imgQuestCompleted = (ImageView) v.findViewById(R.id.img_animation_quest_completed);
         imgQuestCompleted.setImageDrawable(null);
         inView = false;
@@ -569,13 +581,21 @@ public class QuestInProgressFragment extends MapMainFragment {
     private void flipCard()
     {
 
-        FlipAnimation flipAnimation = new FlipAnimation(cardFace, cardBack);
-
         if (cardFace.getVisibility() == View.GONE)
         {
-            flipAnimation.reverse();
+            cardBack.setVisibility(View.GONE);
+            cardBack.animate().alpha(0f).setDuration(100);
+            cardFace.bringToFront();
+            cardFace.setVisibility(View.VISIBLE);
+            cardFace.animate().alpha(1f).setDuration(100);
+
+        }else{
+            cardFace.setVisibility(View.GONE);
+            cardFace.animate().alpha(0f).setDuration(100);
+            cardBack.bringToFront();
+            cardBack.setVisibility(View.VISIBLE);
+            cardBack.animate().alpha(1f).setDuration(100);
         }
-        rootLayout.startAnimation(flipAnimation);
     }
 
     /**

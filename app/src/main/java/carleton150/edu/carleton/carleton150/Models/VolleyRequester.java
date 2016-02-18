@@ -98,6 +98,8 @@ public class VolleyRequester {
                         error.printStackTrace();
                         callerFragment.handleResult(null);
                         callerFragment.printMessageToast(error.getMessage());
+                        Log.i(logMessages.VOLLEY, "request : error response");
+
                     }
                 }
         );
@@ -306,7 +308,7 @@ public class VolleyRequester {
             e.printStackTrace();
         }
 
-
+Log.i(logMessages.MEMORY_MONITORING, "requestMemories: JSON request : " + memoriesRequest);
         JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/memories_fetch", memoriesRequest,
                 new Response.Listener<JSONObject>() {
 
