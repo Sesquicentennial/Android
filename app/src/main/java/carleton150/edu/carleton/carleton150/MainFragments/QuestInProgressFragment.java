@@ -39,6 +39,8 @@ import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Waypoint;
 import carleton150.edu.carleton.carleton150.R;
 
+import static carleton150.edu.carleton.carleton150.R.id.rel_layout_found_it_hint;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -177,19 +179,29 @@ public class QuestInProgressFragment extends MapMainFragment {
                 txtHint.setText(waypoints[numClue].getHint().getText());
             }
 
+            RelativeLayout relLayoutFoundItHint = (RelativeLayout) v.findViewById(rel_layout_found_it_hint);
+            RelativeLayout relLayoutFoundItClue = (RelativeLayout) v.findViewById(R.id.rel_layout_found_it_clue);
+
+            float scale = getResources().getDisplayMetrics().density;
+            int dpAsPixelsSmallPadding = (int) (10*scale + 0.5f);
+            int dpAsPixelsBigPadding = (int) (80*scale + 0.5f);
 
             if (image != null) {
                 slidingDrawerClue.setVisibility(View.VISIBLE);
+                relLayoutFoundItClue.setPadding(0, 0, 0, dpAsPixelsBigPadding);
                 setImage(image, screenWidth, screenHeight, imgClue);
             } else {
                 slidingDrawerClue.setVisibility(View.GONE);
+                relLayoutFoundItClue.setPadding(0, 0, 0, dpAsPixelsSmallPadding);
             }
 
             if (hintImage != null) {
                 slidingDrawerHint.setVisibility(View.VISIBLE);
+                relLayoutFoundItHint.setPadding(0, 0, 0, dpAsPixelsBigPadding);
                 setImage(hintImage, screenWidth, screenHeight, imgHint);
             } else {
                 slidingDrawerHint.setVisibility(View.GONE);
+                relLayoutFoundItHint.setPadding(0, 0, 0, dpAsPixelsSmallPadding);
             }
 
             btnReturnToMyLocation.setOnClickListener(new View.OnClickListener() {

@@ -13,12 +13,12 @@
     <RelativeLayout
         android:id="@+id/layout_clue_text"
         android:layout_width="fill_parent"
+        android:layout_above="@+id/rel_layout_found_it_clue"
         android:paddingBottom="20dp"
         android:layout_height="match_parent">
 
         <ScrollView
             android:layout_width="fill_parent"
-            android:layout_above="@+id/rel_layout_found_it"
             android:layout_height="fill_parent">
 
                 <TextView
@@ -34,16 +34,6 @@
         </ScrollView>
 
 
-        <RelativeLayout
-            android:id="@+id/rel_layout_found_it"
-            android:layout_width="match_parent"
-            android:layout_alignParentBottom="true"
-            android:padding="10dp"
-            android:layout_height="wrap_content"
-            >
-
-        </RelativeLayout>
-
     </RelativeLayout>
 
 
@@ -52,6 +42,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:paddingBottom="80dp"
+        android:id="@+id/rel_layout_found_it_clue"
         android:layout_alignParentBottom="true"
         android:layout_height="wrap_content">
     <Button

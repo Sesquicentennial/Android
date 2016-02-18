@@ -35,6 +35,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
     private QuestAdapter questAdapter;
     private int screenWidth;
     private View view;
+    private boolean requestQuests = true;
 
 
     public QuestFragment() {
@@ -142,6 +143,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
 
                 super.handleNewQuests(newQuests);
                 if(newQuests == null){
+                    requestQuests = true;
 
                     txtInfo.setText(getString(R.string.no_quests_retrieved));
                     btnTryAgain.setVisibility(View.VISIBLE);
@@ -153,7 +155,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
                 else if (newQuests != null) {
 
                     //btnTryAgain.setVisibility(View.GONE);
-
+                    requestQuests = false;
                     questInfo = newQuests;
 
                     questAdapter.updateQuestList(questInfo);
@@ -164,7 +166,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
                     Log.i(logMessages.VOLLEY, "QuestFragment: handleNewQuests : questAdapter contains : " + questAdapter.getItemCount());
                 }
                     if (questInfo == null) {
-
+                        requestQuests = true;
                         txtInfo.setText(getString(R.string.no_quests_retrieved));
                         btnTryAgain.setVisibility(View.VISIBLE);
                         if (quests != null) {
@@ -191,13 +193,17 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
     public void fragmentInView() {
         super.fragmentInView();
         Log.i("UI", "QuestFragment : fragmentInView");
-        volleyRequester.requestQuests(this);
+        if(requestQuests) {
+            volleyRequester.requestQuests(this);
+            requestQuests = false;
+        }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         view = null;
+        requestQuests = true;
         questAdapter = null;
         questLayoutManager = null;
         questInfo = null;
