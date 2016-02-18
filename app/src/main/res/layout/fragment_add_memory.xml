@@ -84,6 +84,8 @@
               <EditText
                   android:id="@+id/et_memory_title"
                   android:hint="Memory Title"
+                  android:imeOptions="actionNext"
+                  android:singleLine="true"
                   android:textColor="@color/colorPrimaryDark"
                   android:textColorHint="@color/colorPrimaryDarkSlightlyTransparent"
                   android:layout_width="match_parent"
@@ -92,7 +94,8 @@
                <EditText
                    android:id="@+id/et_memory_description"
                    android:hint="Memory Description"
-                   android:lines="3"
+                   android:imeOptions="actionNext"
+                   android:singleLine="true"
                    android:textColor="@color/colorPrimaryDark"
                    android:textColorHint="@color/colorPrimaryDarkSlightlyTransparent"
                    android:layout_width="match_parent"
@@ -101,6 +104,8 @@
                <EditText
                    android:id="@+id/et_memory_uploader"
                    android:hint="Uploader Name"
+                   android:imeOptions="actionDone"
+                   android:singleLine="true"
                    android:textColor="@color/colorPrimaryDark"
                    android:textColorHint="@color/colorPrimaryDarkSlightlyTransparent"
                    android:layout_width="match_parent"
