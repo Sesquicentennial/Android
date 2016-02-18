@@ -14,12 +14,12 @@
 <RelativeLayout
     android:id="@+id/layout_hint_text"
     android:layout_width="fill_parent"
+    android:layout_above="@+id/rel_layout_found_it_hint"
     android:paddingBottom="20dp"
     android:layout_height="match_parent">
 
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_above="@+id/rel_layout_found_it"
         android:layout_height="fill_parent">
 
         <TextView
@@ -41,6 +41,7 @@
 
 
 <RelativeLayout
+    android:id="@+id/rel_layout_found_it_hint"
 android:layout_width="match_parent"
 android:paddingBottom="80dp"
 android:layout_alignParentBottom="true"
