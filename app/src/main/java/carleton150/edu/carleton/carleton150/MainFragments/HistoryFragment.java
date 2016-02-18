@@ -573,6 +573,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
 
                 if (txtRequestGeofences != null) {
                     txtRequestGeofences.setVisibility(View.GONE);
+                    btnRequestGeofences.setVisibility(View.GONE);
 
                 }
             }
