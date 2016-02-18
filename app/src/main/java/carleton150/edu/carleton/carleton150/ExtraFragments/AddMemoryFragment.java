@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Base64;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,6 +87,7 @@ public class AddMemoryFragment extends Fragment {
         EditText etTitle = (EditText) v.findViewById(R.id.et_memory_title);
         EditText etDesc = (EditText) v.findViewById(R.id.et_memory_description);
         EditText etUploader = (EditText) v.findViewById(R.id.et_memory_uploader);
+
         editTexts.add(etTitle);
         editTexts.add(etDesc);
         editTexts.add(etUploader);
