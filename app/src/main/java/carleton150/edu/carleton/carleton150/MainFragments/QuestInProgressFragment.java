@@ -458,6 +458,7 @@ public class QuestInProgressFragment extends MapMainFragment {
         TextView txtQuestCompleted = (TextView) v.findViewById(R.id.txt_completion_message);
         RelativeLayout relLayoutQuestCompleted = (RelativeLayout) v.findViewById(R.id.rel_layout_quest_completed);
         Button btnDoneWithQuest = (Button) v.findViewById(R.id.btn_done_with_quest);
+        btnDoneWithQuest.setText("DONE");
         MainActivity mainActivity = (MainActivity) getActivity();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             imgQuestCompleted.setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.anim_quest_completed));
@@ -562,10 +563,10 @@ public class QuestInProgressFragment extends MapMainFragment {
         ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_image_back);
         ImageView imgQuestCompleted = (ImageView) v.findViewById(R.id.img_animation_quest_completed);
         imgQuestCompleted.setImageDrawable(null);
-        inView = false;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            imgQuestCompleted.setBackground(getResources().getDrawable(R.drawable.ic_cream_star));
+            imgQuestCompleted.setBackground(getResources().getDrawable(R.drawable.bg_transparent));
         }
+        inView = false;
         imgClue.setImageDrawable(null);
         imgHint.setImageDrawable(null);
     }
@@ -596,17 +597,17 @@ public class QuestInProgressFragment extends MapMainFragment {
         if (cardFace.getVisibility() == View.GONE)
         {
             cardBack.setVisibility(View.GONE);
-            cardBack.animate().alpha(0f).setDuration(100);
+            cardBack.animate().alpha(0f).setDuration(300);
             cardFace.bringToFront();
             cardFace.setVisibility(View.VISIBLE);
-            cardFace.animate().alpha(1f).setDuration(100);
+            cardFace.animate().alpha(1f).setDuration(300);
 
         }else{
             cardFace.setVisibility(View.GONE);
-            cardFace.animate().alpha(0f).setDuration(100);
+            cardFace.animate().alpha(0f).setDuration(300);
             cardBack.bringToFront();
             cardBack.setVisibility(View.VISIBLE);
-            cardBack.animate().alpha(1f).setDuration(100);
+            cardBack.animate().alpha(1f).setDuration(300);
         }
     }
 

@@ -132,6 +132,10 @@ public class GeofenceMonitor{
 
     }
 
+    public ArrayList<GeofenceObjectContent> getCurGeofences(){
+        return this.curGeofences;
+    }
+
     /**
      * Called from MainActivity if user's location changes. If
      * a certain distance has passed since the last geofence update

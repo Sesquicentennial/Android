@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
-    card_view:cardBackgroundColor="@color/colorPrimarySemiTransparent"
+    card_view:cardBackgroundColor="@color/windowBackground"
     card_view:backgroundTintMode="src_over"
     card_view:backgroundTint="@color/colorAccent"
     card_view:cardElevation="3dp"
@@ -15,6 +15,7 @@
 
     <TextView
         android:id="@+id/event_date_title"
+        android:textColor="@color/colorPrimaryDark"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

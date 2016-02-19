@@ -1,63 +1,59 @@
-<?xml version="1.0" encoding="utf-8"?>
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/layout_root"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:paddingTop="?attr/actionBarSize"
+    tools:context="carleton150.edu.carleton.carleton150.MainFragments.QuestFragment">
 
-    <!-- Ignore: Getting events holder... -->
-    <LinearLayout
-        android:id="@+id/layout_unable_to_retrieve_events"
-        android:layout_width="match_parent"
-        android:padding="10dp"
-        android:orientation="vertical"
-        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/txt_request_events"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="Getting events..."
-            android:layout_height="wrap_content" />
+        <!-- Ignore: Getting events holder... -->
+        <LinearLayout
+            android:id="@+id/layout_unable_to_retrieve_events"
+            android:layout_width="match_parent"
+            android:padding="10dp"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/btn_try_getting_events"
-            android:text="Try Again"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/txt_request_events"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Getting events..."
+                android:layout_height="wrap_content" />
 
-    <!-- Vertical Layout for date tabs + event item list -->
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical">
-
-        <!-- Event list view -->
-        <HorizontalScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:id="@+id/scroll_dates">
-
-            <!--<com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager
-                android:id="@+id/lst_event_dates"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:scrollbars="horizontal"
-                app:rvp_triggerOffset="0.1"
+            <Button
+                android:id="@+id/btn_try_getting_events"
+                android:text="Try Again"
+                android:gravity="center"
+                android:layout_gravity="center"
                 android:visibility="gone"
-                app:rvp_singlePageFling="true"
-                android:clipToPadding="false"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>-->
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
-            <!-- Eventually phase out dummy LinearLayout below -->
+        <!-- Vertical Layout for date tabs + event item list -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="100"
+            android:background="@color/yellowAccent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/lst_event_dates"
+                android:background="@color/colorPrimaryDark"
+                android:layout_gravity="center_horizontal"
+                android:padding="3dp"
+                android:scrollbars="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="10" />
+
+
+            <!-- Eventually phase out dummy LinearLayout below
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -98,18 +94,14 @@
                     android:layout_margin="1dp"
                     android:textColor="@color/yellowAccent"
                     android:background="@color/colorPrimary" />
+            </LinearLayout>  -->
 
-            </LinearLayout>
-        </HorizontalScrollView>
+            <ExpandableListView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="90"
+                android:id="@+id/lst_events">
+            </ExpandableListView>
 
-        <ExpandableListView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:id="@+id/lst_events">
-        </ExpandableListView>
-
-    </LinearLayout>
-
-
+        </LinearLayout>
 </FrameLayout>
