@@ -542,13 +542,6 @@ public class HistoryFragment extends MapMainFragment {
     @Override
     public void fragmentInView() {
         super.fragmentInView();
-        if(currentGeofences != null) {
-            Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : fragmentInView : currentGeofences size is: " + currentGeofences.size());
-        }else{
-            Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : fragmentInView : currentGeofences is null");
-        }
-
-
 
 
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -564,19 +557,14 @@ public class HistoryFragment extends MapMainFragment {
                     btnRequestGeofences.setVisibility(View.VISIBLE);
                     txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
                 }
-
-            if (mainActivity == null) {
-                mainActivity = (MainActivity) getActivity();
-            }
-            Log.i("UI", "HistoryFragment : fragmentInView");
-
+/*
             if (mainActivity.getGeofenceMonitor().allGeopointsByName.size() == 0) {
-                gotGeofences = mainActivity.getGeofenceMonitor().getNewGeofences();
+                boolean gotGeofences = mainActivity.getGeofenceMonitor().getNewGeofences();
                 if (!gotGeofences) {
                     btnRequestGeofences.setVisibility(View.VISIBLE);
                     txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
-                }
-            } else {
+                }*/
+            /*}*/ else {
                 //mainActivity.getGeofenceMonitor().startMonitoringGeofencesAfterPause();
 
                 if (txtRequestGeofences != null) {

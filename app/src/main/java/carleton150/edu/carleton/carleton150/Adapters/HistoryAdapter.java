@@ -273,7 +273,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         /**
          */
         public void setImage(int resId, String encodedImage, int screenWidth, int screenHeight) {
-
+            System.gc();
             int w = 10, h = 10;
 
             Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types

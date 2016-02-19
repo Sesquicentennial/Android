@@ -151,6 +151,7 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
         /**
          */
         public void setImage(int resId, String encodedImage, int screenWidth, int screenHeight) {
+            System.gc();
             if(encodedImage == null) {
                 image.setImageResource(R.drawable.test_image1);
                 image.setColorFilter(R.color.blackSemiTransparent);

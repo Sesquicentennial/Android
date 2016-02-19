@@ -54,7 +54,6 @@ public class QuestInProgressFragment extends MapMainFragment {
     private static final String QUEST_STARTED = "You already started this quest. " +
             "Would you like to Resume it or Start Over?";
 
-    private View rootLayout;
     private View cardFace;
     private View cardBack;
     private View v;
@@ -95,7 +94,6 @@ public class QuestInProgressFragment extends MapMainFragment {
         Button btnFoundItHint = (Button) v.findViewById(R.id.btn_found_location_hint);
         TextView txtHint = (TextView) v.findViewById(R.id.txt_hint);
         ImageButton btnReturnToMyLocation = (ImageButton) v.findViewById(R.id.btn_return_to_my_location);
-        rootLayout = v.findViewById(R.id.lin_layout_card_root);
         cardFace = v.findViewById(R.id.clue_view_front);
         cardBack = v.findViewById(R.id.clue_view_back);
         Button btnFlipCardToClue = (Button) v.findViewById(R.id.btn_show_clue);
@@ -454,13 +452,14 @@ public class QuestInProgressFragment extends MapMainFragment {
      * completed
      */
     private void showCompletedQuestMessage(){
-        ImageView imgQuestCompleted = (ImageView) v.findViewById(R.id.img_animation_quest_completed);
+        final ImageView imgQuestCompleted = (ImageView) v.findViewById(R.id.img_animation_quest_completed);
         TextView txtQuestCompleted = (TextView) v.findViewById(R.id.txt_completion_message);
         RelativeLayout relLayoutQuestCompleted = (RelativeLayout) v.findViewById(R.id.rel_layout_quest_completed);
         Button btnDoneWithQuest = (Button) v.findViewById(R.id.btn_done_with_quest);
         btnDoneWithQuest.setText("DONE");
-        MainActivity mainActivity = (MainActivity) getActivity();
+        final MainActivity mainActivity = (MainActivity) getActivity();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            System.gc();
             imgQuestCompleted.setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.anim_quest_completed));
         }
         txtQuestCompleted.setText("Message is : " + quest.getCompMsg());
@@ -471,6 +470,10 @@ public class QuestInProgressFragment extends MapMainFragment {
         btnDoneWithQuest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    imgQuestCompleted.setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.bg_transparent));
+                    System.gc();
+                }
                 goBackToQuestSelectionScreen();
             }
         });
@@ -675,9 +678,14 @@ public class QuestInProgressFragment extends MapMainFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        rootLayout = null;
         cardFace = null;
         cardBack = null;
         v = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        quest = null;
+        super.onDestroy();
     }
 }
