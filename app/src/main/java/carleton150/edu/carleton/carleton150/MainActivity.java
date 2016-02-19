@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static int FASTEST_INTERVAL = 10000; // 10 sec
     private static int DISPLACEMENT = 20; // 10 meters
 
-    private boolean historyFragmentNeedsToHandleGeofenceChange = false;
+
 
     private LogMessages logMessages = new LogMessages();
 
@@ -85,6 +85,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     AlertDialog playServicesConnectivityAlertDialog;
 
     public GeofenceMonitor geofenceMonitor = new GeofenceMonitor(this);
+
+    private boolean historyFragmentNeedsToHandleGeofenceChange = false;
+    private boolean historyFragmentNeedsToGetNewGeofences = false;
 
 
 
@@ -163,8 +166,35 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     public void checkIfFragmentNeedsToHandleGeofenceChange(){
+        if(adapter.getCurFragment() instanceof HistoryFragment){
+            Log.i("Fragment Handling", "MainActivity : viewFragment is instanceof HistoryFragment");
+        }else{
+
+            Log.i("Fragment Handling", "CheckIfFragmentNeedsToHandleGeofenceChange : viewFragment is not an instanceof HistoryFragment");
+
+        }
+
         if(adapter.getCurFragment() instanceof HistoryFragment && historyFragmentNeedsToHandleGeofenceChange){
+            Log.i("Fragment Handling", "CheckIfFragmentNeedsToHandleGeofenceChange : calling handleGeofenceChange. Length: " + geofenceMonitor.getCurGeofences().size());
+
             handleGeofenceChange(geofenceMonitor.getCurGeofences());
+        }
+    }
+
+    public void checkIfFragmentNeedsNewGeofences(){
+
+        if(adapter.getCurFragment() instanceof HistoryFragment){
+            Log.i("Fragment Handling", "MainActivity : viewFragment is instanceof HistoryFragment");
+        }else{
+
+            Log.i("Fragment Handling", "CheckIfFragmentNeedsNewGeofences : viewFragment is not an instanceof HistoryFragment");
+
+        }
+
+        if(adapter.getCurFragment() instanceof HistoryFragment && historyFragmentNeedsToGetNewGeofences){
+            Log.i("Fragment Handling", "CheckIfFragmentNeedsNewGeoences : calling handleGeofenceChange. Length: " + geofenceMonitor.geofencesBeingMonitored.length);
+
+            handleNewGeofences(geofenceMonitor.geofencesBeingMonitored);
         }
     }
 
@@ -334,10 +364,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * @param content
      */
     public void handleGeofenceChange(ArrayList<GeofenceObjectContent> content){
+        Log.i("Fragment Handling", "MainActivity : handleGeofenceChange. Length: " + content.size());
+
         MainFragment curFragment = adapter.getCurFragment();
         if(curFragment instanceof HistoryFragment){
             historyFragmentNeedsToHandleGeofenceChange = false;
+            Log.i("Fragment Handling", "MainActivity : handleGeofenceChange. needsToHandleChangeSetToFalse ");
         }else{
+            Log.i("Fragment Handling", "MainActivity : handleGeofenceChange. needsToHandleChangeSetTo True ");
+
             historyFragmentNeedsToHandleGeofenceChange = true;
         }
         if(curFragment != null) {
@@ -452,7 +487,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * @param content
      */
     public void handleNewGeofences(GeofenceObjectContent[] content){
+
         curFragment = adapter.getCurFragment();
+        if (curFragment instanceof HistoryFragment){
+            historyFragmentNeedsToGetNewGeofences = false;
+        }else {
+            historyFragmentNeedsToGetNewGeofences = true;
+        }
         curFragment.handleNewGeofences(content);
     }
 
@@ -555,6 +596,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void viewFragmentChanged(MainFragment viewFragment) {
+        if(viewFragment instanceof HistoryFragment){
+            Log.i("Fragment Handling", "MainActivity : viewFragment is instanceof HistoryFragment");
+        }else{
+
+                Log.i("Fragment Handling", "MainActivity : viewFragment is not an instanceof HistoryFragment");
+
+        }
         checkIfFragmentNeedsToHandleGeofenceChange();
+        checkIfFragmentNeedsNewGeofences();
     }
 }
