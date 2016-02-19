@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.ViewGroup;
 
 import carleton150.edu.carleton.carleton150.ExtraFragments.AddMemoryFragment;
+import carleton150.edu.carleton.carleton150.Interfaces.ViewFragmentChangedListener;
 import carleton150.edu.carleton.carleton150.MainFragments.EventsFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.HistoryFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
@@ -21,11 +22,13 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
     MainFragment curFragment = null;
     FragmentManager fragmentManager;
     MainFragment tab3 = null;
+    ViewFragmentChangedListener viewFragmentChangedListener;
 
-    public MyFragmentPagerAdapter(FragmentManager fm, int NumOfTabs) {
+    public MyFragmentPagerAdapter(FragmentManager fm, int NumOfTabs, ViewFragmentChangedListener viewFragmentChangedListener) {
         super(fm);
         this.mNumOfTabs = NumOfTabs;
         fragmentManager = fm;
+        this.viewFragmentChangedListener = viewFragmentChangedListener;
     }
 
 
@@ -65,6 +68,7 @@ public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
             if (curFragment != object) {
                 curFragment = (MainFragment) object;
                 curFragment.fragmentInView();
+                viewFragmentChangedListener.viewFragmentChanged(curFragment);
             }
         }
         if (curFragment != object) {

@@ -37,6 +37,8 @@ import java.util.prefs.Preferences;
 
 import carleton150.edu.carleton.carleton150.ExtraFragments.AddMemoryFragment;
 import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
+import carleton150.edu.carleton.carleton150.Interfaces.ViewFragmentChangedListener;
+import carleton150.edu.carleton.carleton150.MainFragments.HistoryFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
 import carleton150.edu.carleton.carleton150.Adapters.MyFragmentPagerAdapter;
 import carleton150.edu.carleton.carleton150.MainFragments.QuestInProgressFragment;
@@ -51,7 +53,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  * to handle geofence and location changes. Also controls which fragment is in view.
  */
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status>, FragmentChangeListener{
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status>, FragmentChangeListener, ViewFragmentChangedListener{
 
     //things for managing fragments
     public static FragmentManager fragmentManager;
@@ -70,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static int UPDATE_INTERVAL = 30000; // 30 sec
     private static int FASTEST_INTERVAL = 10000; // 10 sec
     private static int DISPLACEMENT = 20; // 10 meters
+
+    private boolean historyFragmentNeedsToHandleGeofenceChange = false;
 
     private LogMessages logMessages = new LogMessages();
 
@@ -118,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         final NoSwipeViewPager viewPager = (NoSwipeViewPager) findViewById(R.id.pager);
         viewPager.setOffscreenPageLimit(1);
         adapter = new MyFragmentPagerAdapter
-                (getSupportFragmentManager(), tabLayout.getTabCount());
+                (getSupportFragmentManager(), tabLayout.getTabCount(), this);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         //changeTabsFont(tabLayout);
@@ -140,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 Log.i("UI", "newTabSelectedTablistener");
                 adapter.getCurFragment().fragmentOutOfView();
                 viewPager.setCurrentItem(tab.getPosition());
+
             }
 
             @Override
@@ -155,6 +160,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
 
+    }
+
+    public void checkIfFragmentNeedsToHandleGeofenceChange(){
+        if(adapter.getCurFragment() instanceof HistoryFragment && historyFragmentNeedsToHandleGeofenceChange){
+            handleGeofenceChange(geofenceMonitor.getCurGeofences());
+        }
     }
 
     @Override
@@ -324,6 +335,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     public void handleGeofenceChange(ArrayList<GeofenceObjectContent> content){
         MainFragment curFragment = adapter.getCurFragment();
+        if(curFragment instanceof HistoryFragment){
+            historyFragmentNeedsToHandleGeofenceChange = false;
+        }else{
+            historyFragmentNeedsToHandleGeofenceChange = true;
+        }
         if(curFragment != null) {
             curFragment.handleGeofenceChange(content);
         }
@@ -537,4 +553,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         return memoryClass;
     }
 
+    @Override
+    public void viewFragmentChanged(MainFragment viewFragment) {
+        checkIfFragmentNeedsToHandleGeofenceChange();
+    }
 }

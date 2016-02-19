@@ -56,6 +56,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
     private View view;
     private int screenWidth;
     private boolean needToHandleGeofenceChange = false;
+    private boolean needToGetGeofences = false;
 
     ArrayList<GeofenceObjectContent> currentGeofences;
 
@@ -116,6 +117,10 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
                 txtRequestGeofences.setText(getResources().getString(R.string.retrieving_geofences));
             }
         });
+
+        if(needToGetGeofences){
+            fragmentInView();
+        }
 
 
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -361,9 +366,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
                     }
                 }
             }else{
-                if(result != null){
-                    boolean needToHandleGeofenceChange = true;
-                }
+                needToHandleGeofenceChange = true;
             }
         }
     }
@@ -488,6 +491,10 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         to get quests from the server
          */
         MainActivity mainActivity = (MainActivity) getActivity();
+        if(mainActivity == null){
+            needToGetGeofences = true;
+            return;
+        }
         try {
             Button btnRequestGeofences = (Button) view.findViewById(R.id.btn_request_geofences);
             TextView txtRequestGeofences = (TextView) view.findViewById(txt_try_getting_geofences);
@@ -531,6 +538,8 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
                 Log.i(logMessages.VOLLEY, "handleGeofenceChange : about to query database : " + currentGeofences.toString());
                 volleyRequester.request(this, currentGeofences);
             }
+        }else{
+            needToHandleGeofenceChange = true;
         }
     }
 
@@ -549,14 +558,45 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
     @Override
     public void fragmentInView() {
         super.fragmentInView();
+        if(currentGeofences != null) {
+            Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : fragmentInView : currentGeofences size is: " + currentGeofences.size());
+        }else{
+            Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : fragmentInView : currentGeofences is null");
+        }
+        String needToRequestGeofences = "false";
+        if(needToGetGeofences){
+            needToRequestGeofences = "true";
+        }
+        Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : fragmentInView : needToRequestGeofences is: " + needToRequestGeofences);
+
+        String needToGetInfo = "false";
+        if(needToHandleGeofenceChange){
+            needToGetInfo = "true";
+        }
+
+        Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : fragmentInView : needToHandleGeofenceChange is: " + needToGetInfo);
+
+
         MainActivity mainActivity = (MainActivity) getActivity();
         if(view != null) {
+            Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : fragmentInView : view is not null ");
+
+            Button btnRequestGeofences = (Button) view.findViewById(R.id.btn_request_geofences);
+            TextView txtRequestGeofences = (TextView) view.findViewById(txt_try_getting_geofences);
+            if(needToGetGeofences){
+                Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : fragmentInView : about to get new geofences ");
+                boolean gotGeofences = mainActivity.getGeofenceMonitor().getNewGeofences();
+                if (!gotGeofences) {
+                    btnRequestGeofences.setVisibility(View.VISIBLE);
+                    txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
+                }
+            }
             if(currentGeofences != null && needToHandleGeofenceChange){
+                Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : fragmentInView : about to call handle geofence change ");
                 handleGeofenceChange(currentGeofences);
                 needToHandleGeofenceChange = false;
             }
-            Button btnRequestGeofences = (Button) view.findViewById(R.id.btn_request_geofences);
-            TextView txtRequestGeofences = (TextView) view.findViewById(txt_try_getting_geofences);
+
             if (mainActivity == null) {
                 mainActivity = (MainActivity) getActivity();
             }

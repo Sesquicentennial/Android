@@ -1,6 +1,9 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,14 +13,15 @@ import android.widget.ExpandableListView;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 
-import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import carleton150.edu.carleton.carleton150.Adapters.EventDateCardAdapter;
 import carleton150.edu.carleton.carleton150.Adapters.EventsListAdapter;
+import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewDatesClickListener;
 import carleton150.edu.carleton.carleton150.POJO.EventObject.EventContent;
 import carleton150.edu.carleton.carleton150.POJO.EventObject.Events;
 import carleton150.edu.carleton.carleton150.R;
@@ -27,11 +31,12 @@ import carleton150.edu.carleton.carleton150.R;
  * and events calendar
  *
  */
-public class EventsFragment extends MainFragment {
+public class EventsFragment extends MainFragment implements RecyclerViewDatesClickListener {
 
     private Button btnTryAgain;
     private TextView txtTryAgain;
-    private ArrayList<EventContent> events = new ArrayList<>();
+    private ArrayList<EventContent> eventsList = new ArrayList<>();
+    ArrayList<String> dateInfo = new ArrayList<>();
 
     private EventsListAdapter eventsListAdapter;
 
@@ -46,9 +51,12 @@ public class EventsFragment extends MainFragment {
 
     // RecyclerView Pager
     private static View v;
-    private RecyclerViewPager dates;
-    private LinkedHashMap<String, List<EventContent>> eventsMapByDate = new LinkedHashMap<String, List<EventContent>>();
-    private List<EventContent> tempEventContentLst = new ArrayList<EventContent>();
+    private RecyclerView dates;
+    private LinkedHashMap<String, ArrayList<EventContent>> eventsMapByDate = new LinkedHashMap<String, ArrayList<EventContent>>();
+    private ArrayList<EventContent> tempEventContentLst = new ArrayList<EventContent>();
+    private int screenWidth;
+    private LinearLayoutManager dateLayoutManager;
+    private EventDateCardAdapter eventDateCardAdapter;
 
     public EventsFragment() {
         // Required empty public constructor
@@ -68,13 +76,11 @@ public class EventsFragment extends MainFragment {
         //requests events from server
         requestEvents();
 
-        LinkedHashMap<String, List<String>> eventCollections = createCollection();
 
         eventsListView = (ExpandableListView) v.findViewById(R.id.lst_events);
-        eventsListAdapter = new EventsListAdapter(getActivity(), events);
+        eventsListAdapter = new EventsListAdapter(getActivity(), eventsList);
         eventsListView.setAdapter(eventsListAdapter);
 
-        datesScrollView = (HorizontalScrollView) v.findViewById(R.id.scroll_dates);
         //eventsListAdapter = new EventsListAdapter(getActivity(), eventsByDate);
 
 
@@ -96,11 +102,33 @@ public class EventsFragment extends MainFragment {
         requestEvents();
 
         // Build RecyclerViews to display date tabs
-        //buildRecyclerViews();
+        buildRecyclerViews();
 
         // Request dates from server (or events? needed if dates already served?)
 
         return v;
+    }
+
+    /**
+     * Builds the views for the quests
+     */
+    private void buildRecyclerViews(){
+        DisplayMetrics metrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        screenWidth = metrics.widthPixels;
+        dates = (RecyclerView) v.findViewById(R.id.lst_event_dates);
+        dateLayoutManager = new LinearLayoutManager(getActivity());
+
+
+
+        dateLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        dates.setLayoutManager(dateLayoutManager);
+
+        eventDateCardAdapter = new EventDateCardAdapter(dateInfo, this, screenWidth, getResources());
+
+
+        dates.setAdapter(eventDateCardAdapter);
+        eventDateCardAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -115,7 +143,7 @@ public class EventsFragment extends MainFragment {
         String dayString = String.format("%02d", day);
         String startTime = monthString + "/" + dayString + "/" + year;
         Log.i(logMessages.VOLLEY, "requestEvents : start time is : " + startTime);
-        volleyRequester.requestEvents(startTime, 20, this);
+        volleyRequester.requestEvents(startTime, 100, this);
     }
 
     /**
@@ -124,7 +152,10 @@ public class EventsFragment extends MainFragment {
      */
     @Override
     public void handleNewEvents(Events events) {
-
+        String completeDate;
+        String[] completeDateArray;
+        String dateByDay;
+        eventsMapByDate.clear();
         /*This is a call from the VolleyRequester, so this check prevents the app from
         crashing if the user leaves the tab while the app is trying
         to get quests from the server
@@ -135,38 +166,80 @@ public class EventsFragment extends MainFragment {
             try {
                 EventContent[] eventContents = events.getContent();
                 for (int i = 0; i < eventContents.length; i++) {
-                    // eventContents[i].getStartTime();
-                    // if equal to button date, then go ahead and add
-                    this.events.add(eventContents[i]);
 
                     // Begin battle
-                    String completeDate = eventContents[i].getStartTime();
-                    String[] completeDateArray = completeDate.split("T");
-                    String dateByDay = completeDateArray[0];
-                    Log.d(dateByDay, " = date without hours/mins/sec");
-                    Log.d(String.valueOf(tempEventContentLst), " = tempEventContentLst should be empty");
-                    Log.d(String.valueOf(eventsMapByDate), " = eventsMapByDate should be empty and showing");
+                    completeDate = eventContents[i].getStartTime();
+                    completeDateArray = completeDate.split("T");
+                    dateByDay = completeDateArray[0];
+                    Log.d(dateByDay, "date without hours/mins/sec");
+                    Log.d(String.valueOf(eventsMapByDate), "eventsMapByDate");
+                    Log.i("Date is : ", dateByDay);
 
-                    /*// If key not already there, add from current List<EventContent>
-                    if (eventsMapByDate.get(dateByDay) == null) {
+
+                    // If key already there, add + update new values
+                    if (!eventsMapByDate.containsKey(dateByDay)) {
+                        tempEventContentLst.clear();
+                        Log.d("Debugging", "Does not contain the key!" + dateByDay);
                         tempEventContentLst.add(eventContents[i]);
-                        eventsMapByDate.put(dateByDay, tempEventContentLst);
-                        //Log.d(String.valueOf(tempEventContentLst), " = tempEventContentLst so far");
-                        //Log.d(String.valueOf(eventsMapByDate), " = eventsMapByDate (all events for each date");
+                        ArrayList<EventContent> eventContents1 = new ArrayList<>();
+                        for(int k = 0; k<tempEventContentLst.size(); k++){
+                            eventContents1.add(tempEventContentLst.get(k));
+                        }
+                        eventsMapByDate.put(dateByDay, eventContents1);
                     }
                     else {
                         tempEventContentLst.add(eventContents[i]);
-                        //Log.d(String.valueOf(tempEventContentLst), " = tempEventContentLst added to");
-                        //Log.d(dateByDay, "Got to the else statement...meaning key hadn't existed?");
-                    }*/
+                        ArrayList<EventContent> eventContents1 = new ArrayList<>();
+                        for(int k = 0; k<tempEventContentLst.size(); k++){
+                            eventContents1.add(tempEventContentLst.get(k));
+                        }
+                        eventsMapByDate.put(dateByDay, eventContents1);
+                    }
+
+
+
+
+
+                    // TODO: Figure out size of list in eventsMapBySize
+                    Log.d("eventsdebugging", String.valueOf(eventsMapByDate.get(dateByDay).size()));
+
                 }
+                dateInfo.clear();
+                for (Map.Entry<String, ArrayList<EventContent>> entry : eventsMapByDate.entrySet()) {
+                    dateInfo.add(entry.getKey());
+                }
+
+                Log.i("eventsdebugging", "length of dateInfo : " + dateInfo.size());
+
+                eventDateCardAdapter.notifyDataSetChanged();
+
+                String key = eventsMapByDate.keySet().iterator().next();
+                ArrayList<EventContent> newEvents = eventsMapByDate.get(key);
+                eventsList.clear();
+                for(int i = 0; i<newEvents.size(); i++){
+                    eventsList.add(newEvents.get(i));
+                }
+
+                eventsListAdapter.notifyDataSetChanged();
+
+
+               /* Set set = eventsMapByDate.entrySet();
+                Iterator iterator = set.iterator();
+
+                while iterator.hasNext() {
+                    LinkedHashMap.Entry mentry = (LinkedHashMap.Entry)iterator.next();
+                    Log.d(mentry.getKey(), " = key");
+                    v
+                    Log.d(mentry.getValue(), " = value");
+                }*/
+
                 txtTryAgain.setVisibility(View.GONE);
                 btnTryAgain.setVisibility(View.GONE);
                 eventsListView.setVisibility(View.VISIBLE);
                 datesScrollView.setVisibility(View.VISIBLE);
                 eventsListAdapter.notifyDataSetChanged();
             } catch (NullPointerException e) {
-                if (this.events.size() == 0) {
+                if (eventsList.size() == 0) {
                     txtTryAgain.setText(getString(R.string.no_events_retrieved));
                     txtTryAgain.setVisibility(View.VISIBLE);
                     btnTryAgain.setVisibility(View.VISIBLE);
@@ -192,54 +265,16 @@ public class EventsFragment extends MainFragment {
         Log.i("UI", "EventsFragment : fragmentInView");
     }
 
-    private ArrayList<String> createGroupList() {
-        ArrayList<String> groupList = new ArrayList<String>();
-        groupList.add("HP");
-        groupList.add("Dell");
-        groupList.add("Lenovo");
-        groupList.add("Sony");
-        groupList.add("HCL");
-        groupList.add("Samsung");
-        return groupList;
-    }
 
-    private LinkedHashMap<String, List<String>> createCollection() {
-        // preparing laptops collection(child)
-        String[] hpModels = { "HP Pavilion G6-2014TX", "ProBook HP 4540",
-                "HP Envy 4-1025TX" };
-        String[] hclModels = { "HCL S2101", "HCL L2102", "HCL V2002" };
-        String[] lenovoModels = { "IdeaPad Z Series", "Essential G Series",
-                "ThinkPad X Series", "Ideapad Z Series" };
-        String[] sonyModels = { "VAIO E Series", "VAIO Z Series",
-                "VAIO S Series", "VAIO YB Series" };
-        String[] dellModels = { "Inspiron", "Vostro", "XPS" };
-        String[] samsungModels = { "NP Series", "Series 5", "SF Series" };
-
-        LinkedHashMap<String, List<String>> eventCollection = new LinkedHashMap<String, List<String>>();
-
-        for (String laptop : createGroupList()) {
-            if (laptop.equals("HP")) {
-                loadChild(hpModels);
-            } else if (laptop.equals("Dell"))
-                loadChild(dellModels);
-            else if (laptop.equals("Sony"))
-                loadChild(sonyModels);
-            else if (laptop.equals("HCL"))
-                loadChild(hclModels);
-            else if (laptop.equals("Samsung"))
-                loadChild(samsungModels);
-            else
-                loadChild(lenovoModels);
-
-            eventCollection.put(laptop, loadChild(hpModels));
+    @Override
+    public void recyclerViewListClicked(String dateInfo) {
+        Log.i("debugginginfo", "recyclerViewListClicked! dateInfo : " + dateInfo);
+        ArrayList<EventContent> newEvents = eventsMapByDate.get(dateInfo);
+        eventsList.clear();
+        for(int i = 0; i<newEvents.size(); i++){
+            eventsList.add(newEvents.get(i));
         }
-        return eventCollection;
-    }
 
-    private ArrayList<String> loadChild(String[] eventModels) {
-        ArrayList<String> childList = new ArrayList<String>();
-        for (String model : eventModels)
-            childList.add(model);
-        return childList;
+        eventsListAdapter.notifyDataSetChanged();
     }
 }
