@@ -557,14 +557,14 @@ public class HistoryFragment extends MapMainFragment {
                     btnRequestGeofences.setVisibility(View.VISIBLE);
                     txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
                 }
-/*
+
             if (mainActivity.getGeofenceMonitor().allGeopointsByName.size() == 0) {
-                boolean gotGeofences = mainActivity.getGeofenceMonitor().getNewGeofences();
+                gotGeofences = mainActivity.getGeofenceMonitor().getNewGeofences();
                 if (!gotGeofences) {
                     btnRequestGeofences.setVisibility(View.VISIBLE);
                     txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
-                }*/
-            /*}*/ else {
+                }
+            } else {
                 //mainActivity.getGeofenceMonitor().startMonitoringGeofencesAfterPause();
 
                 if (txtRequestGeofences != null) {
