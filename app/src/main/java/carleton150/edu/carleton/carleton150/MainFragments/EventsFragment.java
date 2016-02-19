@@ -236,7 +236,6 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
                 txtTryAgain.setVisibility(View.GONE);
                 btnTryAgain.setVisibility(View.GONE);
                 eventsListView.setVisibility(View.VISIBLE);
-                datesScrollView.setVisibility(View.VISIBLE);
                 eventsListAdapter.notifyDataSetChanged();
             } catch (NullPointerException e) {
                 if (eventsList.size() == 0) {
@@ -244,7 +243,6 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
                     txtTryAgain.setVisibility(View.VISIBLE);
                     btnTryAgain.setVisibility(View.VISIBLE);
                     eventsListView.setVisibility(View.GONE);
-                    datesScrollView.setVisibility(View.GONE);
                     e.printStackTrace();
                 }
             }
