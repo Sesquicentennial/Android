@@ -26,18 +26,15 @@ import carleton150.edu.carleton.carleton150.R;
 public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private GeofenceInfoContent[] historyList = null;
-    public static RecyclerViewClickListener clickListener;
     public static RecyclerViewScrolledListener scrolledListener;
     public int screenWidth;
     public int screenHeight;
     public boolean isMemories;
     public Context context;
 
-    public HistoryAdapter(Context context, GeofenceInfoContent[] historyList,
-                          RecyclerViewClickListener clickListener, RecyclerView recyclerView,
+    public HistoryAdapter(Context context, GeofenceInfoContent[] historyList, RecyclerView recyclerView,
                           RecyclerViewScrolledListener scrolledListener, int screenWidth, int screenHeight, boolean isMemories) {
         this.historyList = historyList;
-        this.clickListener = clickListener;
         this.scrolledListener = scrolledListener;
         this.screenHeight = screenHeight;
         this.screenWidth = screenWidth;
@@ -74,7 +71,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public void closeAdapter(){
         this.context = null;
-        this.clickListener = null;
     }
 
     /**
@@ -329,7 +325,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         @Override
         public void onClick(View v) {
-            clickListener.recyclerViewListClicked(v, getLayoutPosition());
             swapExpanded();
         }
     }
@@ -407,9 +402,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         @Override
         public void onClick(View v) {
-            clickListener.recyclerViewListClicked(v, getLayoutPosition());
             swapExpanded();
-
         }
     }
 

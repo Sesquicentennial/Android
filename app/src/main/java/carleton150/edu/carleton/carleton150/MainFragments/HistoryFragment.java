@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,11 +28,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 import java.util.Map;
 
-import carleton150.edu.carleton.carleton150.Adapters.HistoryCardAdapter;
 import carleton150.edu.carleton.carleton150.Adapters.MyInfoWindowAdapter;
 import carleton150.edu.carleton.carleton150.ExtraFragments.AddMemoryFragment;
 import carleton150.edu.carleton.carleton150.ExtraFragments.HistoryPopoverFragment;
-import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
@@ -50,13 +46,11 @@ import static carleton150.edu.carleton.carleton150.R.id.txt_try_getting_geofence
  * A simple {@link Fragment} subclass.
  *
  */
-public class HistoryFragment extends MapMainFragment implements RecyclerViewClickListener {
+public class HistoryFragment extends MapMainFragment {
 
     private MyInfoWindowAdapter myInfoWindowAdapter;
     private View view;
     private int screenWidth;
-    private boolean needToHandleGeofenceChange = false;
-    private boolean needToGetGeofences = false;
 
     ArrayList<GeofenceObjectContent> currentGeofences;
 
@@ -118,9 +112,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
             }
         });
 
-        if(needToGetGeofences){
-            fragmentInView();
-        }
+        fragmentInView();
 
 
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -225,10 +217,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         MainActivity mainActivity = (MainActivity) getActivity();
         if(mainActivity.isConnectedToNetwork()) {
             setUpMapIfNeeded();
-            if(currentGeofences != null && needToHandleGeofenceChange){
-                handleGeofenceChange(currentGeofences);
-                needToHandleGeofenceChange = false;
-            }
+
         }
         fragmentInView();
     }
@@ -365,8 +354,6 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
                         queryResult.setText("the geofence request returned a null content array");
                     }
                 }
-            }else{
-                needToHandleGeofenceChange = true;
             }
         }
     }
@@ -492,7 +479,6 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
          */
         MainActivity mainActivity = (MainActivity) getActivity();
         if(mainActivity == null){
-            needToGetGeofences = true;
             return;
         }
         try {
@@ -533,13 +519,11 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         super.handleGeofenceChange(currentGeofences);
         MainActivity mainActivity = (MainActivity) getActivity();
         this.currentGeofences = currentGeofences;
-        if(mainActivity != null) {
+        if(mainActivity != null && currentGeofences != null) {
             if (mainActivity.isConnectedToNetwork()) {
                 Log.i(logMessages.VOLLEY, "handleGeofenceChange : about to query database : " + currentGeofences.toString());
                 volleyRequester.request(this, currentGeofences);
             }
-        }else{
-            needToHandleGeofenceChange = true;
         }
     }
 
@@ -547,7 +531,7 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
     public void fragmentOutOfView() {
         super.fragmentOutOfView();
         MainActivity mainActivity = (MainActivity) getActivity();
-        mainActivity.getGeofenceMonitor().removeAllGeofences();
+       // mainActivity.getGeofenceMonitor().removeAllGeofences();
         Log.i("UI", "HistoryFragment : fragmentOutOfView");
     }
 
@@ -563,18 +547,8 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
         }else{
             Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : fragmentInView : currentGeofences is null");
         }
-        String needToRequestGeofences = "false";
-        if(needToGetGeofences){
-            needToRequestGeofences = "true";
-        }
-        Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : fragmentInView : needToRequestGeofences is: " + needToRequestGeofences);
 
-        String needToGetInfo = "false";
-        if(needToHandleGeofenceChange){
-            needToGetInfo = "true";
-        }
 
-        Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : fragmentInView : needToHandleGeofenceChange is: " + needToGetInfo);
 
 
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -583,19 +557,13 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
 
             Button btnRequestGeofences = (Button) view.findViewById(R.id.btn_request_geofences);
             TextView txtRequestGeofences = (TextView) view.findViewById(txt_try_getting_geofences);
-            if(needToGetGeofences){
+
                 Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : fragmentInView : about to get new geofences ");
                 boolean gotGeofences = mainActivity.getGeofenceMonitor().getNewGeofences();
                 if (!gotGeofences) {
                     btnRequestGeofences.setVisibility(View.VISIBLE);
                     txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
                 }
-            }
-            if(currentGeofences != null && needToHandleGeofenceChange){
-                Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : fragmentInView : about to call handle geofence change ");
-                handleGeofenceChange(currentGeofences);
-                needToHandleGeofenceChange = false;
-            }
 
             if (mainActivity == null) {
                 mainActivity = (MainActivity) getActivity();
@@ -603,13 +571,13 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
             Log.i("UI", "HistoryFragment : fragmentInView");
 
             if (mainActivity.getGeofenceMonitor().allGeopointsByName.size() == 0) {
-                boolean gotGeofences = mainActivity.getGeofenceMonitor().getNewGeofences();
+                gotGeofences = mainActivity.getGeofenceMonitor().getNewGeofences();
                 if (!gotGeofences) {
                     btnRequestGeofences.setVisibility(View.VISIBLE);
                     txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
                 }
             } else {
-                mainActivity.getGeofenceMonitor().startMonitoringGeofencesAfterPause();
+                //mainActivity.getGeofenceMonitor().startMonitoringGeofencesAfterPause();
 
                 if (txtRequestGeofences != null) {
                     txtRequestGeofences.setVisibility(View.GONE);
@@ -641,29 +609,6 @@ public class HistoryFragment extends MapMainFragment implements RecyclerViewClic
            marker.showInfoWindow();
        }
     }
-
-    @Override
-    public void recyclerViewListClicked(View v, int position) {
-       // GeofenceInfoContent[] clickedContent = historyCardAdapter.getItemAtPosition(position);
-       // showTooltip(clickedContent);
-    }
-
-    /**
-     * Builds the views for the quests
-     */
-   /* private void buildiews(){
-        DisplayMetrics metrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        screenWidth = metrics.widthPixels;
-        lstImages = (RecyclerView) view.findViewById(R.id.lst_images);
-        historyCardLayoutManager = new LinearLayoutManager(getActivity());
-        historyCardLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        lstImages.setLayoutManager(historyCardLayoutManager);
-
-        historyCardAdapter = new HistoryCardAdapter(mainActivity.getGeofenceMonitor().curGeofenceInfoMap, this, screenWidth, getResources());
-        lstImages.setAdapter(historyCardAdapter);
-
-    }*/
 
     private void showMemoriesPopover(){
 

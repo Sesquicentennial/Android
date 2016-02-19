@@ -105,6 +105,7 @@ public class GeofenceMonitor{
         for(int i = 0; i< curGeofences.size(); i++){
             curGeofencesMap.put(curGeofences.get(i).getName(), curGeofences.get(i));
         }
+        Log.i("Fragment Handling", "GeofenceMonitor : about to call handleGeofenceChange : curGeofences size: " + curGeofences.size());
         activity.handleGeofenceChange(currentGeofences);
     }
 
