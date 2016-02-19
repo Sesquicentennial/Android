@@ -52,50 +52,6 @@
                 android:layout_height="0dp"
                 android:layout_weight="10" />
 
-
-            <!-- Eventually phase out dummy LinearLayout below
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" >
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="February 17, 2016"
-                    android:padding="10dp"
-                    android:layout_margin="1dp"
-                    android:textColor="@color/yellowAccent"
-                    android:background="@color/colorPrimary"/>
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Feb 18, 2016"
-                    android:padding="10dp"
-                    android:layout_margin="1dp"
-                    android:textColor="@color/yellowAccent"
-                    android:background="@color/colorPrimary" />
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Feb 19, 2016"
-                    android:padding="10dp"
-                    android:layout_margin="1dp"
-                    android:textColor="@color/yellowAccent"
-                    android:background="@color/colorPrimary" />
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Feb 20, 2016"
-                    android:padding="10dp"
-                    android:layout_margin="1dp"
-                    android:textColor="@color/yellowAccent"
-                    android:background="@color/colorPrimary" />
-            </LinearLayout>  -->
-
             <ExpandableListView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"

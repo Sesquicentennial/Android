@@ -194,21 +194,6 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
             holder.view.setBackgroundColor(Color.parseColor("#e4decf"));
             event.setIsExpanded(false);
         }
-
-        /*convertView.OnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!event.isExpanded()) {
-                    holder.view.setBackgroundColor(Color.parseColor("#c8bc9d"));
-                    event.setIsExpanded(true);
-                } else {
-                    holder.view.setBackgroundColor(Color.parseColor("#e4decf"));
-                    event.setIsExpanded(false);
-                }
-
-            }
-        });*/
-
         return convertView;
     }
 
