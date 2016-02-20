@@ -1,7 +1,9 @@
 package carleton150.edu.carleton.carleton150.ExtraFragments;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -14,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Base64;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +25,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -52,6 +57,7 @@ public class AddMemoryFragment extends Fragment {
     private File photoFile = null;
     private ArrayList<EditText> editTexts = new ArrayList();
     private String imageString = null;
+    private Dialog alertDialogLoading = null;
 
     /**
      * Use this factory method to create a new instance of
@@ -275,8 +281,28 @@ public class AddMemoryFragment extends Fragment {
             }
             VolleyRequester volleyRequester = new VolleyRequester();
 
-            volleyRequester.addMemory(imageString, title, uploader, desc, timestamp, lat, lng);
-            removeCurrentFragment();
+            volleyRequester.addMemory(imageString, title, uploader, desc, timestamp, lat, lng, this);
+
+
+
+            RelativeLayout layout = new RelativeLayout(getActivity());
+
+            TextView textView = new TextView(getActivity());
+            textView.setText("Uploading memory...");
+            textView.setTextColor(getResources().getColor(R.color.colorAccent));
+            textView.setBackgroundColor(getResources().getColor(R.color.transparent));
+
+            RelativeLayout.LayoutParams childParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            childParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+            layout.addView(textView, childParams);
+
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+
+
+            alertDialogLoading = new Dialog(getActivity(), R.style.LoadingDialogTheme);
+            alertDialogLoading.addContentView(layout, params);
+            alertDialogLoading.show();
+
         }
 
 
@@ -315,6 +341,27 @@ public class AddMemoryFragment extends Fragment {
     public static void closeKeyboard(Context c, IBinder windowToken) {
         InputMethodManager mgr = (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
         mgr.hideSoftInputFromWindow(windowToken, 0);
+    }
+
+    public void addMemorySuccess(){
+        if(alertDialogLoading != null){
+            alertDialogLoading.dismiss();
+            alertDialogLoading = null;
+        }
+        MainActivity mainActivity = (MainActivity) getActivity();
+        AlertDialog alertDialog = new AlertDialog.Builder(mainActivity).create();
+        mainActivity.showAlertDialog(getResources().getString(R.string.successfully_added_memory), alertDialog);
+        removeCurrentFragment();
+    }
+
+    public void addMemoryError(){
+        if(alertDialogLoading != null){
+            alertDialogLoading.dismiss();
+            alertDialogLoading = null;
+        }
+        MainActivity mainActivity = (MainActivity) getActivity();
+        AlertDialog alertDialog = new AlertDialog.Builder(mainActivity).create();
+        mainActivity.showAlertDialog(getResources().getString(R.string.unable_to_add_memory), alertDialog);
     }
 
 }
