@@ -2,6 +2,7 @@ package carleton150.edu.carleton.carleton150;
 
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -14,6 +15,7 @@ import com.google.android.gms.common.api.Status;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -38,9 +40,11 @@ import java.util.prefs.Preferences;
 import carleton150.edu.carleton.carleton150.ExtraFragments.AddMemoryFragment;
 import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
 import carleton150.edu.carleton.carleton150.Interfaces.ViewFragmentChangedListener;
+import carleton150.edu.carleton.carleton150.MainFragments.EventsFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.HistoryFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
 import carleton150.edu.carleton.carleton150.Adapters.MyFragmentPagerAdapter;
+import carleton150.edu.carleton.carleton150.MainFragments.QuestFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.QuestInProgressFragment;
 import carleton150.edu.carleton.carleton150.Models.GeofenceErrorMessages;
 import carleton150.edu.carleton.carleton150.Models.GeofenceMonitor;
@@ -56,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status>, FragmentChangeListener, ViewFragmentChangedListener{
 
     //things for managing fragments
-    public static FragmentManager fragmentManager;
+    //public static FragmentManager fragmentManager;
 
 
     //things for location
@@ -78,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private LogMessages logMessages = new LogMessages();
 
     MainFragment curFragment = null;
-    private MyFragmentPagerAdapter adapter;
+   // private MyFragmentPagerAdapter adapter;
 
     public VolleyRequester mVolleyRequester = new VolleyRequester();
     AlertDialog networkAlertDialog;
@@ -110,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
 
         //managing fragments and UI
-        fragmentManager = getSupportFragmentManager();
+       // fragmentManager = getSupportFragmentManager();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -118,12 +122,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         }
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_action_history));
+        tabLayout.addTab(tabLayout.newTab().setText("History"));
         tabLayout.addTab(tabLayout.newTab().setText("Events"));
         tabLayout.addTab(tabLayout.newTab().setText("Quests"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        final NoSwipeViewPager viewPager = (NoSwipeViewPager) findViewById(R.id.pager);
-        viewPager.setOffscreenPageLimit(1);
+
+        curFragment = new HistoryFragment();
+        int commit = getSupportFragmentManager()
+                .beginTransaction().replace(R.id.containerLayout, curFragment).commit();
+
+
+        //final NoSwipeViewPager viewPager = (NoSwipeViewPager) findViewById(R.id.pager);
+        /*viewPager.setOffscreenPageLimit(1);
         adapter = new MyFragmentPagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount(), this);
         viewPager.setAdapter(adapter);
@@ -133,8 +143,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         viewPager.clearOnPageChangeListeners();
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
-
+*/
         /*
+
+
         Overrides onTabSelected to notify the fragment going out of view that it is
         going out of view.
         This is because fragments are kept in onResumed state for the viewPager, so
@@ -144,9 +156,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                if(tab.getPosition() == 0){
+                    curFragment = new HistoryFragment();
+                } if(tab.getPosition() == 1){
+                    curFragment = new EventsFragment();
+                } if(tab.getPosition() == 2){
+                    curFragment = new QuestFragment();
+                }
+
+
+                int commit = getSupportFragmentManager()
+                        .beginTransaction().replace(R.id.containerLayout, curFragment).commit();
+
+
                 Log.i("UI", "newTabSelectedTablistener");
-                adapter.getCurFragment().fragmentOutOfView();
-                viewPager.setCurrentItem(tab.getPosition());
+                //adapter.getCurFragment().fragmentOutOfView();
+                //viewPager.setCurrentItem(tab.getPosition());
 
             }
 
@@ -166,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     public void checkIfFragmentNeedsToHandleGeofenceChange(){
-        if(adapter.getCurFragment() instanceof HistoryFragment){
+        if(curFragment instanceof HistoryFragment){
             Log.i("Fragment Handling", "MainActivity : viewFragment is instanceof HistoryFragment");
         }else{
 
@@ -174,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         }
 
-        if(adapter.getCurFragment() instanceof HistoryFragment && historyFragmentNeedsToHandleGeofenceChange){
+        if(curFragment instanceof HistoryFragment && historyFragmentNeedsToHandleGeofenceChange){
             Log.i("Fragment Handling", "CheckIfFragmentNeedsToHandleGeofenceChange : calling handleGeofenceChange. Length: " + geofenceMonitor.getCurGeofences().size());
 
             handleGeofenceChange(geofenceMonitor.getCurGeofences());
@@ -183,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     public void checkIfFragmentNeedsNewGeofences(){
 
-        if(adapter.getCurFragment() instanceof HistoryFragment){
+        if(curFragment instanceof HistoryFragment){
             Log.i("Fragment Handling", "MainActivity : viewFragment is instanceof HistoryFragment");
         }else{
 
@@ -191,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         }
 
-        if(adapter.getCurFragment() instanceof HistoryFragment && historyFragmentNeedsToGetNewGeofences){
+        if(curFragment instanceof HistoryFragment && historyFragmentNeedsToGetNewGeofences){
             Log.i("Fragment Handling", "CheckIfFragmentNeedsNewGeoences : calling handleGeofenceChange. Length: " + geofenceMonitor.geofencesBeingMonitored.length);
 
             handleNewGeofences(geofenceMonitor.geofencesBeingMonitored);
@@ -335,7 +360,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * Calls a method in the current fragment to handle a location change.
      */
     private void tellFragmentLocationChanged(){
-        MainFragment curFragment = adapter.getCurFragment();
         if(curFragment != null) {
             curFragment.handleLocationChange(mLastLocation);
         }
@@ -366,7 +390,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void handleGeofenceChange(ArrayList<GeofenceObjectContent> content){
         Log.i("Fragment Handling", "MainActivity : handleGeofenceChange. Length: " + content.size());
 
-        MainFragment curFragment = adapter.getCurFragment();
         if(curFragment instanceof HistoryFragment){
             historyFragmentNeedsToHandleGeofenceChange = false;
             Log.i("Fragment Handling", "MainActivity : handleGeofenceChange. needsToHandleChangeSetToFalse ");
@@ -488,7 +511,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     public void handleNewGeofences(GeofenceObjectContent[] content){
 
-        curFragment = adapter.getCurFragment();
         if (curFragment instanceof HistoryFragment){
             historyFragmentNeedsToGetNewGeofences = false;
         }else {
@@ -532,7 +554,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     @Override
     public void replaceFragment(MainFragment fragment) {
-        adapter.replaceFragment(fragment);
+        //adapter.replaceFragment(fragment);
+
+        curFragment = fragment;
+
+        int commit = getSupportFragmentManager()
+                .beginTransaction().replace(R.id.containerLayout, curFragment).commit();
+
+
+        //TODO: do this thing
     }
 
 
@@ -544,11 +574,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onBackPressed() {
 
-        if(adapter.getCurFragment() instanceof QuestInProgressFragment) {
+        if(curFragment instanceof QuestInProgressFragment) {
 
-            if (adapter.getCurFragment() instanceof QuestInProgressFragment) {
-                adapter.replaceFragment();
-            }
+            curFragment = new QuestFragment();
+
+            int commit = getSupportFragmentManager()
+                    .beginTransaction().replace(R.id.containerLayout, curFragment).commit();
+
+
+           //TODO: this thing
+               // adapter.replaceFragment();
+
         }
         else{
             super.onBackPressed();
@@ -606,4 +642,5 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         checkIfFragmentNeedsToHandleGeofenceChange();
         checkIfFragmentNeedsNewGeofences();
     }
+
 }
