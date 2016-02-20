@@ -466,7 +466,7 @@ public class QuestInProgressFragment extends MapMainFragment {
         }
             else{
                 imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(mainActivity, R.drawable.qanim25));
-            
+
         }
         txtQuestCompleted.setText("Message is : " + quest.getCompMsg());
         txtQuestCompleted.setMovementMethod(new ScrollingMovementMethod());
