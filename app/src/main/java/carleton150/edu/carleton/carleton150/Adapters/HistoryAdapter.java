@@ -105,6 +105,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      */
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if(isMemories){
+            View view = LayoutInflater.
+                    from(parent.getContext()).
+                    inflate(R.layout.history_info_card_memories, parent, false);
+            return new HistoryViewHolderImage(view);
+        }
         switch (viewType) {
             case 0:
                 View itemView = LayoutInflater.
