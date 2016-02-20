@@ -269,10 +269,12 @@ public class QuestInProgressFragment extends MapMainFragment {
         super.onResume();
         MainActivity mainActivity = (MainActivity) getActivity();
         setUpMapIfNeeded();
+        fragmentInView();
         if(mainActivity.mLastLocation != null){
             drawLocationMarker(mainActivity.mLastLocation);
         }
         drawTiles();
+
     }
 
     /**
