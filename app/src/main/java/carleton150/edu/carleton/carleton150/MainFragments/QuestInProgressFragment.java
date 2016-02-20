@@ -434,6 +434,9 @@ public class QuestInProgressFragment extends MapMainFragment {
         Log.i(logMessages.GEOFENCE_MONITORING, "QuestInProgressFragment: clueCompleted");
         showClueCompletedMessage();
         numClue += 1;
+        if(cardFace.getVisibility() == View.GONE){
+            flipCard();
+        }
 
         //saves the quest progress into SharedPreferences
         MainActivity mainActivity = (MainActivity) getActivity();

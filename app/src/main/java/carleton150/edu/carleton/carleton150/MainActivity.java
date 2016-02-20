@@ -50,6 +50,7 @@ import carleton150.edu.carleton.carleton150.Models.GeofenceErrorMessages;
 import carleton150.edu.carleton.carleton150.Models.GeofenceMonitor;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
+import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
@@ -157,11 +158,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 if(tab.getPosition() == 0){
-                    curFragment = new HistoryFragment();
+                    if(curFragment instanceof HistoryFragment == false) {
+                        curFragment = new HistoryFragment();
+                    }
                 } if(tab.getPosition() == 1){
-                    curFragment = new EventsFragment();
+                    if(curFragment instanceof EventsFragment == false) {
+                        curFragment = new EventsFragment();
+                    }
                 } if(tab.getPosition() == 2){
-                    curFragment = new QuestFragment();
+                    if(curFragment instanceof QuestFragment == false) {
+                        curFragment = new QuestFragment();
+                    }
                 }
 
 
@@ -382,9 +389,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /**
      * Method called from the geofenceMonitor when the geofences currently
      * triggered by the user change. Passes this information on to
-     * the fragment currently in view. GeofenceMonitor stores a record
-     * of which fragment is in view, so this will only be called if the
-     * HistoryFragment is in view.
+     * the fragment currently in view.
      * @param content
      */
     public void handleGeofenceChange(ArrayList<GeofenceObjectContent> content){
