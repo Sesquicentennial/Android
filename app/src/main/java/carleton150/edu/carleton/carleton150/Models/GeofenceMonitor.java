@@ -37,7 +37,6 @@ public class GeofenceMonitor{
     protected Location lastGeofenceUpdateLocation = null;
 
     public HashMap<String, GeofenceObjectContent> curGeofencesMap = new HashMap<>();
-    public HashMap<String, GeofenceInfoContent[]> curGeofenceInfoMap;
 
     public GeofenceObjectContent[] geofencesBeingMonitored;
     protected PendingIntent mGeofencePendingIntent;
@@ -123,7 +122,6 @@ public class GeofenceMonitor{
         } else {
             Log.i(logMessages.VOLLEY, "handleResult: result is: " + result.toString());
             try {
-                curGeofenceInfoMap = result.getContent();
                 Log.i(logMessages.VOLLEY, "GeofenceMonitor handleResult : got content");
             }catch (NullPointerException e){
                 e.printStackTrace();

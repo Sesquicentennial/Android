@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
@@ -63,6 +65,14 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
                 btnTryAgain.setVisibility(View.GONE);
                 txtInfo.setText(getString(R.string.retrieving_quests));
                 fragmentInView();
+            }
+        });
+
+        ImageView imgQuestion = (ImageView) view.findViewById(R.id.img_question);
+        imgQuestion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleTutorial();
             }
         });
 
@@ -208,4 +218,22 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         questLayoutManager = null;
         questInfo = null;
     }
+
+
+    private void toggleTutorial(){
+        final RelativeLayout relLayoutTutorial = (RelativeLayout) view.findViewById(R.id.tutorial);
+        if(relLayoutTutorial.getVisibility() == View.VISIBLE){
+            relLayoutTutorial.setVisibility(View.GONE);
+        }else{
+            relLayoutTutorial.setVisibility(View.VISIBLE);
+        }
+        Button btnCloseTutorial = (Button) view.findViewById(R.id.btn_close_tutorial);
+        btnCloseTutorial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                relLayoutTutorial.setVisibility(View.GONE);
+            }
+        });
+    }
+
 }
