@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/tutorial"
+    android:padding="20dp"
+    android:visibility="gone"
+    android:background="@color/transparent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/bg_tutorial"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_close_tutorial"
+            android:background="@color/transparent"
+            android:text="X"
+            android:textSize="@dimen/abc_text_size_large_material"
+            android:textColor="@color/windowBackground"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:text="@string/tutorial_quest_in_progress"
+            android:padding="20dp"
+            android:layout_below="@id/btn_close_tutorial"
+            android:textSize="@dimen/abc_text_size_medium_material"
+            android:textColor="@color/windowBackground"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

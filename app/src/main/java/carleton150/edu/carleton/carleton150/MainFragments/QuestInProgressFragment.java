@@ -103,6 +103,14 @@ public class QuestInProgressFragment extends MapMainFragment {
         final ImageView imgExpandClue = (ImageView) v.findViewById(R.id.img_expand_clue);
         final ImageView imgExpandHint = (ImageView) v.findViewById(R.id.img_expand_hint);
 
+        ImageView imgQuestion = (ImageView) v.findViewById(R.id.img_question);
+        imgQuestion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleTutorial();
+            }
+        });
+
 
         slidingDrawerClue.setOnDrawerOpenListener(new SlidingDrawer.OnDrawerOpenListener() {
             @Override
@@ -696,4 +704,22 @@ public class QuestInProgressFragment extends MapMainFragment {
         quest = null;
         super.onDestroy();
     }
+
+
+    private void toggleTutorial(){
+        final RelativeLayout relLayoutTutorial = (RelativeLayout) v.findViewById(R.id.tutorial);
+        if(relLayoutTutorial.getVisibility() == View.VISIBLE){
+            relLayoutTutorial.setVisibility(View.GONE);
+        }else{
+            relLayoutTutorial.setVisibility(View.VISIBLE);
+        }
+        Button btnCloseTutorial = (Button) v.findViewById(R.id.btn_close_tutorial);
+        btnCloseTutorial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                relLayoutTutorial.setVisibility(View.GONE);
+            }
+        });
+    }
+
 }
