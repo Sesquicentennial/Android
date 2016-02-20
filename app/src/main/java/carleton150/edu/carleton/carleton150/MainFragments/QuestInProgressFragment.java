@@ -460,9 +460,13 @@ public class QuestInProgressFragment extends MapMainFragment {
         Button btnDoneWithQuest = (Button) v.findViewById(R.id.btn_done_with_quest);
         btnDoneWithQuest.setText("DONE");
         final MainActivity mainActivity = (MainActivity) getActivity();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && mainActivity.getMemoryClass() > 150) {
             System.gc();
             imgQuestCompleted.setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.anim_quest_completed));
+        }
+            else{
+                imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(mainActivity, R.drawable.qanim25));
+            
         }
         txtQuestCompleted.setText("Message is : " + quest.getCompMsg());
         txtQuestCompleted.setMovementMethod(new ScrollingMovementMethod());
@@ -472,9 +476,11 @@ public class QuestInProgressFragment extends MapMainFragment {
         btnDoneWithQuest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && mainActivity.getMemoryClass() > 150) {
                     imgQuestCompleted.setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.bg_transparent));
                     System.gc();
+                }else{
+                    imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(mainActivity, R.drawable.bg_transparent));
                 }
                 goBackToQuestSelectionScreen();
             }

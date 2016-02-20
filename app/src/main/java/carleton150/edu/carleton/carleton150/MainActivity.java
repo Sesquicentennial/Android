@@ -157,11 +157,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 if(tab.getPosition() == 0){
-                    curFragment = new HistoryFragment();
+                    if(curFragment instanceof HistoryFragment == false) {
+                        getSupportFragmentManager().beginTransaction().remove(curFragment).commit();
+                        curFragment = new HistoryFragment();
+                    }
                 } if(tab.getPosition() == 1){
-                    curFragment = new EventsFragment();
+                    if(curFragment instanceof EventsFragment ==false) {
+                        getSupportFragmentManager().beginTransaction().remove(curFragment).commit();
+                        curFragment = new EventsFragment();
+                    }
                 } if(tab.getPosition() == 2){
-                    curFragment = new QuestFragment();
+                    if(curFragment instanceof QuestFragment == false) {
+                        getSupportFragmentManager().beginTransaction().remove(curFragment).commit();
+                        curFragment = new QuestFragment();
+                    }
                 }
 
 
@@ -555,6 +564,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void replaceFragment(MainFragment fragment) {
         //adapter.replaceFragment(fragment);
+        getSupportFragmentManager().beginTransaction().remove(curFragment).commit();
 
         curFragment = fragment;
 
@@ -575,6 +585,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onBackPressed() {
 
         if(curFragment instanceof QuestInProgressFragment) {
+
+            getSupportFragmentManager().beginTransaction().remove(curFragment).commit();
+
 
             curFragment = new QuestFragment();
 
