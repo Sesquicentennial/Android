@@ -103,6 +103,7 @@
                     android:layout_width="match_parent"
                     android:layout_margin="20dp"
                     android:background="@drawable/bg_color_primary_btn"
+                    android:elevation="10dp"
                     android:textColor="@color/colorAccent"
                     android:padding="10dp"
                     android:text="Get Nearby Memories"

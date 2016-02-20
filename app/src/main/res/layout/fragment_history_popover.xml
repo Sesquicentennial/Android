@@ -58,10 +58,12 @@
         <Button
             android:id="@+id/btn_add_memory"
             android:layout_below="@+id/view_line"
-            android:background="@drawable/scroll_year_bg"
+            android:background="@drawable/accent_color_button_bg"
             android:text="Add Memory"
             android:clickable="true"
-            android:textColor="@color/windowBackground"
+            android:textColor="@color/colorAccent"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

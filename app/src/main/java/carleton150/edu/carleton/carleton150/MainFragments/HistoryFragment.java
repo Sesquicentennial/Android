@@ -51,6 +51,7 @@ public class HistoryFragment extends MapMainFragment {
     private MyInfoWindowAdapter myInfoWindowAdapter;
     private View view;
     private int screenWidth;
+    private boolean needToCallFragmentInView = true;
 
     ArrayList<GeofenceObjectContent> currentGeofences;
 
@@ -113,6 +114,7 @@ public class HistoryFragment extends MapMainFragment {
         });
 
         fragmentInView();
+        needToCallFragmentInView = false;
 
 
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -175,12 +177,11 @@ public class HistoryFragment extends MapMainFragment {
                 if(mainActivity.getGeofenceMonitor().curGeofenceInfoMap != null){
                     myInfoWindowAdapter.setCurrentGeopoints(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
                 }
-                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
-                    public void onInfoWindowClick(Marker marker) {
-                        marker.hideInfoWindow();
-
+                    public boolean onMarkerClick(Marker marker) {
                         showPopup(getContentFromMarker(marker));
+                        return true;
                     }
                 });
                 return true;
@@ -219,7 +220,9 @@ public class HistoryFragment extends MapMainFragment {
             setUpMapIfNeeded();
 
         }
-        fragmentInView();
+        if(needToCallFragmentInView) {
+            fragmentInView();
+        }
     }
 
 
@@ -262,6 +265,7 @@ public class HistoryFragment extends MapMainFragment {
         }
         Log.i(logMessages.GEOFENCE_MONITORING, "drawGeofenceMapMarker : done drawing markers");
     }
+
 
     /**
      * Displays text stating which geofences the user is currently in
@@ -577,27 +581,6 @@ public class HistoryFragment extends MapMainFragment {
 
     }
 
-    public void showTooltip(GeofenceInfoContent[] object){
-        Marker marker = null;
-        for(int i = 0; i<currentGeofenceMarkers.size(); i++){
-            Marker curMarker = currentGeofenceMarkers.get(i);
-            String name = null;
-            for(int j =0; j < object.length; j++){
-                if(name != null){
-                    break;
-                }else if(object[i].getName() != null){
-                    name = object[i].getName();
-                }
-            }
-            if(curMarker.getTitle().equals(name)){
-                marker = curMarker;
-            }
-        }
-       if(marker != null){
-           marker.showInfoWindow();
-       }
-    }
-
     private void showMemoriesPopover(){
 
         FragmentManager fm = getActivity().getSupportFragmentManager();
@@ -635,5 +618,11 @@ public class HistoryFragment extends MapMainFragment {
         myInfoWindowAdapter = null;
         currentGeofenceMarkers = null;
 
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        needToCallFragmentInView = true;
     }
 }
