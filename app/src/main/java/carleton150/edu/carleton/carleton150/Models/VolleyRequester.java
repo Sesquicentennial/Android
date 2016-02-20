@@ -20,6 +20,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import carleton150.edu.carleton.carleton150.ExtraFragments.AddMemoryFragment;
 import carleton150.edu.carleton.carleton150.ExtraFragments.HistoryPopoverFragment;
 import carleton150.edu.carleton.carleton150.LogMessages;
 import carleton150.edu.carleton.carleton150.MainActivity;
@@ -106,7 +107,7 @@ public class VolleyRequester {
 
 
         request.setRetryPolicy(new DefaultRetryPolicy(
-                30000,
+                60000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
@@ -345,7 +346,7 @@ Log.i(logMessages.MEMORY_MONITORING, "requestMemories: JSON request : " + memori
         MyApplication.getInstance().getRequestQueue().add(request);
     }
 
-    public void addMemory(String image, String title, String uploader, String desc, String timestamp, double lat, double lng){
+    public void addMemory(String image, String title, String uploader, String desc, String timestamp, double lat, double lng, final AddMemoryFragment callerFragment){
         final Gson gson = new Gson();
         //Creates request object
         JSONObject addMemoryRequest = new JSONObject();
@@ -377,6 +378,7 @@ Log.i(logMessages.MEMORY_MONITORING, "requestMemories: JSON request : " + memori
                     @Override
                     public void onResponse(JSONObject response) {
                         String responseString = response.toString();
+                        callerFragment.addMemorySuccess();
                         Log.i(logMessages.MEMORY_MONITORING, "addMemory : response string = : " + responseString);
                     }
                 },
@@ -385,6 +387,7 @@ Log.i(logMessages.MEMORY_MONITORING, "requestMemories: JSON request : " + memori
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        callerFragment.addMemoryError();
                         Log.i(logMessages.MEMORY_MONITORING, "addMemory : error : " + error.toString());
 
                     }

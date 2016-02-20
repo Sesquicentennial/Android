@@ -44,4 +44,6 @@
     <string name="found_it">Found it!</string>
     <string name ="no_info_retrieved">Unable to retrieve info about geofences. Please check your internet connection and try again.</string>
     <string name="retrieving_info">Retrieving info about current geofences...</string>
+    <string name="successfully_added_memory">Added memory successfully!</string>
+    <string name="unable_to_add_memory">We were unable to add your memory at this time. Please try again later.</string>
 </resources>
