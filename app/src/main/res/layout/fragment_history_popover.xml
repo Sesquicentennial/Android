@@ -7,11 +7,13 @@
     tools:context="carleton150.edu.carleton.carleton150.ExtraFragments.HistoryPopoverFragment">
 
     <View
+        android:id="@+id/view_window_separator"
         android:layout_width="match_parent"
-        android:background="@color/windowBackground"
+        android:background="@color/transparent"
         android:layout_height="10dp">
     </View>
     <RelativeLayout
+        android:id="@+id/rel_layout_history_popover_background"
         android:layout_width="match_parent"
         android:layout_marginTop="10dp"
         android:background="@color/colorPrimaryDarkSlightlyTransparent"
@@ -98,9 +100,6 @@
             android:scrollbars="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-
-
-
 
     </RelativeLayout>
 

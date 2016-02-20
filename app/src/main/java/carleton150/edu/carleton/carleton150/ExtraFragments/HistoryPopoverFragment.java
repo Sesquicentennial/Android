@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import carleton150.edu.carleton.carleton150.Adapters.HistoryAdapter;
@@ -115,6 +116,10 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
             txtErrorGettingMemories.setText(R.string.getting_nearby_memories);
         }
 
+        if(isMemories){
+            setMemoriesColorScheme();
+        }
+
         //builds RecyclerViews to display info
         buildRecyclerViews();
         //historyAdapter.updateHistoryList(historyInfo);
@@ -130,6 +135,14 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
         fm.setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
         fm.detach(this).remove(this).commit();
+
+    }
+
+    private void setMemoriesColorScheme(){
+        View line = view.findViewById(R.id.view_line);
+        RelativeLayout relLayoutHistPopoverBackground = (RelativeLayout) view.findViewById(R.id.rel_layout_history_popover_background);
+        relLayoutHistPopoverBackground.setBackgroundColor(getResources().getColor(R.color.windowBackground));
+        line.setVisibility(View.GONE);
 
     }
 
