@@ -57,4 +57,9 @@
 
     <string name="not_rated">Not Rated</string>
     <string name="intended_for">Intended for: </string>
+    <string name ="message_is">"Message is : "</string>
+    <string name ="quest_started">You already started this quest. Would you like to resume it or start over?"</string>
+    <string name="start_over">Start Over</string>
+    <string name="resume">Resume</string>
+    <string name="continue_to_next_hint">Continue to next hint</string>
 </resources>

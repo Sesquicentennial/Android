@@ -3,14 +3,9 @@ package carleton150.edu.carleton.carleton150.Adapters;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +20,6 @@ import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener
 import carleton150.edu.carleton.carleton150.Models.BitmapWorkerTask;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.R;
-import jp.wasabeef.recyclerview.animators.holder.AnimateViewHolder;
 
 
 /**
@@ -39,6 +33,8 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
     private int screenHeight;
     private Resources resources;
     private SharedPreferences sharedPreferences;
+    private static int PLACEHOLDER_BITMAP_SIZE = 10;
+
 
     public QuestAdapter(ArrayList<Quest> questList, RecyclerViewClickListener clickListener, int screenWidth, int screenHeight, Resources resources, SharedPreferences sharedPreferences) {
         this.questList = questList;
@@ -49,6 +45,13 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
         this.sharedPreferences = sharedPreferences;
     }
 
+    /**
+     * inflates the itemView with a quest_card
+     *
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @Override
     public QuestViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.
@@ -57,25 +60,34 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
         return new QuestViewHolder(itemView);
     }
 
+    /**
+     * Binds a view holder after setting the necessary fields
+     * @param holder the holder to be recycled
+     * @param position the position of the holder being created
+     */
     @Override
     public void onBindViewHolder(QuestViewHolder holder, int position) {
         Quest qi = questList.get(position);
         holder.setTitle(qi.getName());
-        holder.setWidth((int) (screenWidth));
+        holder.setWidth(screenWidth);
         holder.setDescription(qi.getDesc());
         holder.setDifficulty(qi.getDifficulty(), resources);
         holder.setCreator(qi.getCreator());
         holder.setTargetAudience(qi.getAudience(), resources);
         holder.setImage(position, qi.getImage(), screenWidth, screenHeight);
-        int cluesCompleted = sharedPreferences.getInt(qi.getName(), 0);
-        float percentCompleted = 0;
+        double cluesCompleted = sharedPreferences.getInt(qi.getName(), 0);
+        double percentCompleted = 0;
         if(cluesCompleted != 0){
-            percentCompleted = cluesCompleted/qi.getWaypoints().length * 100;
+            percentCompleted = cluesCompleted/(double)qi.getWaypoints().length * 100;
         }
         holder.setPercentCompleted((int) percentCompleted);
-
     }
 
+    /**
+     * gets the count of the list this is an adapter for
+     *
+     * @return the number of items in the questList
+     */
     @Override
     public int getItemCount() {
         if(questList != null) {
@@ -89,12 +101,14 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
         questList = newQuests;
     }
 
-
     public ArrayList<Quest> getQuestList(){
         return this.questList;
     }
 
 
+    /**
+     * RecyclerView.ViewHolder for a quest view
+     */
     public static class QuestViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView title;
         private ImageView image;
@@ -108,7 +122,6 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
 
         public QuestViewHolder(View itemView) {
             super(itemView);
-
             title = (TextView) itemView.findViewById(R.id.txtTitle);
             image = (ImageView) itemView.findViewById(R.id.img_quest);
             description = (TextView) itemView.findViewById(R.id.txt_quest_description);
@@ -117,12 +130,14 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
             txtDifficulty = (TextView) itemView.findViewById(R.id.txt_difficulty);
             creator = (TextView) itemView.findViewById(R.id.txt_creator);
             intendedAudience = (TextView) itemView.findViewById(R.id.txt_intended_audience);
-
-
             btnBeginQuest.setOnClickListener(this);
         }
 
 
+        /**
+         * Sets the button to display the percentage of the quest that was completed
+         * @param percentCompleted
+         */
         public void setPercentCompleted(int percentCompleted){
             if(percentCompleted == 0){
                 btnBeginQuest.setText("Begin Quest");
@@ -130,16 +145,23 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
                 btnBeginQuest.setText(percentCompleted + "% Completed");
             }
         }
+
         public void setDescription(String description) {
             this.description.setText(description);
         }
 
+        /**
+         * Fills in circles with the necessary colors to show the quest difficulty
+         * and sets the quest difficulty string
+         *
+         * @param difficulty
+         * @param resources
+         */
         public void setDifficulty(String difficulty, Resources resources) {
             int difficultyInt = 0;
             difficultyInt = Integer.parseInt(difficulty);
             String difficultyString = "No Rating";
             int colorInt = resources.getColor(R.color.windowBackground);
-
             if(difficultyInt == 0){
                 difficultyString = "Easy";
                 colorInt = resources.getColor(R.color.green);
@@ -161,7 +183,6 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
                 GradientDrawable background = (GradientDrawable) view.getBackground();
                 background.setColor(resources.getColor(R.color.windowBackground));
             }
-
             txtDifficulty.setText(difficultyString);
         }
 
@@ -187,6 +208,13 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
         }
 
         /**
+         * Sets the image by downsizing and decoding the image string, then putting the image
+         * into the recyclerView at the specified position in the image ImageView
+         *
+         * @param resId position of image in RecyclerView
+         * @param encodedImage 64-bit encoded image
+         * @param screenWidth width of phone screen
+         * @param screenHeight height of phone screen
          */
         public void setImage(int resId, String encodedImage, int screenWidth, int screenHeight) {
             System.gc();
@@ -194,19 +222,10 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
                 image.setImageResource(R.drawable.test_image1);
                 image.setColorFilter(R.color.blackSemiTransparent);
             }else {
-
-
-                byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
-
-                int w = 10, h = 10;
-
+                int w = PLACEHOLDER_BITMAP_SIZE, h = PLACEHOLDER_BITMAP_SIZE;
                 Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
                 Bitmap mPlaceHolderBitmap = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
-
-
                 if (cancelPotentialWork(resId, image)) {
-
-                    //TODO: find better formula than dividing by 2
                     final BitmapWorkerTask task = new BitmapWorkerTask(image, encodedImage
                             , screenWidth / 2, screenHeight / 2);
                     final BitmapWorkerTask.AsyncDrawable asyncDrawable =
@@ -214,13 +233,18 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
                     image.setImageDrawable(asyncDrawable);
                     task.execute(resId);
                 }
-
             }
         }
 
+        /**
+         * Cancels the previous task if a view is recycled so it can use the correct image
+         *
+         * @param data
+         * @param imageView
+         * @return
+         */
         public static boolean cancelPotentialWork(int data, ImageView imageView) {
             final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
-
             if (bitmapWorkerTask != null) {
                 final int bitmapData = bitmapWorkerTask.data;
                 // If bitmapData is not yet set or it differs from the new data
@@ -236,7 +260,11 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
             return true;
         }
 
-
+        /**
+         * Gets the worker task that is trying to decode an image for the imageView
+         * @param imageView
+         * @return the new BitmapWorkerTask for the imageView
+         */
         private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) {
             if (imageView != null) {
                 final Drawable drawable = imageView.getDrawable();
@@ -282,6 +310,11 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
             }
         }
 
+        /**
+         * Tells clickListener the item that was clicked so it can begin
+         * the specified quest
+         * @param v
+         */
         @Override
         public void onClick(View v) {
             clickListener.recyclerViewListClicked(v, getLayoutPosition());

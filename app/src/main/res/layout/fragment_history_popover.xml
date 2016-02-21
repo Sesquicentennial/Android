@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="@color/transparent"
     android:orientation="vertical"
-    tools:context="carleton150.edu.carleton.carleton150.ExtraFragments.HistoryPopoverFragment">
+    tools:context="carleton150.edu.carleton.carleton150.ExtraFragments.RecyclerViewPopoverFragment">
 
     <View
         android:id="@+id/view_window_separator"

@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import carleton150.edu.carleton.carleton150.ExtraFragments.AddMemoryFragment;
-import carleton150.edu.carleton.carleton150.ExtraFragments.HistoryPopoverFragment;
+import carleton150.edu.carleton.carleton150.ExtraFragments.RecyclerViewPopoverFragment;
 import carleton150.edu.carleton.carleton150.LogMessages;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
@@ -97,7 +97,6 @@ public class VolleyRequester {
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
                         callerFragment.handleResult(null);
-                        callerFragment.printMessageToast(error.getMessage());
                         Log.i(logMessages.VOLLEY, "request : error response");
 
                     }
@@ -299,7 +298,7 @@ public class VolleyRequester {
      * @param longitude user's longitude
      * @param callerFragment
      */
-    public void requestMemories(double latitude, double longitude, double radius, final HistoryPopoverFragment callerFragment) {
+    public void requestMemories(double latitude, double longitude, double radius, final RecyclerViewPopoverFragment callerFragment) {
         final Gson gson = new Gson();
         //Creates request object
         JSONObject memoriesRequest = new JSONObject();

@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import java.lang.ref.WeakReference;
 
 /**
- * Created by haleyhinze on 2/9/16.
+ * Task to do image processing in a new thread
  */
 public class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
 

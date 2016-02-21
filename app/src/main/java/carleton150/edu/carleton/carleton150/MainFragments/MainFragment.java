@@ -2,17 +2,11 @@ package carleton150.edu.carleton.carleton150.MainFragments;
 
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import carleton150.edu.carleton.carleton150.LogMessages;
-import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.EventObject.Events;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
@@ -53,18 +47,11 @@ public class MainFragment extends Fragment{
 
     }
 
-
-
     /**
      * Handles results of query for information about geofences
      * @param result
      */
     public void handleResult(GeofenceInfoObject result){
-        /*if(result == null){
-            MainActivity mainActivity = (MainActivity) getActivity();
-                Toast toast = Toast.makeText(mainActivity, "Null info result", Toast.LENGTH_SHORT);
-                toast.show();
-            }*/
         }
 
 
@@ -102,12 +89,6 @@ public class MainFragment extends Fragment{
 
     public void handleNewQuests(ArrayList<Quest> newQuests){
 
-    }
-
-    public void printMessageToast(String message){
-       /* MainActivity mainActivity = (MainActivity) getActivity();
-        Toast toast = Toast.makeText(mainActivity, message, Toast.LENGTH_SHORT);
-        toast.show();*/
     }
 }
 
