@@ -162,7 +162,7 @@ public class HistoryFragment extends MapMainFragment {
             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(Marker marker) {
-                    showPopup(getContentFromMarker(marker));
+                    showPopup(getContentFromMarker(marker), marker.getTitle());
                     return true;
                 }
             });
@@ -350,12 +350,12 @@ public class HistoryFragment extends MapMainFragment {
      *
      * @param geofenceInfoObject
      */
-    private void showPopup(GeofenceInfoContent[] geofenceInfoObject){
+    private void showPopup(GeofenceInfoContent[] geofenceInfoObject, String name){
         RelativeLayout relLayoutTutorial = (RelativeLayout) view.findViewById(R.id.tutorial);
         relLayoutTutorial.setVisibility(View.GONE);
         GeofenceInfoContent[] sortedContent = sortByDate(geofenceInfoObject);
         FragmentManager fm = getActivity().getSupportFragmentManager();
-        RecyclerViewPopoverFragment recyclerViewPopoverFragment = RecyclerViewPopoverFragment.newInstance(sortedContent);
+        RecyclerViewPopoverFragment recyclerViewPopoverFragment = RecyclerViewPopoverFragment.newInstance(sortedContent, name);
         // Transaction start
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
         fragmentTransaction.setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom,
@@ -480,9 +480,8 @@ public class HistoryFragment extends MapMainFragment {
             }
             if(removeMarker){
                 currentGeofenceMarkers.get(i).remove();
-                currentGeofenceMarkers.remove(i);
                 currentGeofencesInfoMap.remove(currentGeofencesInfoMap.get(currentGeofenceMarkers.get(i).getTitle()));
-
+                currentGeofenceMarkers.remove(i);
             }
         }
 
