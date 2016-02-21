@@ -3,10 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingTop="?attr/actionBarSize"
-    tools:context="carleton150.edu.carleton.carleton150.MainFragments.QuestFragment">
-
+    tools:context="carleton150.edu.carleton.carleton150.MainFragments.EventsFragment">
 
         <!-- Ignore: Getting events holder... -->
         <LinearLayout
@@ -45,19 +43,17 @@
             <!-- Scrollable date tabs -->
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/lst_event_dates"
-                android:background="@color/colorPrimaryDark"
                 android:layout_gravity="center_horizontal"
-                android:padding="3dp"
                 android:scrollbars="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="12" />
+                android:layout_weight="11" />
 
             <!-- Event list items -->
             <ExpandableListView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="88"
+                android:layout_weight="89"
                 android:id="@+id/lst_events">
             </ExpandableListView>
 

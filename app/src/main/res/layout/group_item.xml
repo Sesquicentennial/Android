@@ -2,9 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:id="@+id/list_item"
-
     android:layout_height="match_parent">
-    <!-- android:background="@color/windowBackground" -->
 
     <TextView
         android:id="@+id/txt_title"
@@ -15,6 +13,10 @@
         android:padding="22dp"
         android:layout_height="match_parent"
         android:textColor="@color/darkAccent"
+        android:background="@color/white"
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:text="description"/>
 
     <TextView
@@ -23,7 +25,10 @@
         android:layout_height="match_parent"
         android:textSize="17sp"
         android:textColor="@color/darkAccent"
+        android:background="@color/white"
         android:gravity="center"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:text="Date" />
 
     <TextView
@@ -35,7 +40,10 @@
         android:textStyle="italic"
         android:text="Full Description"
         android:paddingBottom="20dp"
-        android:layout_marginBottom="1dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/box_shadow"
         android:gravity="center" />
 
 
@@ -45,6 +53,11 @@
         android:layout_height="match_parent"
         android:textColor="@color/darkAccent"
         android:text="Description"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/box_shadow"
         android:visibility="gone" />
 
 </LinearLayout>
