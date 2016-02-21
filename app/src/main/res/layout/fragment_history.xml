@@ -103,6 +103,7 @@
                     android:layout_width="match_parent"
                     android:layout_margin="20dp"
                     android:background="@drawable/bg_color_primary_btn"
+                    android:elevation="10dp"
                     android:textColor="@color/colorAccent"
                     android:padding="10dp"
                     android:text="Get Nearby Memories"
@@ -126,11 +127,22 @@
 
     </LinearLayout>
 
-
+    <ImageView
+        android:id="@+id/img_question"
+        android:layout_width="wrap_content"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_question"
+        android:layout_alignParentLeft="true"
+        android:layout_height="wrap_content" />
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+
+
+    <include layout="@layout/tutorial_history" />
+
 
 </RelativeLayout>

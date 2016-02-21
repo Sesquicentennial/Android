@@ -103,6 +103,14 @@ public class QuestInProgressFragment extends MapMainFragment {
         final ImageView imgExpandClue = (ImageView) v.findViewById(R.id.img_expand_clue);
         final ImageView imgExpandHint = (ImageView) v.findViewById(R.id.img_expand_hint);
 
+        ImageView imgQuestion = (ImageView) v.findViewById(R.id.img_question);
+        imgQuestion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleTutorial();
+            }
+        });
+
 
         slidingDrawerClue.setOnDrawerOpenListener(new SlidingDrawer.OnDrawerOpenListener() {
             @Override
@@ -459,10 +467,17 @@ public class QuestInProgressFragment extends MapMainFragment {
         RelativeLayout relLayoutQuestCompleted = (RelativeLayout) v.findViewById(R.id.rel_layout_quest_completed);
         Button btnDoneWithQuest = (Button) v.findViewById(R.id.btn_done_with_quest);
         btnDoneWithQuest.setText("DONE");
-        final MainActivity mainActivity = (MainActivity) getActivity();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             System.gc();
-            imgQuestCompleted.setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.anim_quest_completed));
+            try {
+                imgQuestCompleted.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.anim_quest_completed));
+            }catch (OutOfMemoryError e){
+                imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.qanim25));
+            }
+        }
+            else{
+                imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.qanim25));
+
         }
         txtQuestCompleted.setText("Message is : " + quest.getCompMsg());
         txtQuestCompleted.setMovementMethod(new ScrollingMovementMethod());
@@ -473,8 +488,10 @@ public class QuestInProgressFragment extends MapMainFragment {
             @Override
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    imgQuestCompleted.setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.bg_transparent));
+                    imgQuestCompleted.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.bg_transparent));
                     System.gc();
+                }else{
+                    imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.bg_transparent));
                 }
                 goBackToQuestSelectionScreen();
             }
@@ -591,6 +608,7 @@ public class QuestInProgressFragment extends MapMainFragment {
     }
 
     private void goBackToQuestSelectionScreen(){
+        System.gc();
         QuestFragment fr=new QuestFragment();
         FragmentChangeListener fc=(FragmentChangeListener)getActivity();
         fc.replaceFragment(fr);
@@ -679,10 +697,20 @@ public class QuestInProgressFragment extends MapMainFragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
+
+        MainActivity mainActivity = (MainActivity) getActivity();
+        ImageView imgQuestCompleted = (ImageView) v.findViewById(R.id.img_animation_quest_completed);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            imgQuestCompleted.setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.bg_transparent));
+            System.gc();
+        }else{
+            imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(mainActivity, R.drawable.bg_transparent));
+        }
+        imgQuestCompleted = null;
         cardFace = null;
         cardBack = null;
         v = null;
+        super.onDestroyView();
     }
 
     @Override
@@ -690,4 +718,22 @@ public class QuestInProgressFragment extends MapMainFragment {
         quest = null;
         super.onDestroy();
     }
+
+
+    private void toggleTutorial(){
+        final RelativeLayout relLayoutTutorial = (RelativeLayout) v.findViewById(R.id.tutorial);
+        if(relLayoutTutorial.getVisibility() == View.VISIBLE){
+            relLayoutTutorial.setVisibility(View.GONE);
+        }else{
+            relLayoutTutorial.setVisibility(View.VISIBLE);
+        }
+        Button btnCloseTutorial = (Button) v.findViewById(R.id.btn_close_tutorial);
+        btnCloseTutorial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                relLayoutTutorial.setVisibility(View.GONE);
+            }
+        });
+    }
+
 }

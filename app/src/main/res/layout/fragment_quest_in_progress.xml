@@ -54,4 +54,15 @@
     </LinearLayout>
 
     <include layout="@layout/quest_completed_view" />
+
+    <ImageView
+        android:id="@+id/img_question"
+        android:layout_width="wrap_content"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_question"
+        android:layout_alignParentLeft="true"
+        android:layout_height="wrap_content" />
+
+    <include layout="@layout/tutorial_quest_in_progress" />
+
 </RelativeLayout>

@@ -3,9 +3,7 @@ package carleton150.edu.carleton.carleton150.Adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
-import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewScrolledListener;
-import carleton150.edu.carleton.carleton150.LogMessages;
 import carleton150.edu.carleton.carleton150.Models.BitmapWorkerTask;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.R;
@@ -26,48 +21,19 @@ import carleton150.edu.carleton.carleton150.R;
 public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private GeofenceInfoContent[] historyList = null;
-    public static RecyclerViewScrolledListener scrolledListener;
     public int screenWidth;
     public int screenHeight;
     public boolean isMemories;
     public Context context;
 
-    public HistoryAdapter(Context context, GeofenceInfoContent[] historyList, RecyclerView recyclerView,
-                          RecyclerViewScrolledListener scrolledListener, int screenWidth, int screenHeight, boolean isMemories) {
+    public HistoryAdapter(Context context, GeofenceInfoContent[] historyList, int screenWidth, int screenHeight, boolean isMemories) {
         this.historyList = historyList;
-        this.scrolledListener = scrolledListener;
         this.screenHeight = screenHeight;
         this.screenWidth = screenWidth;
         this.isMemories = isMemories;
         this.context = context;
-
-        if (!isMemories) {
-            recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
-                    if (newState == recyclerView.SCROLL_STATE_IDLE) {
-                        clearDate();
-                    } else {
-                        LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
-                        displayDate(lm);
-                    }
-
-                }
-            });
-        }
     }
 
-    private void displayDate(LinearLayoutManager lm){
-        int lastVisible = lm.findLastVisibleItemPosition();
-        scrolledListener.recyclerViewScrolled(historyList[lastVisible].getYear());
-    }
-
-    private void clearDate(){
-        if(scrolledListener != null) {
-            scrolledListener.recyclerViewStoppedScrolling();
-        }
-    }
 
     public void closeAdapter(){
         this.context = null;
@@ -105,6 +71,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      */
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if(isMemories){
+            View view = LayoutInflater.
+                    from(parent.getContext()).
+                    inflate(R.layout.history_info_card_memories, parent, false);
+            return new HistoryViewHolderImage(view);
+        }
         switch (viewType) {
             case 0:
                 View itemView = LayoutInflater.
@@ -134,6 +106,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ((HistoryViewHolderText) holder).setTxtDate(geofenceInfoContent.getYear());
             ((HistoryViewHolderText) holder).setExpanded(geofenceInfoContent.isExpanded());
             ImageView imgExpanded = ((HistoryViewHolderText) holder).getIconExpand();
+
+            ((HistoryViewHolderText) holder).setExpanded(geofenceInfoContent.isExpanded());
+            ((HistoryViewHolderText) holder).setIconExpand(context);
+
             imgExpanded.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -151,6 +127,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 ((HistoryViewHolderImage) holder).setTxtDescription(geofenceInfoContent.getDesc());
                 ((HistoryViewHolderImage) holder).setExpanded(geofenceInfoContent.isExpanded());
                 ImageView imgExpanded = ((HistoryViewHolderImage) holder).getIconExpand();
+                ((HistoryViewHolderImage) holder).setExpanded(geofenceInfoContent.isExpanded());
+                ((HistoryViewHolderImage) holder).setIconExpand(context);
                 imgExpanded.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -160,6 +138,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         ((HistoryViewHolderImage) holder).setIconExpand(context);
                     }
                 });
+
+
             }else{
                 Log.i("HistoryAdapter", "Image string for memory is: " + geofenceInfoContent.getImage());
                 ((HistoryViewHolderImage) holder).setImage(position, geofenceInfoContent.getImage(), screenWidth, screenHeight);
@@ -168,6 +148,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 ((HistoryViewHolderImage) holder).setTxtDescription(geofenceInfoContent.getDesc());
                 ((HistoryViewHolderImage) holder).setExpanded(geofenceInfoContent.isExpanded());
                 ImageView imgExpanded = ((HistoryViewHolderImage) holder).getIconExpand();
+                ((HistoryViewHolderImage) holder).setExpanded(geofenceInfoContent.isExpanded());
+                ((HistoryViewHolderImage) holder).setIconExpand(context);
                 imgExpanded.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -260,12 +242,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
         public void setIconExpand(Context context){
-            if(expanded){
-                iconExpand.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_navigation_expand_less));
-                txtDescription.setVisibility(View.VISIBLE);
-            }else{
-                iconExpand.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_navigation_expand_more));
-                txtDescription.setVisibility(View.GONE);
+            if(context != null) {
+                if (expanded) {
+                    iconExpand.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_navigation_expand_less));
+                    txtDescription.setVisibility(View.VISIBLE);
+                } else {
+                    iconExpand.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_navigation_expand_more));
+                    txtDescription.setVisibility(View.GONE);
+                }
             }
         }
 

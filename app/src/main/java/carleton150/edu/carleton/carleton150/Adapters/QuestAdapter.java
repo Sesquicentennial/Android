@@ -1,8 +1,11 @@
 package carleton150.edu.carleton.carleton150.Adapters;
 
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.RecyclerView;
@@ -35,12 +38,16 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
     private int screenWidth;
     private int screenHeight;
     private View itemView;
+    private Resources resources;
+    private SharedPreferences sharedPreferences;
 
-    public QuestAdapter(ArrayList<Quest> questList, RecyclerViewClickListener clickListener, int screenWidth, int screenHeight) {
+    public QuestAdapter(ArrayList<Quest> questList, RecyclerViewClickListener clickListener, int screenWidth, int screenHeight, Resources resources, SharedPreferences sharedPreferences) {
         this.questList = questList;
         this.clickListener = clickListener;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
+        this.resources = resources;
+        this.sharedPreferences = sharedPreferences;
     }
 
     @Override
@@ -57,9 +64,16 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
         holder.setTitle(qi.getName());
         holder.setWidth((int) (screenWidth));
         holder.setDescription(qi.getDesc());
-        holder.setLayoutRatings(4);
-
+        holder.setDifficulty(qi.getDifficulty(), resources);
+        holder.setCreator(qi.getCreator());
+        holder.setTargetAudience(qi.getAudience(), resources);
         holder.setImage(position, qi.getImage(), screenWidth, screenHeight);
+        int cluesCompleted = sharedPreferences.getInt(qi.getName(), 0);
+        float percentCompleted = 0;
+        if(cluesCompleted != 0){
+            percentCompleted = cluesCompleted/qi.getWaypoints().length * 100;
+        }
+        holder.setPercentCompleted((int) percentCompleted);
 
     }
 
@@ -95,9 +109,11 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
         private TextView title;
         private ImageView image;
         private TextView creator;
+        private TextView txtDifficulty;
         private TextView description;
         private LinearLayout layoutRatings;
         private Button btnBeginQuest;
+        private TextView intendedAudience;
 
 
         public QuestViewHolder(View itemView) {
@@ -108,23 +124,55 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
             description = (TextView) itemView.findViewById(R.id.txt_quest_description);
             layoutRatings = (LinearLayout) itemView.findViewById(R.id.lin_layout_ratings);
             btnBeginQuest = (Button) itemView.findViewById(R.id.btn_start_quest);
+            txtDifficulty = (TextView) itemView.findViewById(R.id.txt_difficulty);
+            creator = (TextView) itemView.findViewById(R.id.txt_creator);
+            intendedAudience = (TextView) itemView.findViewById(R.id.txt_intended_audience);
+
 
             btnBeginQuest.setOnClickListener(this);
         }
 
 
+        public void setPercentCompleted(int percentCompleted){
+            if(percentCompleted == 0){
+                btnBeginQuest.setText("Begin Quest");
+            }else {
+                btnBeginQuest.setText(percentCompleted + "% Completed");
+            }
+        }
         public void setDescription(String description) {
             this.description.setText(description);
         }
 
-        public void setLayoutRatings(int ratings) {
-            for(int i = 0; i < ratings; i++){
-                ImageView imageView = (ImageView) this.layoutRatings.getChildAt(i);
-                imageView.setImageResource(R.drawable.ic_yellow_star);
-            }for(int i = ratings; i<5; i++){
-                ImageView imageView = (ImageView) this.layoutRatings.getChildAt(i);
-                imageView.setImageResource(R.drawable.ic_cream_star);
+        public void setDifficulty(String difficulty, Resources resources) {
+            int difficultyInt = 0;
+            difficultyInt = Integer.parseInt(difficulty);
+            String difficultyString = "No Rating";
+            int colorInt = resources.getColor(R.color.windowBackground);
+
+            if(difficultyInt == 0){
+                difficultyString = "Easy";
+                colorInt = resources.getColor(R.color.green);
+            }if(difficultyInt == 1){
+                difficultyString = "Medium";
+                colorInt = resources.getColor(R.color.orange);
+            }if(difficultyInt == 2){
+                difficultyString = "Hard";
+                colorInt = resources.getColor(R.color.red);
+            }if(difficultyInt > 2){
+                difficultyInt = 2;
             }
+            for(int i = 0; i <= difficultyInt; i++){
+                View view = this.layoutRatings.getChildAt(i);
+                GradientDrawable background = (GradientDrawable) view.getBackground();
+                background.setColor(colorInt);
+            }for(int i = difficultyInt+1; i<3; i++){
+                View view = this.layoutRatings.getChildAt(i);
+                GradientDrawable background = (GradientDrawable) view.getBackground();
+                background.setColor(resources.getColor(R.color.windowBackground));
+            }
+
+            txtDifficulty.setText(difficultyString);
         }
 
         /**
@@ -214,7 +262,34 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
          * @param creator
          */
         public void setCreator(String creator) {
-            this.creator.setText(creator);
+            if(creator != null) {
+                if(!creator.equals("")) {
+                    this.creator.setVisibility(View.VISIBLE);
+                    this.creator.setText(creator);
+                }
+                else{
+                    this.creator.setVisibility(View.GONE);
+                }
+            }else{
+                this.creator.setVisibility(View.GONE);
+            }
+        }
+
+        /**
+         * @param targetAudience
+         */
+        public void setTargetAudience(String targetAudience, Resources resources) {
+            if(targetAudience != null) {
+                if(!targetAudience.equals("")) {
+                    this.intendedAudience.setVisibility(View.VISIBLE);
+                    this.intendedAudience.setText(resources.getString(R.string.intended_for) + " " + targetAudience);
+                }
+                else{
+                    this.intendedAudience.setVisibility(View.GONE);
+                }
+            }else{
+                this.intendedAudience.setVisibility(View.GONE);
+            }
         }
 
         @Override
