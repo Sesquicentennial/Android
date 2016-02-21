@@ -183,10 +183,8 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
         }
 
         if (event.isExpanded()) {
-            holder.view.setBackgroundResource(R.color.windowBackgroundDark);
             event.setIsExpanded(true);
         } else {
-            holder.view.setBackgroundResource(R.color.windowBackground);
             event.setIsExpanded(false);
         }
         return convertView;
