@@ -693,10 +693,20 @@ public class QuestInProgressFragment extends MapMainFragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
+
+        MainActivity mainActivity = (MainActivity) getActivity();
+        ImageView imgQuestCompleted = (ImageView) v.findViewById(R.id.img_animation_quest_completed);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            imgQuestCompleted.setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.bg_transparent));
+            System.gc();
+        }else{
+            imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(mainActivity, R.drawable.bg_transparent));
+        }
+        imgQuestCompleted = null;
         cardFace = null;
         cardBack = null;
         v = null;
+        super.onDestroyView();
     }
 
     @Override
