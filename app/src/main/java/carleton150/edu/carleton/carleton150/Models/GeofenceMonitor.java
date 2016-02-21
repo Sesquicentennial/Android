@@ -242,6 +242,8 @@ public class GeofenceMonitor{
         if (geofencesContent != null) {
             Log.i(logMessages.VOLLEY, "handleNewGeofences : content is: " + geofencesContent.toString());
             lastGeofenceUpdateLocation = currentGeofenceUpdateRequestLocation;
+            mGeofenceList.clear();
+            allGeopointsByName.clear();
             for (int i = 0; i < geofencesContent.length; i++) {
                 carleton150.edu.carleton.carleton150.POJO.GeofenceObject.Geofence geofence =
                         geofencesContent[i].getGeofence();
@@ -250,22 +252,25 @@ public class GeofenceMonitor{
                 double longitude = geofenceLocation.getLng();
                 int radius = geofence.getRadius();
                 String name = geofencesContent[i].getName();
-                allGeopointsByName.put(name, geofencesContent[i]);
-                mGeofenceList.add(new Geofence.Builder()
-                        // Set the request ID of the geofence to identify the geofence
-                        .setRequestId(name)
-                                // Set the circular region of this geofence.
-                        .setCircularRegion(
-                                latitude,
-                                longitude,
-                                radius
-                        )
-                                // Set the expiration duration of the geofence to never expire
-                        .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                                // Set the transition types of interest to track entry and exit transitions in this sample.
-                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
-                        .build());
 
+                if (!allGeopointsByName.containsKey(name)) {
+                    allGeopointsByName.put(name, geofencesContent[i]);
+                    mGeofenceList.add(new Geofence.Builder()
+                            // Set the request ID of the geofence to identify the geofence
+                            .setRequestId(name)
+                                    // Set the circular region of this geofence.
+                            .setCircularRegion(
+                                    latitude,
+                                    longitude,
+                                    radius
+                            )
+                                    // Set the expiration duration of the geofence to never expire
+                            .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                                    // Set the transition types of interest to track entry and exit transitions in this sample.
+                            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
+                            .build());
+
+                }
             }
             removeAllGeofences();
             addGeofences();

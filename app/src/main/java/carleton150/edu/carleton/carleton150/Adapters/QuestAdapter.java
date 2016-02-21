@@ -37,7 +37,6 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
     public static RecyclerViewClickListener clickListener;
     private int screenWidth;
     private int screenHeight;
-    private View itemView;
     private Resources resources;
     private SharedPreferences sharedPreferences;
 
@@ -90,15 +89,6 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
         questList = newQuests;
     }
 
-    public void removeItem(int position) {
-        questList.remove(position);
-        notifyItemRemoved(position);
-    }
-
-    public void addItem(Quest quest, int position) {
-        questList.add(position, quest);
-        notifyItemInserted(position);
-    }
 
     public ArrayList<Quest> getQuestList(){
         return this.questList;
