@@ -42,6 +42,7 @@
     <string name="view_image_clue">VIEW IMAGE CLUE</string>
     <string name="hint">HINT</string>
     <string name="found_it">Found it!</string>
+    <string name="progress_through_quest_title">Progress Through Quest</string>
     <string name ="no_info_retrieved">Unable to retrieve info about geofences. Please check your internet connection and try again.</string>
     <string name="retrieving_info">Retrieving info about current geofences...</string>
     <string name="successfully_added_memory">Added memory successfully!</string>

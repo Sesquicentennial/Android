@@ -3,6 +3,7 @@ package carleton150.edu.carleton.carleton150.Adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,8 @@ import android.widget.TextView;
 
 import carleton150.edu.carleton.carleton150.Models.BitmapWorkerTask;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
+import carleton150.edu.carleton.carleton150.POJO.Quests.Image;
+import carleton150.edu.carleton.carleton150.POJO.Quests.Waypoint;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
@@ -21,16 +24,20 @@ import carleton150.edu.carleton.carleton150.R;
 public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private GeofenceInfoContent[] historyList = null;
+    private Waypoint[] waypointList = null;
     public int screenWidth;
     public int screenHeight;
     public boolean isMemories;
+    public boolean isQuestProgress;
     public Context context;
 
-    public HistoryAdapter(Context context, GeofenceInfoContent[] historyList, int screenWidth, int screenHeight, boolean isMemories) {
+    public HistoryAdapter(Context context, GeofenceInfoContent[] historyList, Waypoint[] waypoints, int screenWidth, int screenHeight, boolean isMemories, boolean isQuestProgress) {
         this.historyList = historyList;
         this.screenHeight = screenHeight;
         this.screenWidth = screenWidth;
         this.isMemories = isMemories;
+        this.waypointList = waypoints;
+        this.isQuestProgress = isQuestProgress;
         this.context = context;
     }
 
@@ -47,13 +54,21 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public int getItemViewType(int position) {
         if(isMemories){
+            Log.i("debugging quest progres", "HistoryAdapter: getItemViewType: returning 0!");
             return 0;
+        }if(isQuestProgress){
+            Log.i("debugging quest progres", "HistoryAdapter: getItemViewType: returning 2!");
+
+            return 2;
         }
         if(historyList[position].getType().equals(historyList[position].TYPE_IMAGE)){
+            Log.i("debugging quest progres", "HistoryAdapter: getItemViewType: returning 0!");
             return 0;
         } if(historyList[position].getType().equals(historyList[position].TYPE_TEXT)){
+            Log.i("debugging quest progres", "HistoryAdapter: getItemViewType: returning 1!");
             return 1;
         } else {
+            Log.i("debugging quest progres", "HistoryAdapter: getItemViewType: returning -1!");
             return -1;
         }
     }
@@ -88,7 +103,16 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         from(parent.getContext()).
                         inflate(R.layout.history_info_card_text, parent, false);
                 return new HistoryViewHolderText(view);
+            case 2:
+                Log.i("debugging quest progres", "onCreateViewHolder: creating type 2!");
+
+                View questInProgressView = LayoutInflater.
+                        from(parent.getContext()).
+                        inflate(R.layout.info_card_quest_in_progress, parent, false);
+                return new ViewHolderQuestInProgress(questInProgressView);
         }
+        Log.i("debugging quest progres", "onCreateViewHolder: creating type null!");
+
         return null;
     }
 
@@ -99,8 +123,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      */
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        final GeofenceInfoContent geofenceInfoContent = historyList[position];
+
         if(holder instanceof HistoryViewHolderText){
+            final GeofenceInfoContent geofenceInfoContent = historyList[position];
             ((HistoryViewHolderText) holder).setTxtSummary(geofenceInfoContent.getSummary());
             ((HistoryViewHolderText) holder).setTxtDescription(geofenceInfoContent.getData());
             ((HistoryViewHolderText) holder).setTxtDate(geofenceInfoContent.getYear());
@@ -120,7 +145,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
             });
         }else if(holder instanceof HistoryViewHolderImage){
-            if(!isMemories) {
+            final GeofenceInfoContent geofenceInfoContent = historyList[position];
+            if(!isMemories && !isQuestProgress) {
                 ((HistoryViewHolderImage) holder).setImage(position, geofenceInfoContent.getData(), screenWidth, screenHeight);
                 ((HistoryViewHolderImage) holder).setTxtDate(geofenceInfoContent.getYear());
                 ((HistoryViewHolderImage) holder).setTxtCaption(geofenceInfoContent.getCaption());
@@ -140,7 +166,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 });
 
 
-            }else{
+            }else if (isMemories){
                 Log.i("HistoryAdapter", "Image string for memory is: " + geofenceInfoContent.getImage());
                 ((HistoryViewHolderImage) holder).setImage(position, geofenceInfoContent.getImage(), screenWidth, screenHeight);
                 ((HistoryViewHolderImage) holder).setTxtDate(geofenceInfoContent.getTimestamp());
@@ -160,6 +186,33 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     }
                 });
             }
+        }else if(holder instanceof ViewHolderQuestInProgress) {
+            Log.i("debugging quest progres", "instance of ViwHolderQuestInProgress!");
+
+            final Waypoint waypoint = waypointList[position];
+            ((ViewHolderQuestInProgress) holder).setVisibilities(waypoint);
+            if(waypoint.getClue().getImage() != null) {
+                ((ViewHolderQuestInProgress) holder).setImageClue(position, waypoint.getClue().getImage().getImage(), screenWidth, screenHeight);
+            }
+            if(waypoint.getHint().getImage() != null) {
+                ((ViewHolderQuestInProgress) holder).setImageHint(position, waypoint.getHint().getImage().getImage(), screenWidth, screenHeight);
+            }
+            if(waypoint.getCompletion().getImage() != null){
+                ((ViewHolderQuestInProgress) holder).setImageComp(position, waypoint.getClue().getImage().getImage(), screenWidth, screenHeight);
+            }
+            ((ViewHolderQuestInProgress) holder).setTxtCompMessage(waypoint.getCompletion().getText());
+            ((ViewHolderQuestInProgress) holder).setTxtClue(waypoint.getClue().getText());
+            ((ViewHolderQuestInProgress) holder).setTxtHint(waypoint.getHint().getText());
+            ((ViewHolderQuestInProgress) holder).setExpanded(false);
+            ImageView imgExpanded = ((ViewHolderQuestInProgress) holder).getIconExpand();
+            ((ViewHolderQuestInProgress) holder).setIconExpand(context);
+            imgExpanded.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ((ViewHolderQuestInProgress) holder).swapExpanded();
+                    ((ViewHolderQuestInProgress) holder).setIconExpand(context);
+                }
+            });
         }
 
     }
@@ -170,9 +223,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      */
     @Override
     public int getItemCount() {
-        if(historyList != null) {
+        if (historyList != null) {
             return historyList.length;
-        }else{
+        } else if (waypointList != null){
+            return waypointList.length;
+    }else{
             return 0;
         }
     }
@@ -389,6 +444,253 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             swapExpanded();
         }
     }
+
+
+
+    /**
+     * A ViewHolder for views that contain only an image and date
+     */
+    public static class ViewHolderQuestInProgress extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private TextView txtCompMessage;
+        private ImageView imgClue;
+        private ImageView imgHint;
+        private TextView txtClue;
+        private TextView txtHint;
+        private CardView cardClue;
+        private CardView cardHint;
+        private ImageView iconExpand;
+        private ImageView imgCompImage;
+        private CardView cardCompImage;
+        private TextView txtHintTitle;
+        private TextView txtClueTitle;
+        private boolean expanded = false;
+        private boolean hasClueImage = false;
+        private boolean hasHintImage = false;
+        private boolean hasCompImage = false;
+
+        public ViewHolderQuestInProgress(View itemView) {
+            super(itemView);
+            itemView.setOnClickListener(this);
+
+            txtCompMessage = (TextView) itemView.findViewById(R.id.txt_completion_message);
+            imgClue = (ImageView) itemView.findViewById(R.id.img_clue_image);
+            imgHint = (ImageView) itemView.findViewById(R.id.img_hint_image);
+            txtClue = (TextView) itemView.findViewById(R.id.txt_clue);
+            txtHint = (TextView) itemView.findViewById(R.id.txt_hint);
+            cardClue = (CardView) itemView.findViewById(R.id.card_clue_image);
+            cardHint = (CardView) itemView.findViewById(R.id.card_hint_image);
+            iconExpand = (ImageView) itemView.findViewById(R.id.img_expand);
+            txtClueTitle = (TextView) itemView.findViewById(R.id.txt_clue_title);
+            txtHintTitle = (TextView) itemView.findViewById(R.id.txt_hint_title);
+            imgCompImage = (ImageView) itemView.findViewById(R.id.img_comp_image);
+            cardCompImage = (CardView) itemView.findViewById(R.id.card_comp_image);
+        }
+
+        public void setTxtHint(String hint){
+            if(hint != null) {
+                txtHint.setText(hint);
+            }else{
+                txtHint.setVisibility(View.GONE);
+            }
+        }
+
+        public void setTxtClue(String clue){
+            if(clue != null) {
+                txtClue.setText(clue);
+            }else{
+                txtClue.setVisibility(View.GONE);
+            }
+        }
+
+        public void setTxtCompMessage(String compMessage){
+            if(compMessage != null) {
+                txtCompMessage.setText(compMessage);
+            }else{
+                txtCompMessage.setVisibility(View.GONE);
+            }
+        }
+
+        public void setExpanded(boolean expanded){
+            this.expanded = expanded;
+        }
+
+        public void swapExpanded(){
+            this.expanded = !this.expanded;
+        }
+
+        public void setIconExpand(Context context){
+            if(context != null) {
+                if (expanded) {
+                    iconExpand.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_navigation_expand_less));
+                    txtHint.setVisibility(View.VISIBLE);
+                    txtHintTitle.setVisibility(View.VISIBLE);
+                    txtClueTitle.setVisibility(View.VISIBLE);
+                    txtClue.setVisibility(View.VISIBLE);
+                    if(hasHintImage) {
+                        cardHint.setVisibility(View.VISIBLE);
+                    }if(hasClueImage){
+                        cardClue.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    iconExpand.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_navigation_expand_more));
+                    txtHint.setVisibility(View.GONE);
+                    txtHintTitle.setVisibility(View.GONE);
+                    txtClueTitle.setVisibility(View.GONE);
+                    txtClue.setVisibility(View.GONE);
+                    cardHint.setVisibility(View.GONE);
+                    cardClue.setVisibility(View.GONE);
+                }
+            }
+        }
+        public ImageView getIconExpand(){
+            return this.iconExpand;
+        }
+
+        public void setVisibilities(Waypoint waypoint){
+            if(waypoint.getClue().getImage() != null){
+                if(!waypoint.getClue().getImage().equals("")){
+                    hasClueImage = true;
+                }else{
+                    hasClueImage = false;
+                }
+            }else {
+                hasClueImage = false;
+                cardClue.setVisibility(View.GONE);
+            }if(waypoint.getHint().getImage() != null){
+                    if(!waypoint.getHint().getImage().equals("")) {
+                        hasHintImage = true;
+                    }else{
+                        hasHintImage = false;
+                }
+            }else{
+                hasHintImage = false;
+            }
+            if(waypoint.getCompletion().getImage() != null){
+                if(!waypoint.getClue().getImage().equals("")){
+                    hasCompImage = true;
+                    cardCompImage.setVisibility(View.VISIBLE);
+                }else{
+                    hasCompImage = false;
+                    cardCompImage.setVisibility(View.GONE);
+                }
+            }else {
+                hasCompImage = false;
+                cardCompImage.setVisibility(View.GONE);
+            }
+        }
+
+
+        /**
+         */
+        public void setImageClue(int resId, String encodedImage, int screenWidth, int screenHeight) {
+            if(hasClueImage) {
+                System.gc();
+                int w = 10, h = 10;
+
+                Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+                Bitmap mPlaceHolderBitmap = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
+
+
+                if (cancelPotentialWork(resId, imgClue)) {
+
+                    //TODO: find better formula than dividing by 2
+                    final BitmapWorkerTask task = new BitmapWorkerTask(imgClue, encodedImage
+                            , screenWidth / 2, screenHeight / 3);
+                    final BitmapWorkerTask.AsyncDrawable asyncDrawable =
+                            new BitmapWorkerTask.AsyncDrawable(mPlaceHolderBitmap, task);
+                    imgClue.setImageDrawable(asyncDrawable);
+                    task.execute(resId);
+                }
+            }
+
+        }
+
+        /**
+         */
+        public void setImageHint(int resId, String encodedImage, int screenWidth, int screenHeight) {
+            if(hasHintImage) {
+                System.gc();
+                int w = 10, h = 10;
+
+                Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+                Bitmap mPlaceHolderBitmap = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
+
+
+                if (cancelPotentialWork(resId, imgHint)) {
+
+                    //TODO: find better formula than dividing by 2
+                    final BitmapWorkerTask task = new BitmapWorkerTask(imgHint, encodedImage
+                            , screenWidth / 2, screenHeight / 3);
+                    final BitmapWorkerTask.AsyncDrawable asyncDrawable =
+                            new BitmapWorkerTask.AsyncDrawable(mPlaceHolderBitmap, task);
+                    imgHint.setImageDrawable(asyncDrawable);
+                    task.execute(resId);
+                }
+            }
+
+        }
+
+        /**
+         */
+        public void setImageComp(int resId, String encodedImage, int screenWidth, int screenHeight) {
+            if(hasCompImage) {
+                System.gc();
+                int w = 10, h = 10;
+
+                Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+                Bitmap mPlaceHolderBitmap = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
+
+
+                if (cancelPotentialWork(resId, imgCompImage)) {
+
+                    //TODO: find better formula than dividing by 2
+                    final BitmapWorkerTask task = new BitmapWorkerTask(imgCompImage, encodedImage
+                            , screenWidth / 2, screenHeight / 3);
+                    final BitmapWorkerTask.AsyncDrawable asyncDrawable =
+                            new BitmapWorkerTask.AsyncDrawable(mPlaceHolderBitmap, task);
+                    imgCompImage.setImageDrawable(asyncDrawable);
+                    task.execute(resId);
+                }
+            }
+
+        }
+
+        public static boolean cancelPotentialWork(int data, ImageView imageView) {
+            final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
+
+            if (bitmapWorkerTask != null) {
+                final int bitmapData = bitmapWorkerTask.data;
+                // If bitmapData is not yet set or it differs from the new data
+                if (bitmapData == 0 || bitmapData != data) {
+                    // Cancel previous task
+                    bitmapWorkerTask.cancel(true);
+                } else {
+                    // The same work is already in progress
+                    return false;
+                }
+            }
+            // No task associated with the ImageView, or an existing task was cancelled
+            return true;
+        }
+
+
+        private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) {
+            if (imageView != null) {
+                final Drawable drawable = imageView.getDrawable();
+                if (drawable instanceof BitmapWorkerTask.AsyncDrawable) {
+                    final BitmapWorkerTask.AsyncDrawable asyncDrawable = (BitmapWorkerTask.AsyncDrawable) drawable;
+                    return asyncDrawable.getBitmapWorkerTask();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public void onClick(View v) {
+            swapExpanded();
+        }
+    }
+
 
 
 }

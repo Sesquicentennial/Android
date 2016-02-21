@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +22,14 @@ import carleton150.edu.carleton.carleton150.Adapters.MyScaleInAnimationAdapter;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.MainFragments.HistoryFragment;
+import carleton150.edu.carleton.carleton150.MainFragments.QuestInProgressFragment;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.MemoriesContent;
+import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
+import carleton150.edu.carleton.carleton150.POJO.Quests.Waypoint;
 import carleton150.edu.carleton.carleton150.R;
+import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
 /**
  * Class to manage a HistoryPopoverDialogFragment. Currently fills in a text view
@@ -43,8 +48,12 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
     private TextView txtErrorGettingMemories;
     private double MEMORIES_RADIUS = 0.1;
     private static HistoryFragment parentFragment;
+    private static Fragment parentQuestFragment;
+    private static boolean isQuestInProgress = false;
 
     private static GeofenceInfoContent[] geofenceInfoObject;
+    private static Quest quest;
+    private static int progressThroughQuest;
     public HistoryPopoverFragment()
     {
     }
@@ -53,6 +62,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         HistoryPopoverFragment f = new HistoryPopoverFragment();
         geofenceInfoObject = object;
         isMemories = false;
+        isQuestInProgress = false;
         return f;
     }
 
@@ -60,12 +70,30 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         HistoryPopoverFragment f = new HistoryPopoverFragment();
         isMemories = true;
         parentFragment = mParentFragment;
+        isQuestInProgress = false;
+        return f;
+    }
+
+    public static HistoryPopoverFragment newInstance(Fragment mParentQuestFragment, Quest mQuest, int mProgress){
+        HistoryPopoverFragment f = new HistoryPopoverFragment();
+        isMemories = false;
+        quest = mQuest;
+        progressThroughQuest = mProgress;
+        parentQuestFragment = mParentQuestFragment;
+        isQuestInProgress = true;
         return f;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+
+        if(isQuestInProgress) {
+            Log.i("debugging quest progres", "quest in progress");
+        }else{
+            Log.i("debugging quest progres", "quest is not in progress");
+        }
+
         view = getActivity().getLayoutInflater().
                 inflate(R.layout.fragment_history_popover, new LinearLayout(getActivity()), false);
         TextView txtTitle = (TextView) view.findViewById(R.id.txt_title);
@@ -90,7 +118,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
             }
         });
 
-        if(!isMemories) {
+        if(!isMemories && !isQuestInProgress) {
             String name = null;
             int i = 0;
             while (name == null && i < geofenceInfoObject.length) {
@@ -103,10 +131,13 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
 
             txtTitle.setText(name);
         }
-        else{
+        else if (isMemories){
             txtTitle.setText(getString(R.string.nearby_memories_title));
             txtErrorGettingMemories.setVisibility(View.VISIBLE);
             txtErrorGettingMemories.setText(R.string.getting_nearby_memories);
+        }else if(isQuestInProgress){
+            txtTitle.setText(getString(R.string.progress_through_quest_title));
+            txtErrorGettingMemories.setVisibility(View.GONE);
         }
 
         if(isMemories){
@@ -154,8 +185,8 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
             screenHeight = metrics.heightPixels;
 
             //if it is memories, we don't have data yet...
-            if(!isMemories) {
-                historyAdapter = new HistoryAdapter(getActivity(), geofenceInfoObject, screenWidth, screenHeight, isMemories);
+            if(!isMemories && !isQuestInProgress) {
+                historyAdapter = new HistoryAdapter(getActivity(), geofenceInfoObject, null, screenWidth, screenHeight, isMemories, isQuestInProgress);
 
                 //RecyclerView animation
                 MyScaleInAnimationAdapter scaleInAnimationAdapter = new MyScaleInAnimationAdapter(historyAdapter);
@@ -163,7 +194,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
                 scaleInAnimationAdapter.setInterpolator(new OvershootInterpolator());
 
                 historyInfoObjects.setAdapter(scaleInAnimationAdapter);
-            }else{
+            }else if (isMemories){
                 VolleyRequester volleyRequester = new VolleyRequester();
                 MainActivity activity = (MainActivity) getActivity();
                 Location location = activity.getLastLocation();
@@ -173,6 +204,24 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
                     txtErrorGettingMemories.setVisibility(View.VISIBLE);
                     txtErrorGettingMemories.setText(getString(R.string.no_current_location));
                 }
+            }else if (isQuestInProgress){
+                Log.i("debugging quest progres", "isQuestInProgress!");
+                Waypoint[] waypoints = quest.getWaypoints();
+                Waypoint[] completedWaypoints = new Waypoint[progressThroughQuest];
+                for(int i = 0; i<progressThroughQuest; i++){
+                    completedWaypoints[i] = waypoints[i];
+                }
+
+                Log.i("debugging quest progres", "completedWaypoints size is: " + completedWaypoints.length);
+
+
+                historyAdapter = new HistoryAdapter(getActivity(), null, completedWaypoints, screenWidth, screenHeight, false, true);
+                MyScaleInAnimationAdapter scaleInAnimationAdapter = new MyScaleInAnimationAdapter(historyAdapter);
+                scaleInAnimationAdapter.setFirstOnly(false);
+                scaleInAnimationAdapter.setInterpolator(new OvershootInterpolator());
+                historyInfoObjects.setAdapter(scaleInAnimationAdapter);
+                historyAdapter.notifyDataSetChanged();
+
             }
 
     }
@@ -205,7 +254,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
             }else{
                 txtErrorGettingMemories.setVisibility(View.GONE);
             }
-            historyAdapter = new HistoryAdapter(getActivity(), memories.getContent(), screenWidth, screenHeight, isMemories);
+            historyAdapter = new HistoryAdapter(getActivity(), memories.getContent(), null, screenWidth, screenHeight, isMemories, isQuestInProgress);
 
             //RecyclerView animation
             MyScaleInAnimationAdapter scaleInAnimationAdapter = new MyScaleInAnimationAdapter(historyAdapter);
