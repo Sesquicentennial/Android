@@ -4,13 +4,12 @@ import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -18,17 +17,15 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-
 
 import java.util.ArrayList;
 
@@ -50,11 +47,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  * to handle geofence and location changes. Also controls which fragment is in view.
  */
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status>, FragmentChangeListener{
-
-    //things for managing fragments
-    //public static FragmentManager fragmentManager;
-
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status>, FragmentChangeListener {
 
     //things for location
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
@@ -68,25 +61,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     // Location updates intervals in milliseconds
     private static int UPDATE_INTERVAL = 30000; // 30 sec
     private static int FASTEST_INTERVAL = 10000; // 10 sec
-    private static int DISPLACEMENT = 20; // 10 meters
-
-
-
+    private static int DISPLACEMENT = 10; // 10 meters
     private LogMessages logMessages = new LogMessages();
-
     MainFragment curFragment = null;
-   // private MyFragmentPagerAdapter adapter;
+    // private MyFragmentPagerAdapter adapter;
 
     public VolleyRequester mVolleyRequester = new VolleyRequester();
     AlertDialog networkAlertDialog;
     AlertDialog playServicesConnectivityAlertDialog;
-
     public GeofenceMonitor geofenceMonitor = new GeofenceMonitor(this);
-
-    private boolean historyFragmentNeedsToHandleGeofenceChange = false;
-    private boolean historyFragmentNeedsToGetNewGeofences = false;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (checkPlayServices()) {
             buildGoogleApiClient();
             createLocationRequest();
-            if(isConnectedToNetwork()) {
+            if (isConnectedToNetwork()) {
                 mGoogleApiClient.connect();
             }
         } else {
@@ -107,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
 
         //managing fragments and UI
-       // fragmentManager = getSupportFragmentManager();
+        // fragmentManager = getSupportFragmentManager();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -115,9 +98,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         }
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("History"));
-        tabLayout.addTab(tabLayout.newTab().setText("Events"));
-        tabLayout.addTab(tabLayout.newTab().setText("Quests"));
+        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.history)));
+        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.events)));
+        tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.quests)));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         curFragment = new HistoryFragment();
@@ -125,21 +108,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .beginTransaction().replace(R.id.containerLayout, curFragment).commit();
 
 
-        //final NoSwipeViewPager viewPager = (NoSwipeViewPager) findViewById(R.id.pager);
-        /*viewPager.setOffscreenPageLimit(1);
-        adapter = new MyFragmentPagerAdapter
-                (getSupportFragmentManager(), tabLayout.getTabCount(), this);
-        viewPager.setAdapter(adapter);
-        tabLayout.setupWithViewPager(viewPager);
-        //changeTabsFont(tabLayout);
-        curFragment = adapter.getCurFragment();
-        viewPager.clearOnPageChangeListeners();
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
-*/
         /*
-
-
         Overrides onTabSelected to notify the fragment going out of view that it is
         going out of view.
         This is because fragments are kept in onResumed state for the viewPager, so
@@ -149,32 +119,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if(tab.getPosition() == 0){
-                    if(curFragment instanceof HistoryFragment == false) {
+                if (tab.getPosition() == 0) {
+                    if (curFragment instanceof HistoryFragment == false) {
                         getSupportFragmentManager().beginTransaction().remove(curFragment).commit();
                         curFragment = new HistoryFragment();
                     }
-                } if(tab.getPosition() == 1){
-                    if(curFragment instanceof EventsFragment ==false) {
+                }
+                if (tab.getPosition() == 1) {
+                    if (curFragment instanceof EventsFragment == false) {
                         getSupportFragmentManager().beginTransaction().remove(curFragment).commit();
                         curFragment = new EventsFragment();
                     }
-                } if(tab.getPosition() == 2){
-                    if(curFragment instanceof QuestFragment == false) {
+                }
+                if (tab.getPosition() == 2) {
+                    if (curFragment instanceof QuestFragment == false) {
                         getSupportFragmentManager().beginTransaction().remove(curFragment).commit();
                         curFragment = new QuestFragment();
                     }
                 }
-
-
                 int commit = getSupportFragmentManager()
                         .beginTransaction().replace(R.id.containerLayout, curFragment).commit();
-
-
                 Log.i("UI", "newTabSelectedTablistener");
-                //adapter.getCurFragment().fragmentOutOfView();
-                //viewPager.setCurrentItem(tab.getPosition());
-
             }
 
             @Override
@@ -189,40 +154,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         });
 
 
-
-    }
-
-    public void checkIfFragmentNeedsToHandleGeofenceChange(){
-        if(curFragment instanceof HistoryFragment){
-            Log.i("Fragment Handling", "MainActivity : viewFragment is instanceof HistoryFragment");
-        }else{
-
-            Log.i("Fragment Handling", "CheckIfFragmentNeedsToHandleGeofenceChange : viewFragment is not an instanceof HistoryFragment");
-
-        }
-
-        if(curFragment instanceof HistoryFragment && historyFragmentNeedsToHandleGeofenceChange){
-            Log.i("Fragment Handling", "CheckIfFragmentNeedsToHandleGeofenceChange : calling handleGeofenceChange. Length: " + geofenceMonitor.getCurGeofences().size());
-
-            handleGeofenceChange(geofenceMonitor.getCurGeofences());
-        }
-    }
-
-    public void checkIfFragmentNeedsNewGeofences(){
-
-        if(curFragment instanceof HistoryFragment){
-            Log.i("Fragment Handling", "MainActivity : viewFragment is instanceof HistoryFragment");
-        }else{
-
-            Log.i("Fragment Handling", "CheckIfFragmentNeedsNewGeofences : viewFragment is not an instanceof HistoryFragment");
-
-        }
-
-        if(curFragment instanceof HistoryFragment && historyFragmentNeedsToGetNewGeofences){
-            Log.i("Fragment Handling", "CheckIfFragmentNeedsNewGeoences : calling handleGeofenceChange. Length: " + geofenceMonitor.geofencesBeingMonitored.length);
-
-            handleNewGeofences(geofenceMonitor.geofencesBeingMonitored);
-        }
     }
 
     @Override
@@ -240,7 +171,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -250,17 +180,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onResume() {
         super.onResume();
-
+        checkIfGPSEnabled();
 
         // Resuming the periodic location updates
         if (mGoogleApiClient.isConnected()) {
             isConnectedToNetwork();
-            if(mRequestingLocationUpdates) {
+            if (mRequestingLocationUpdates) {
                 startLocationUpdates();
             }
-        }
-        else{
-            if(isConnectedToNetwork()){
+        } else {
+            if (isConnectedToNetwork()) {
                 // check availability of play services for location data and geofencing
                 if (checkPlayServices()) {
                     mGoogleApiClient.connect();
@@ -275,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     /**
      * Method that is called when google API Client is connected
+     *
      * @param bundle
      */
     @Override
@@ -296,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     /**
      * If google api client connection was suspended, keeps trying to connect
+     *
      * @param i
      */
     @Override
@@ -305,6 +236,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     /**
      * Displays an alert dialog if unable to connect to the GoogleApiClient
+     *
      * @param connectionResult
      */
     @Override
@@ -318,7 +250,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * Builds a GoogleApiClient
      */
     protected synchronized void buildGoogleApiClient() {
-
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -336,7 +267,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 GooglePlayServicesUtil.getErrorDialog(resultCode, this,
                         PLAY_SERVICES_RESOLUTION_REQUEST).show();
             } else {
-
                 finish();
             }
             return false;
@@ -349,6 +279,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * Method called by the google location client when the user's
      * location changes. Records the location and passes the new
      * location information to the fragment
+     *
      * @param location
      */
     @Override
@@ -361,18 +292,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /**
      * Calls a method in the current fragment to handle a location change.
      */
-    private void tellFragmentLocationChanged(){
-        if(curFragment != null) {
+    private void tellFragmentLocationChanged() {
+        if (curFragment != null) {
             curFragment.handleLocationChange(mLastLocation);
         }
     }
 
-    public Location getLastLocation(){
+    public Location getLastLocation() {
         return mLastLocation;
     }
 
     /**
      * Overridden to use custom fonts using Calligraphy
+     *
      * @param newBase
      */
     @Override
@@ -387,20 +319,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * the fragment currently in view. GeofenceMonitor stores a record
      * of which fragment is in view, so this will only be called if the
      * HistoryFragment is in view.
+     *
      * @param content
      */
-    public void handleGeofenceChange(ArrayList<GeofenceObjectContent> content){
-        Log.i("Fragment Handling", "MainActivity : handleGeofenceChange. Length: " + content.size());
-
-        if(curFragment instanceof HistoryFragment){
-            historyFragmentNeedsToHandleGeofenceChange = false;
-            Log.i("Fragment Handling", "MainActivity : handleGeofenceChange. needsToHandleChangeSetToFalse ");
-        }else{
-            Log.i("Fragment Handling", "MainActivity : handleGeofenceChange. needsToHandleChangeSetTo True ");
-
-            historyFragmentNeedsToHandleGeofenceChange = true;
-        }
-        if(curFragment != null) {
+    public void handleGeofenceChange(ArrayList<GeofenceObjectContent> content) {
+        if (curFragment != null) {
             curFragment.handleGeofenceChange(content);
         }
     }
@@ -423,7 +346,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     protected void startLocationUpdates() {
 
         if (mGoogleApiClient.isConnected()) {
-            if(mRequestingLocationUpdates) {
+            if (mRequestingLocationUpdates) {
                 LocationServices.FusedLocationApi.requestLocationUpdates(
                         mGoogleApiClient, mLocationRequest, this);
             }
@@ -434,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * Stopping location updates
      */
     protected void stopLocationUpdates() {
-        if(mGoogleApiClient.isConnected()) {
+        if (mGoogleApiClient.isConnected()) {
             Log.i(logMessages.LOCATION, "stopLocationUpdates : location updates stopped");
             LocationServices.FusedLocationApi.removeLocationUpdates(
                     mGoogleApiClient, this);
@@ -445,20 +368,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /**
      * checks whether phone has network connection. If not, displays a dialog
      * requesting that the user connects to a network.
+     *
      * @return
      */
-    public boolean isConnectedToNetwork(){
+    public boolean isConnectedToNetwork() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        if(activeNetworkInfo != null){
-            if(activeNetworkInfo.isConnected()) {
+        if (activeNetworkInfo != null) {
+            if (activeNetworkInfo.isConnected()) {
                 return true;
             } else {
                 showNetworkNotConnectedDialog();
                 return false;
             }
-        }else {
+        } else {
             showNetworkNotConnectedDialog();
             return false;
         }
@@ -475,16 +399,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /**
      * Shows a dialog to tell user google play services is unavailable
      */
-    private void showGooglePlayServicesUnavailableDialog(){
+    private void showGooglePlayServicesUnavailableDialog() {
         showAlertDialog(getResources().getString(R.string.no_google_services), playServicesConnectivityAlertDialog);
     }
 
     /**
      * shows an alert dialog with the specified message
+     *
      * @param message
      */
     public void showAlertDialog(String message, AlertDialog dialog) {
-        if(!dialog.isShowing()) {
+        if (!dialog.isShowing()) {
             dialog.setTitle("Alert");
             dialog.setMessage(message);
             dialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
@@ -500,7 +425,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    public void showAlertDialogNoNeutralButton(AlertDialog dialog){
+    public void showAlertDialogNoNeutralButton(AlertDialog dialog) {
 
         dialog.show();
     }
@@ -509,23 +434,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * Method called from VolleyRequester when new geofences are retrieved
      * from server. Calls a function on whatever fragment is currently in view to
      * handle the new geofences
+     *
      * @param content
      */
-    public void handleNewGeofences(GeofenceObjectContent[] content){
-
-        if (curFragment instanceof HistoryFragment){
-            historyFragmentNeedsToGetNewGeofences = false;
-        }else {
-            historyFragmentNeedsToGetNewGeofences = true;
-        }
+    public void handleNewGeofences(GeofenceObjectContent[] content) {
         curFragment.handleNewGeofences(content);
     }
 
     /**
      * returns the geofenceMonitor
+     *
      * @return GeofenceMonitor
      */
-    public GeofenceMonitor getGeofenceMonitor(){
+    public GeofenceMonitor getGeofenceMonitor() {
         return this.geofenceMonitor;
     }
 
@@ -552,6 +473,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * Overridden from FragmentChangeListener interface to replace
      * the QuestFragment with a new QuestInProgressFragment
      * when a quest is started from the QuestFragment
+     *
      * @param fragment
      */
     @Override
@@ -563,9 +485,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         int commit = getSupportFragmentManager()
                 .beginTransaction().replace(R.id.containerLayout, curFragment).commit();
-
-
-        //TODO: do this thing
     }
 
 
@@ -576,46 +495,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     @Override
     public void onBackPressed() {
-
-        if(curFragment instanceof QuestInProgressFragment || curFragment instanceof QuestCompletedFragment) {
-
+        if (curFragment instanceof QuestInProgressFragment || curFragment instanceof QuestCompletedFragment) {
             getSupportFragmentManager().beginTransaction().remove(curFragment).commit();
-
-
             curFragment = new QuestFragment();
-
             int commit = getSupportFragmentManager()
                     .beginTransaction().replace(R.id.containerLayout, curFragment).commit();
-
-
-           //TODO: this thing
-               // adapter.replaceFragment();
-
-        }
-        else{
+        } else {
             super.onBackPressed();
-        }
-    }
-
-
-    /**
-     * Changes font of tab items
-     */
-    private void changeTabsFont(TabLayout tabLayout) {
-
-        ViewGroup vg = (ViewGroup) tabLayout.getChildAt(0);
-        int tabsCount = vg.getChildCount();
-        for (int j = 0; j < tabsCount; j++) {
-            ViewGroup vgTab = (ViewGroup) vg.getChildAt(j);
-            int tabChildsCount = vgTab.getChildCount();
-            for (int i = 0; i < tabChildsCount; i++) {
-                View tabViewChild = vgTab.getChildAt(i);
-                if (tabViewChild instanceof TextView) {
-
-                    Typeface font = Typeface.createFromAsset(this.getAssets(), "fonts/EBGaramond12-Regular.ttf");
-                    ((TextView) tabViewChild).setTypeface(font);
-                }
-            }
         }
     }
 
@@ -624,16 +510,55 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * progress in a quest. This method is so the user can resume quests even
      * after killing the app or going back to the quest selection screen
      */
-    public SharedPreferences getPersistentQuestStorage(){
+    public SharedPreferences getPersistentQuestStorage() {
         return getSharedPreferences(QUEST_PREFERENCES_KEY, 0);
 
     }
 
-    public int getMemoryClass(){
+    /**
+     * gets the memory class of the device
+     *
+     * @return
+     */
+    public int getMemoryClass() {
         ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         int memoryClass = am.getMemoryClass();
         Log.v(logMessages.MEMORY_MONITORING, "memoryClass:" + Integer.toString(memoryClass));
         return memoryClass;
+    }
+
+    /**
+     * Checks if gps is enabled on the device
+     * @return true if enabled, false otherwise
+     */
+    public boolean checkIfGPSEnabled() {
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+        {
+            buildAlertMessageNoGps();
+            return false;
+        }return true;
+    }
+
+    /**
+     * Alerts the user that their GPS is not enabled and gives them option to enable it
+     */
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.gps_not_enabled))
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
     }
 
 }
