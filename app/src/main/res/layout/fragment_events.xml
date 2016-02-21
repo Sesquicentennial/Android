@@ -40,8 +40,9 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:weightSum="100"
-            android:background="@color/yellowAccent">
+            android:background="@color/windowBackground">
 
+            <!-- Scrollable date tabs -->
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/lst_event_dates"
                 android:background="@color/colorPrimaryDark"
@@ -50,12 +51,13 @@
                 android:scrollbars="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="10" />
+                android:layout_weight="12" />
 
+            <!-- Event list items -->
             <ExpandableListView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="90"
+                android:layout_weight="88"
                 android:id="@+id/lst_events">
             </ExpandableListView>
 
