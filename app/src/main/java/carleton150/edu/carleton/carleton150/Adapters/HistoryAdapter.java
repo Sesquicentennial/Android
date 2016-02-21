@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewScrolledListener;
-import carleton150.edu.carleton.carleton150.LogMessages;
 import carleton150.edu.carleton.carleton150.Models.BitmapWorkerTask;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.R;
@@ -42,6 +41,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.context = context;
 
         if (!isMemories) {
+
             recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -57,6 +57,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             });
         }
     }
+
+
 
     private void displayDate(LinearLayoutManager lm){
         int lastVisible = lm.findLastVisibleItemPosition();
