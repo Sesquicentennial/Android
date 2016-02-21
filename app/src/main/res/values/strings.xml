@@ -62,4 +62,10 @@
     <string name="start_over">Start Over</string>
     <string name="resume">Resume</string>
     <string name="continue_to_next_hint">Continue to next hint</string>
+    <string name="history">History</string>
+    <string name="events">Events</string>
+    <string name="quests">Quests</string>
+    <string name = "gps_not_enabled">Your GPS seems to be disabled, do you want to enable it?</string>
+    <string name = "yes">Yes</string>
+    <string name="no">No</string>
 </resources>

@@ -337,33 +337,35 @@ public class QuestInProgressFragment extends MapMainFragment {
      */
     private void checkIfClueFound(){
         MainActivity mainActivity = (MainActivity) getActivity();
-        Location curLocation = mainActivity.mLastLocation;
-        if(curLocation != null) {
-            Waypoint curWaypoint = quest.getWaypoints()[numClue];
-            double lat = curWaypoint.getLat();
-            double lon = curWaypoint.getLng();
-            double rad = curWaypoint.getRad();
-            float[] results = new float[1];
+        if(mainActivity.checkIfGPSEnabled()) {
+            Location curLocation = mainActivity.mLastLocation;
+            if (curLocation != null) {
+                Waypoint curWaypoint = quest.getWaypoints()[numClue];
+                double lat = curWaypoint.getLat();
+                double lon = curWaypoint.getLng();
+                double rad = curWaypoint.getRad();
+                float[] results = new float[1];
 
-            Location.distanceBetween(curLocation.getLatitude(), curLocation.getLongitude(),
-                    lat, lon,
-                    results);
-            if (results[0] <= rad) {
-                clueCompleted();
-            } else {
-                //String to display if hint is not already showing
-                String alertString = getActivity().getResources().getString(R.string.location_not_found_hint);
-                TextView txtHint = (TextView) v.findViewById(R.id.txt_hint);
-                if (txtHint.getVisibility() == View.VISIBLE) {
-                    //String to display if hint is already showing
-                    alertString = getActivity().getResources().getString(R.string.location_not_found);
+                Location.distanceBetween(curLocation.getLatitude(), curLocation.getLongitude(),
+                        lat, lon,
+                        results);
+                if (results[0] <= rad) {
+                    clueCompleted();
+                } else {
+                    //String to display if hint is not already showing
+                    String alertString = getActivity().getResources().getString(R.string.location_not_found_hint);
+                    TextView txtHint = (TextView) v.findViewById(R.id.txt_hint);
+                    if (txtHint.getVisibility() == View.VISIBLE) {
+                        //String to display if hint is already showing
+                        alertString = getActivity().getResources().getString(R.string.location_not_found);
+                    }
+                    mainActivity.showAlertDialog(alertString,
+                            new AlertDialog.Builder(mainActivity).create());
                 }
-                mainActivity.showAlertDialog(alertString,
-                        new AlertDialog.Builder(mainActivity).create());
+            } else {
+                Log.i(logMessages.LOCATION, "QuestInProgressFragment: checkIfClueFound: location is null");
+                //: this shouln't happen. Handle it better...
             }
-        }else{
-            Log.i(logMessages.LOCATION, "QuestInProgressFragment: checkIfClueFound: location is null");
-            //: this shouln't happen. Handle it better...
         }
     }
 
