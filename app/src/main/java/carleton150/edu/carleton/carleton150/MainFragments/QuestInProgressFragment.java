@@ -467,13 +467,16 @@ public class QuestInProgressFragment extends MapMainFragment {
         RelativeLayout relLayoutQuestCompleted = (RelativeLayout) v.findViewById(R.id.rel_layout_quest_completed);
         Button btnDoneWithQuest = (Button) v.findViewById(R.id.btn_done_with_quest);
         btnDoneWithQuest.setText("DONE");
-        final MainActivity mainActivity = (MainActivity) getActivity();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && mainActivity.getMemoryClass() > 150) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             System.gc();
-            imgQuestCompleted.setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.anim_quest_completed));
+            try {
+                imgQuestCompleted.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.anim_quest_completed));
+            }catch (OutOfMemoryError e){
+                imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.qanim25));
+            }
         }
             else{
-                imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(mainActivity, R.drawable.qanim25));
+                imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.qanim25));
 
         }
         txtQuestCompleted.setText("Message is : " + quest.getCompMsg());
@@ -484,11 +487,11 @@ public class QuestInProgressFragment extends MapMainFragment {
         btnDoneWithQuest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && mainActivity.getMemoryClass() > 150) {
-                    imgQuestCompleted.setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.bg_transparent));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    imgQuestCompleted.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.bg_transparent));
                     System.gc();
                 }else{
-                    imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(mainActivity, R.drawable.bg_transparent));
+                    imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.bg_transparent));
                 }
                 goBackToQuestSelectionScreen();
             }
@@ -605,6 +608,7 @@ public class QuestInProgressFragment extends MapMainFragment {
     }
 
     private void goBackToQuestSelectionScreen(){
+        System.gc();
         QuestFragment fr=new QuestFragment();
         FragmentChangeListener fc=(FragmentChangeListener)getActivity();
         fc.replaceFragment(fr);

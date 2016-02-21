@@ -281,6 +281,13 @@ public class VolleyRequester {
                     }
                 }
         );
+
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                60000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+
         MyApplication.getInstance().getRequestQueue().add(request);
     }
 
