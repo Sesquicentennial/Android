@@ -25,7 +25,6 @@ package carleton150.edu.carleton.carleton150.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -102,6 +101,7 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
         //holder.txtDescription.setText(event);
 
         TextView item = (TextView) convertView.findViewById(R.id.txt_description);
+        // TODO: If item is expanded, collapse before returning
 
         item.setText(event);
         return convertView;
@@ -132,9 +132,7 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
             holder = new ViewHolder();
             LayoutInflater groupinflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = groupinflater.inflate(R.layout.group_item, null);
-        }
-
-        else {
+        } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
@@ -147,6 +145,7 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
 
         final EventContent event = events.get(groupPosition);
         //final ViewHolder holder = (ViewHolder) v.getTag();
+
         if(event != null){
             //holder.btnDate.setText(event.getStartTime());
             holder.txtTitle.setText(event.getTitle());
@@ -188,10 +187,10 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
         }
 
         if (event.isExpanded()) {
-            holder.view.setBackgroundColor(Color.parseColor("#c8bc9d"));
+            holder.view.setBackgroundResource(R.color.windowBackgroundDark);
             event.setIsExpanded(true);
         } else {
-            holder.view.setBackgroundColor(Color.parseColor("#e4decf"));
+            holder.view.setBackgroundResource(R.color.windowBackground);
             event.setIsExpanded(false);
         }
         return convertView;
