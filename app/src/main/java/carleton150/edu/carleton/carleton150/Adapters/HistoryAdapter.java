@@ -140,6 +140,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ((HistoryViewHolderText) holder).setTxtDate(geofenceInfoContent.getYear());
             ((HistoryViewHolderText) holder).setExpanded(geofenceInfoContent.isExpanded());
             ImageView imgExpanded = ((HistoryViewHolderText) holder).getIconExpand();
+
+            ((HistoryViewHolderText) holder).setExpanded(geofenceInfoContent.isExpanded());
+            ((HistoryViewHolderText) holder).setIconExpand(context);
+
             imgExpanded.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -157,6 +161,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 ((HistoryViewHolderImage) holder).setTxtDescription(geofenceInfoContent.getDesc());
                 ((HistoryViewHolderImage) holder).setExpanded(geofenceInfoContent.isExpanded());
                 ImageView imgExpanded = ((HistoryViewHolderImage) holder).getIconExpand();
+                ((HistoryViewHolderImage) holder).setExpanded(geofenceInfoContent.isExpanded());
+                ((HistoryViewHolderImage) holder).setIconExpand(context);
                 imgExpanded.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -166,6 +172,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         ((HistoryViewHolderImage) holder).setIconExpand(context);
                     }
                 });
+
+
             }else{
                 Log.i("HistoryAdapter", "Image string for memory is: " + geofenceInfoContent.getImage());
                 ((HistoryViewHolderImage) holder).setImage(position, geofenceInfoContent.getImage(), screenWidth, screenHeight);
@@ -174,6 +182,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 ((HistoryViewHolderImage) holder).setTxtDescription(geofenceInfoContent.getDesc());
                 ((HistoryViewHolderImage) holder).setExpanded(geofenceInfoContent.isExpanded());
                 ImageView imgExpanded = ((HistoryViewHolderImage) holder).getIconExpand();
+                ((HistoryViewHolderImage) holder).setExpanded(geofenceInfoContent.isExpanded());
+                ((HistoryViewHolderImage) holder).setIconExpand(context);
                 imgExpanded.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

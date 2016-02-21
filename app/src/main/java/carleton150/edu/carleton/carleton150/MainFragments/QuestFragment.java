@@ -125,7 +125,7 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         quests.setLayoutManager(questLayoutManager);
 
 
-        questAdapter = new QuestAdapter(questInfo, this, screenWidth, metrics.heightPixels);
+        questAdapter = new QuestAdapter(questInfo, this, screenWidth, metrics.heightPixels, getResources());
 
         //RecyclerView animation
         /*scaleAdapter = new ScaleInAnimationAdapter(questAdapter);
