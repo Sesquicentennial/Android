@@ -97,11 +97,7 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
             holder = (ChildViewHolder) convertView.getTag();
         }
 
-        //holder.txtDescription = (TextView) convertView.findViewById(R.id.txt_description);
-        //holder.txtDescription.setText(event);
-
         TextView item = (TextView) convertView.findViewById(R.id.txt_description);
-        // TODO: If item is expanded, collapse before returning
 
         item.setText(event);
         return convertView;

@@ -67,19 +67,20 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_events, container, false);
+        btnTryAgain = (Button) v.findViewById(R.id.btn_try_getting_events);
+        txtTryAgain = (TextView) v.findViewById(R.id.txt_request_events);
 
+        // Before buildRecyclerViews is called, we need to grab all events and put key for each date in a hashmap
+        // Request events
+        requestEvents();
 
-        // The following commented code is moved in QuestFragments into separate fns, so do same here
-
-        //requests events from server
-        //requestEvents();
-        // TODO: uncomment requestEvents() above to see if that makes the retrieve_events btn display
+        eventsListView = (ExpandableListView) v.findViewById(R.id.lst_events);
+        eventsListAdapter = new EventsListAdapter(getActivity(), eventsList);
+        eventsListView.setAdapter(eventsListAdapter);
 
         /*If no events were retrieved, displays this button so the user can click
         to try again once the network is connected
          */
-        btnTryAgain = (Button) v.findViewById(R.id.btn_try_getting_events);
-        txtTryAgain = (TextView) v.findViewById(R.id.txt_request_events);
         btnTryAgain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,14 +89,6 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
                 requestEvents();
             }
         });
-
-        eventsListView = (ExpandableListView) v.findViewById(R.id.lst_events);
-        eventsListAdapter = new EventsListAdapter(getActivity(), eventsList);
-        eventsListView.setAdapter(eventsListAdapter);
-
-        // Before buildRecyclerViews is called, we need to grab all events and put key for each date in a hashmap
-        // Request events
-        requestEvents();
 
         // Build RecyclerViews to display date tabs
         buildRecyclerViews();
@@ -208,23 +201,11 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
                     eventsList.add(newEvents.get(i));
                 }
 
-                eventsListAdapter.notifyDataSetChanged();
-
-
-               /* Set set = eventsMapByDate.entrySet();
-                Iterator iterator = set.iterator();
-
-                while iterator.hasNext() {
-                    LinkedHashMap.Entry mentry = (LinkedHashMap.Entry)iterator.next();
-                    Log.d(mentry.getKey(), " = key");
-                    v
-                    Log.d(mentry.getValue(), " = value");
-                }*/
-
                 txtTryAgain.setVisibility(View.GONE);
                 btnTryAgain.setVisibility(View.GONE);
                 eventsListView.setVisibility(View.VISIBLE);
                 eventsListAdapter.notifyDataSetChanged();
+
             } catch (NullPointerException e) {
                 if (eventsList.size() == 0) {
                     txtTryAgain.setText(getString(R.string.no_events_retrieved));
