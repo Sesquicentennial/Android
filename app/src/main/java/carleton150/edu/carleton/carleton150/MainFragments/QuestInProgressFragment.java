@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.text.method.ScrollingMovementMethod;
 import android.util.DisplayMetrics;
@@ -32,9 +33,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import carleton150.edu.carleton.carleton150.ExtraFragments.HistoryPopoverFragment;
+import carleton150.edu.carleton.carleton150.ExtraFragments.QuestCompletedFragment;
 import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.Models.BitmapWorkerTask;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Waypoint;
 import carleton150.edu.carleton.carleton150.R;
@@ -93,6 +97,10 @@ public class QuestInProgressFragment extends MapMainFragment {
         Button btnFoundIt = (Button) v.findViewById(R.id.btn_found_location);
         Button btnFoundItHint = (Button) v.findViewById(R.id.btn_found_location_hint);
         TextView txtHint = (TextView) v.findViewById(R.id.txt_hint);
+        TextView txtClueNumber = (TextView) v.findViewById(R.id.txt_clue_number);
+        TextView txtClueNumberHint = (TextView) v.findViewById(R.id.txt_clue_number_hint);
+        TextView txtClueNumberCompMessage= (TextView) v.findViewById(R.id.txt_clue_number_comp_window);
+
         ImageButton btnReturnToMyLocation = (ImageButton) v.findViewById(R.id.btn_return_to_my_location);
         cardFace = v.findViewById(R.id.clue_view_front);
         cardBack = v.findViewById(R.id.clue_view_back);
@@ -108,6 +116,35 @@ public class QuestInProgressFragment extends MapMainFragment {
             @Override
             public void onClick(View v) {
                 toggleTutorial();
+            }
+        });
+
+        txtClueNumber.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showProgressPopup();
+            }
+        });
+
+        txtClueNumberHint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showProgressPopup();
+            }
+        });
+
+        final ImageView imgQuestCompleted = (ImageView) v.findViewById(R.id.img_animation_quest_completed);
+
+
+        txtClueNumberCompMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    imgQuestCompleted.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.bg_transparent));
+                }
+                imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.qanim25));
+                System.gc();
+                showProgressPopup();
             }
         });
 
@@ -382,9 +419,12 @@ public class QuestInProgressFragment extends MapMainFragment {
     public boolean updateCurrentWaypoint(){
         boolean finished = false;
         Waypoint[] waypoints = quest.getWaypoints();
+        TextView txtClueNumberCompMessage= (TextView) v.findViewById(R.id.txt_clue_number_comp_window);
+
         try {
             if(numClue == waypoints.length) {
                 finished = true;
+                txtClueNumberCompMessage.setText((numClue) + "/" + quest.getWaypoints().length);
                 return finished;
             }
             TextView txtClue = (TextView) v.findViewById(R.id.txt_clue);
@@ -396,6 +436,7 @@ public class QuestInProgressFragment extends MapMainFragment {
             txtClue.setText(waypoints[numClue].getClue().getText());
             txtClueNumber.setText((numClue + 1) + "/" + quest.getWaypoints().length);
             txtClueNumberBack.setText((numClue + 1) + "/" + quest.getWaypoints().length);
+            txtClueNumberCompMessage.setText((numClue + 1) + "/" + quest.getWaypoints().length);
 
             if(txtHint != null || !txtHint.equals("")){
                 txtHint.setText(waypoints[numClue].getHint().getText());
@@ -462,40 +503,7 @@ public class QuestInProgressFragment extends MapMainFragment {
      * completed
      */
     private void showCompletedQuestMessage(){
-        final ImageView imgQuestCompleted = (ImageView) v.findViewById(R.id.img_animation_quest_completed);
-        TextView txtQuestCompleted = (TextView) v.findViewById(R.id.txt_completion_message);
-        RelativeLayout relLayoutQuestCompleted = (RelativeLayout) v.findViewById(R.id.rel_layout_quest_completed);
-        Button btnDoneWithQuest = (Button) v.findViewById(R.id.btn_done_with_quest);
-        btnDoneWithQuest.setText("DONE");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            System.gc();
-            try {
-                imgQuestCompleted.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.anim_quest_completed));
-            }catch (OutOfMemoryError e){
-                imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.qanim25));
-            }
-        }
-            else{
-                imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.qanim25));
-
-        }
-        txtQuestCompleted.setText("Message is : " + quest.getCompMsg());
-        txtQuestCompleted.setMovementMethod(new ScrollingMovementMethod());
-        imgQuestCompleted.setVisibility(View.VISIBLE);
-        relLayoutQuestCompleted.setVisibility(View.VISIBLE);
-        ((AnimationDrawable) imgQuestCompleted.getBackground()).start();
-        btnDoneWithQuest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    imgQuestCompleted.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.bg_transparent));
-                    System.gc();
-                }else{
-                    imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.bg_transparent));
-                }
-                goBackToQuestSelectionScreen();
-            }
-        });
+        goToQuestCompletionScreen();
     }
 
     /**
@@ -583,11 +591,6 @@ public class QuestInProgressFragment extends MapMainFragment {
         super.fragmentOutOfView();
         ImageView imgClue = (ImageView) v.findViewById(R.id.img_clue_image_front);
         ImageView imgHint = (ImageView) v.findViewById(R.id.img_hint_image_back);
-        ImageView imgQuestCompleted = (ImageView) v.findViewById(R.id.img_animation_quest_completed);
-        imgQuestCompleted.setImageDrawable(null);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            imgQuestCompleted.setBackground(getResources().getDrawable(R.drawable.bg_transparent));
-        }
         inView = false;
         imgClue.setImageDrawable(null);
         imgHint.setImageDrawable(null);
@@ -607,9 +610,10 @@ public class QuestInProgressFragment extends MapMainFragment {
         super.onSaveInstanceState(outState);
     }
 
-    private void goBackToQuestSelectionScreen(){
+    private void goToQuestCompletionScreen(){
         System.gc();
-        QuestFragment fr=new QuestFragment();
+        QuestCompletedFragment fr = new QuestCompletedFragment();
+        fr.initialize(quest);
         FragmentChangeListener fc=(FragmentChangeListener)getActivity();
         fc.replaceFragment(fr);
     }
@@ -698,15 +702,6 @@ public class QuestInProgressFragment extends MapMainFragment {
     @Override
     public void onDestroyView() {
 
-        MainActivity mainActivity = (MainActivity) getActivity();
-        ImageView imgQuestCompleted = (ImageView) v.findViewById(R.id.img_animation_quest_completed);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            imgQuestCompleted.setBackground(ContextCompat.getDrawable(mainActivity, R.drawable.bg_transparent));
-            System.gc();
-        }else{
-            imgQuestCompleted.setImageDrawable(ContextCompat.getDrawable(mainActivity, R.drawable.bg_transparent));
-        }
-        imgQuestCompleted = null;
         cardFace = null;
         cardBack = null;
         v = null;
@@ -734,6 +729,30 @@ public class QuestInProgressFragment extends MapMainFragment {
                 relLayoutTutorial.setVisibility(View.GONE);
             }
         });
+    }
+
+
+    /**
+     * Shows the history popover for a given marker on the map
+     *
+     * @param
+     */
+    private void showProgressPopup(){
+
+        RelativeLayout relLayoutTutorial = (RelativeLayout) v.findViewById(R.id.tutorial);
+        relLayoutTutorial.setVisibility(View.GONE);
+
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        HistoryPopoverFragment historyPopoverFragment = HistoryPopoverFragment.newInstance(this, quest, numClue);
+
+        // Transaction start
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+        fragmentTransaction.setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom,
+                R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
+        fragmentTransaction.add(R.id.fragment_container, historyPopoverFragment, "QuestProgressPopoverFragment");
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
 }

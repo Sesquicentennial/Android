@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.prefs.Preferences;
 
 import carleton150.edu.carleton.carleton150.ExtraFragments.AddMemoryFragment;
+import carleton150.edu.carleton.carleton150.ExtraFragments.QuestCompletedFragment;
 import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
 import carleton150.edu.carleton.carleton150.Interfaces.ViewFragmentChangedListener;
 import carleton150.edu.carleton.carleton150.MainFragments.EventsFragment;
@@ -584,7 +585,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onBackPressed() {
 
-        if(curFragment instanceof QuestInProgressFragment) {
+        if(curFragment instanceof QuestInProgressFragment || curFragment instanceof QuestCompletedFragment) {
 
             getSupportFragmentManager().beginTransaction().remove(curFragment).commit();
 
