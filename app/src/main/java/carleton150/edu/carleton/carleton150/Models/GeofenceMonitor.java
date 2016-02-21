@@ -37,7 +37,6 @@ public class GeofenceMonitor{
     protected Location lastGeofenceUpdateLocation = null;
 
     public HashMap<String, GeofenceObjectContent> curGeofencesMap = new HashMap<>();
-    public HashMap<String, GeofenceInfoContent[]> curGeofenceInfoMap;
 
     public GeofenceObjectContent[] geofencesBeingMonitored;
     protected PendingIntent mGeofencePendingIntent;
@@ -110,28 +109,8 @@ public class GeofenceMonitor{
     }
 
 
-    /**
-     * Handles the result of a query for information about a geofence.
-     * @param result is a GeofenceInfoObject that contains information
-     *               about all geofences the user is currently in
-     */
-    public void handleResult(GeofenceInfoObject result) {
-        if (result == null) {
-            Log.i(logMessages.VOLLEY, "handleResult : result is NULL");
-            //TODO: Do something here if there is an error (check error message, check internet, maybe make new query, etc..)
-            //   queryResult.setText("Error with volley");
-        } else {
-            Log.i(logMessages.VOLLEY, "handleResult: result is: " + result.toString());
-            try {
-                curGeofenceInfoMap = result.getContent();
-                Log.i(logMessages.VOLLEY, "GeofenceMonitor handleResult : got content");
-            }catch (NullPointerException e){
-                e.printStackTrace();
-                Log.i(logMessages.VOLLEY, "GeofenceMonitor handleResult : NullPointerException");
-            }
-        }
 
-    }
+
 
     public ArrayList<GeofenceObjectContent> getCurGeofences(){
         return this.curGeofences;

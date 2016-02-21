@@ -14,7 +14,9 @@ public class Quest
 
     private String creator;
 
-    private String rating;
+    private String difficulty;
+
+    private String audience;
 
     private String image;
 
@@ -66,6 +68,30 @@ public class Quest
     public void setWaypoints (Waypoint[] waypoints)
     {
         this.waypoints = waypoints;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public String getAudience() {
+        return audience;
+    }
+
+    public void setAudience(String audience) {
+        this.audience = audience;
     }
 
     @Override
