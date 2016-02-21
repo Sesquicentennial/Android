@@ -46,6 +46,7 @@ public class RecyclerViewPopoverFragment extends Fragment{
     private static HistoryFragment parentFragment;
     private static Fragment parentQuestFragment;
     private static boolean isQuestInProgress = false;
+    private static String geofenceName;
 
     private static GeofenceInfoContent[] geofenceInfoObject;
     private static Quest quest;
@@ -63,9 +64,10 @@ public class RecyclerViewPopoverFragment extends Fragment{
      * @param object the GeofenceInfoContent[] for the RecyclerViewPopoverFragment to display
      * @return the RecyclerViewPopoverFragment that was created
      */
-    public static RecyclerViewPopoverFragment newInstance(GeofenceInfoContent[] object) {
+    public static RecyclerViewPopoverFragment newInstance(GeofenceInfoContent[] object, String name) {
         RecyclerViewPopoverFragment f = new RecyclerViewPopoverFragment();
         geofenceInfoObject = object;
+        geofenceName = name;
         isMemories = false;
         isQuestInProgress = false;
         return f;
@@ -147,15 +149,12 @@ public class RecyclerViewPopoverFragment extends Fragment{
 
         if(!isMemories && !isQuestInProgress) {
             //If this is being used to show the history, sets the title to the name of the geofence
-            String name = null;
-            int i = 0;
-            while (name == null && i < geofenceInfoObject.length) {
-                if (geofenceInfoObject[i].getName() != null) {
-                    name = geofenceInfoObject[i].getName();
-                }
-                i++;
+
+            if(geofenceName != null) {
+                txtTitle.setText(geofenceName);
+            }else{
+                txtTitle.setText("");
             }
-            txtTitle.setText(name);
         }
         else if (isMemories){
             txtTitle.setText(getString(R.string.nearby_memories_title));
