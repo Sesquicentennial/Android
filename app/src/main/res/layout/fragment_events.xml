@@ -7,7 +7,6 @@
     android:paddingTop="?attr/actionBarSize"
     tools:context="carleton150.edu.carleton.carleton150.MainFragments.QuestFragment">
 
-
         <!-- Ignore: Getting events holder... -->
         <LinearLayout
             android:id="@+id/layout_unable_to_retrieve_events"
@@ -45,9 +44,7 @@
             <!-- Scrollable date tabs -->
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/lst_event_dates"
-                android:background="@color/colorPrimaryDark"
                 android:layout_gravity="center_horizontal"
-                android:padding="3dp"
                 android:scrollbars="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
