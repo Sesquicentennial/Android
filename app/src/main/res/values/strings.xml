@@ -46,9 +46,14 @@
     <string name="retrieving_info">Retrieving info about current geofences...</string>
     <string name="successfully_added_memory">Added memory successfully!</string>
     <string name="unable_to_add_memory">We were unable to add your memory at this time. Please try again later.</string>
-    <string name="tutorial_quest_in_progress">You are on a quest! Go to the location that you think the clue leads to and click "Found it!" to unlock the next clue! If you need a hint, select the "HINT" button.</string>
-    <string name="tutorial_history_view">Map markers will appear for points of interest near your location as you walk around campus. To learn more about the history and function of that location, click the marker! You can also click the "Get Nearby Memories" button to see images that users uploaded near your current location. If you wish to add your own memory, click on "Get Nearby Memories" and then click "Add Memory" and fill out the required fields.</string>
-    <string name="tutorial_quests">Select a quest that looks interesting, then go to the location the clue hints at to unlock the next clue!</string>
+
+    <string name="tutorial_quest_in_progress">"You are on a quest! If you think you've reached the location the clue is referring to, click the "Found It" button and the GPS on your phone will let you know if you've reach it and give you the next clue! If you’re stuck, click on "HINT" to help you out!"</string>
+
+    <string name="tutorial_history_view">"Explore Carleton’s history! Walk around the campus to see interesting facts about buildings and places of interest based on your GPS location. Tap on a marker to view more info.
+        \nTo see images others have uploaded near your current location, tap on “Get Nearby Memories”. To add your own memory, tap on “Add Memory” on the "Nearby Memories" popup"</string>
+
+    <string name="tutorial_quests">"Ready for a Carleton adventure? Embark on a quest using the clues provided! After figuring out what location on campus each clue refers to, walk to that location. The GPS on your phone will let you know if you are at the correct spot and give you the next clue. If you’re stuck, use the Hints provided to help you out!"</string>
+
     <string name="not_rated">Not Rated</string>
     <string name="intended_for">Intended for: </string>
 </resources>
