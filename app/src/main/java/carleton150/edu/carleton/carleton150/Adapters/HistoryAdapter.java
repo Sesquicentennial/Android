@@ -3,9 +3,7 @@ package carleton150.edu.carleton.carleton150.Adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
-import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewScrolledListener;
 import carleton150.edu.carleton.carleton150.Models.BitmapWorkerTask;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.R;
@@ -25,51 +21,19 @@ import carleton150.edu.carleton.carleton150.R;
 public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private GeofenceInfoContent[] historyList = null;
-    public static RecyclerViewScrolledListener scrolledListener;
     public int screenWidth;
     public int screenHeight;
     public boolean isMemories;
     public Context context;
 
-    public HistoryAdapter(Context context, GeofenceInfoContent[] historyList, RecyclerView recyclerView,
-                          RecyclerViewScrolledListener scrolledListener, int screenWidth, int screenHeight, boolean isMemories) {
+    public HistoryAdapter(Context context, GeofenceInfoContent[] historyList, int screenWidth, int screenHeight, boolean isMemories) {
         this.historyList = historyList;
-        this.scrolledListener = scrolledListener;
         this.screenHeight = screenHeight;
         this.screenWidth = screenWidth;
         this.isMemories = isMemories;
         this.context = context;
-
-        if (!isMemories) {
-
-            recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
-                    if (newState == recyclerView.SCROLL_STATE_IDLE) {
-                        clearDate();
-                    } else {
-                        LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
-                        displayDate(lm);
-                    }
-
-                }
-            });
-        }
     }
 
-
-
-    private void displayDate(LinearLayoutManager lm){
-        int lastVisible = lm.findLastVisibleItemPosition();
-        scrolledListener.recyclerViewScrolled(historyList[lastVisible].getYear());
-    }
-
-    private void clearDate(){
-        if(scrolledListener != null) {
-            scrolledListener.recyclerViewStoppedScrolling();
-        }
-    }
 
     public void closeAdapter(){
         this.context = null;
@@ -278,12 +242,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
         public void setIconExpand(Context context){
-            if(expanded){
-                iconExpand.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_navigation_expand_less));
-                txtDescription.setVisibility(View.VISIBLE);
-            }else{
-                iconExpand.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_navigation_expand_more));
-                txtDescription.setVisibility(View.GONE);
+            if(context != null) {
+                if (expanded) {
+                    iconExpand.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_navigation_expand_less));
+                    txtDescription.setVisibility(View.VISIBLE);
+                } else {
+                    iconExpand.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_navigation_expand_more));
+                    txtDescription.setVisibility(View.GONE);
+                }
             }
         }
 
