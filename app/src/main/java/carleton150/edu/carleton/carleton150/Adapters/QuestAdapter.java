@@ -1,5 +1,6 @@
 package carleton150.edu.carleton.carleton150.Adapters;
 
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -38,13 +39,15 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
     private int screenHeight;
     private View itemView;
     private Resources resources;
+    private SharedPreferences sharedPreferences;
 
-    public QuestAdapter(ArrayList<Quest> questList, RecyclerViewClickListener clickListener, int screenWidth, int screenHeight, Resources resources) {
+    public QuestAdapter(ArrayList<Quest> questList, RecyclerViewClickListener clickListener, int screenWidth, int screenHeight, Resources resources, SharedPreferences sharedPreferences) {
         this.questList = questList;
         this.clickListener = clickListener;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         this.resources = resources;
+        this.sharedPreferences = sharedPreferences;
     }
 
     @Override
@@ -65,6 +68,12 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
         holder.setCreator(qi.getCreator());
         holder.setTargetAudience(qi.getAudience(), resources);
         holder.setImage(position, qi.getImage(), screenWidth, screenHeight);
+        int cluesCompleted = sharedPreferences.getInt(qi.getName(), 0);
+        float percentCompleted = 0;
+        if(cluesCompleted != 0){
+            percentCompleted = cluesCompleted/qi.getWaypoints().length * 100;
+        }
+        holder.setPercentCompleted((int) percentCompleted);
 
     }
 
@@ -124,6 +133,13 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
         }
 
 
+        public void setPercentCompleted(int percentCompleted){
+            if(percentCompleted == 0){
+                btnBeginQuest.setText("Begin Quest");
+            }else {
+                btnBeginQuest.setText(percentCompleted + "% Completed");
+            }
+        }
         public void setDescription(String description) {
             this.description.setText(description);
         }

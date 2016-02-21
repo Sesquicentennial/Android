@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import carleton150.edu.carleton.carleton150.Adapters.QuestAdapter;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
+import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.R;
@@ -124,8 +125,10 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         questLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         quests.setLayoutManager(questLayoutManager);
 
+        MainActivity mainActivity = (MainActivity) getActivity();
 
-        questAdapter = new QuestAdapter(questInfo, this, screenWidth, metrics.heightPixels, getResources());
+
+        questAdapter = new QuestAdapter(questInfo, this, screenWidth, metrics.heightPixels, getResources(), mainActivity.getPersistentQuestStorage());
 
         //RecyclerView animation
         /*scaleAdapter = new ScaleInAnimationAdapter(questAdapter);
