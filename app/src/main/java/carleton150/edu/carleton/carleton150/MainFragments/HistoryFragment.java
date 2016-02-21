@@ -35,6 +35,7 @@ import carleton150.edu.carleton.carleton150.ExtraFragments.HistoryPopoverFragmen
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
+import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObject;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectLocation;
 import carleton150.edu.carleton.carleton150.R;
@@ -58,6 +59,7 @@ public class HistoryFragment extends MapMainFragment {
 
     ArrayList<Marker> currentGeofenceMarkers = new ArrayList<Marker>();
     HashMap<String, GeofenceInfoContent[]> currentGeofencesInfoMap = new HashMap<>();
+    HashMap<String, Integer> geofenceNamesBeingQueriedForInfo = new HashMap<>();
     private boolean debugMode = false;
 
     public HistoryFragment() {
@@ -284,6 +286,7 @@ public class HistoryFragment extends MapMainFragment {
         for(Map.Entry<String, GeofenceInfoContent[]> e : geofenceToAdd.entrySet()){
             if(!currentGeofencesInfoMap.containsKey(e.getKey())) {
                 currentGeofencesInfoMap.put(e.getKey(), e.getValue());
+                geofenceNamesBeingQueriedForInfo.remove(e.getKey());
                 String curGeofenceName = e.getKey();
                 GeofenceObjectContent geofence = mainActivity.getGeofenceMonitor().curGeofencesMap.get(curGeofenceName);
                 Bitmap markerIcon = BitmapFactory.decodeResource(getResources(), R.drawable.basic_map_marker);
@@ -368,7 +371,10 @@ public class HistoryFragment extends MapMainFragment {
 
 
                 }
-                mainActivity.getGeofenceMonitor().handleResult(result);
+                Log.i(logMessages.GEOFENCE_MONITORING, "handleResult: result length is: " + result.getContent().size());
+                Log.i(logMessages.GEOFENCE_MONITORING, "handleResult: result is: " + result.getContent().toString());
+
+
                 if (result != null) {
                     TextView queryResult = (TextView) view.findViewById(R.id.txt_query_result);
                     try {
@@ -376,7 +382,6 @@ public class HistoryFragment extends MapMainFragment {
 
                         // historyCardAdapter.updateGeofences(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
                         // historyCardAdapter.notifyDataSetChanged();
-
                         btnRequestInfo.setVisibility(View.GONE);
                         txtRequestGeofences.setVisibility(View.GONE);
 
@@ -523,7 +528,6 @@ public class HistoryFragment extends MapMainFragment {
         try {
             Button btnRequestGeofences = (Button) view.findViewById(R.id.btn_request_geofences);
             TextView txtRequestGeofences = (TextView) view.findViewById(txt_try_getting_geofences);
-            super.handleNewGeofences(geofencesContent);
             Log.i(logMessages.GEOFENCE_MONITORING, "HistoryFragment : handleNewGeofences");
 
 
@@ -549,11 +553,7 @@ public class HistoryFragment extends MapMainFragment {
     }
 
     private void removeMarker(int itemToRemove){
-        currentGeofenceMarkers.get(itemToRemove).remove();
-        Marker marker = currentGeofenceMarkers.get(itemToRemove);
-        marker = null;
-        currentGeofenceMarkers.remove(itemToRemove);
-        currentGeofencesInfoMap.remove(currentGeofencesInfoMap.get(currentGeofenceMarkers.get(itemToRemove).getTitle()));
+
     }
 
     /**
@@ -573,8 +573,10 @@ public class HistoryFragment extends MapMainFragment {
                 }
             }
             if(removeMarker){
+                currentGeofenceMarkers.get(i).remove();
+                currentGeofenceMarkers.remove(i);
+                currentGeofencesInfoMap.remove(currentGeofencesInfoMap.get(currentGeofenceMarkers.get(i).getTitle()));
 
-                removeMarker(i);
             }
         }
 
@@ -583,9 +585,13 @@ public class HistoryFragment extends MapMainFragment {
             if (mainActivity.isConnectedToNetwork()) {
                 ArrayList<GeofenceObjectContent> singleGeofence = new ArrayList<>(1);
                 for(int i = 0; i<currentGeofences.size(); i++){
-                    singleGeofence.add(currentGeofences.get(i));
-                    Log.i(logMessages.VOLLEY, "handleGeofenceChange : about to query database : " + singleGeofence.toString());
-                    volleyRequester.request(this, singleGeofence);
+                    if(!currentGeofencesInfoMap.containsKey(currentGeofences.get(i).getName()) && !geofenceNamesBeingQueriedForInfo.containsKey(currentGeofences.get(i).getName())){
+                        singleGeofence.add(currentGeofences.get(i));
+                        geofenceNamesBeingQueriedForInfo.put(currentGeofences.get(i).getName(), 0);
+                        Log.i(logMessages.VOLLEY, "handleGeofenceChange : about to query database : " + singleGeofence.toString());
+                        volleyRequester.request(this, singleGeofence);
+                    }
+
                 }
             }
 

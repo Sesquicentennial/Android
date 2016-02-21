@@ -3,7 +3,6 @@ package carleton150.edu.carleton.carleton150.ExtraFragments;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,30 +18,25 @@ import android.widget.TextView;
 
 import carleton150.edu.carleton.carleton150.Adapters.HistoryAdapter;
 import carleton150.edu.carleton.carleton150.Adapters.MyScaleInAnimationAdapter;
-import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
-import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewScrolledListener;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.MainFragments.HistoryFragment;
-import carleton150.edu.carleton.carleton150.MainFragments.QuestInProgressFragment;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.MemoriesContent;
-import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
  * Class to manage a HistoryPopoverDialogFragment. Currently fills in a text view
  * and a title from the geofenceInfoObject
  */
-public class HistoryPopoverFragment extends Fragment implements RecyclerViewClickListener, RecyclerViewScrolledListener{
+public class HistoryPopoverFragment extends Fragment implements RecyclerViewClickListener{
 
     private View view;
     private RecyclerView historyInfoObjects;
     private LinearLayoutManager historyLayoutManager;
     private HistoryAdapter historyAdapter;
     private Button btnClose;
-    private TextView txtTimelineDate;
     private static boolean isMemories = false;
     private int screenWidth;
     private int screenHeight;
@@ -75,7 +69,6 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         view = getActivity().getLayoutInflater().
                 inflate(R.layout.fragment_history_popover, new LinearLayout(getActivity()), false);
         TextView txtTitle = (TextView) view.findViewById(R.id.txt_title);
-        txtTimelineDate = (TextView) view.findViewById(R.id.txt_timeline_date);
         txtErrorGettingMemories = (TextView) view.findViewById(R.id.txt_error_getting_memories);
         btnClose = (Button) view.findViewById(R.id.btn_exit_popup);
         Button btnAddMemory = (Button) view.findViewById(R.id.btn_add_memory);
@@ -162,7 +155,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
 
             //if it is memories, we don't have data yet...
             if(!isMemories) {
-                historyAdapter = new HistoryAdapter(getActivity(), geofenceInfoObject, historyInfoObjects, this, screenWidth, screenHeight, isMemories);
+                historyAdapter = new HistoryAdapter(getActivity(), geofenceInfoObject, screenWidth, screenHeight, isMemories);
 
                 //RecyclerView animation
                 MyScaleInAnimationAdapter scaleInAnimationAdapter = new MyScaleInAnimationAdapter(historyAdapter);
@@ -189,24 +182,6 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
 
     }
 
-    @Override
-    public void recyclerViewScrolled(String date) {
-        txtTimelineDate.setVisibility(View.VISIBLE);
-        txtTimelineDate.setText(date);
-    }
-
-    @Override
-    public void recyclerViewStoppedScrolling() {
-
-        //this could be called after view changed, so have to make sure that txtTimelineDate
-        //still exists
-        try {
-            txtTimelineDate.setVisibility(View.GONE);
-        }catch (NullPointerException e){
-            e.printStackTrace();
-        }
-
-    }
 
     @Override
     public void onDestroyView() {
@@ -216,7 +191,6 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
         historyLayoutManager = null;
         historyAdapter = null;
         btnClose = null;
-        txtTimelineDate = null;
         geofenceInfoObject = null;
         txtErrorGettingMemories = null;
         parentFragment = null;
@@ -231,7 +205,7 @@ public class HistoryPopoverFragment extends Fragment implements RecyclerViewClic
             }else{
                 txtErrorGettingMemories.setVisibility(View.GONE);
             }
-            historyAdapter = new HistoryAdapter(getActivity(), memories.getContent(), historyInfoObjects, this, screenWidth, screenHeight, isMemories);
+            historyAdapter = new HistoryAdapter(getActivity(), memories.getContent(), screenWidth, screenHeight, isMemories);
 
             //RecyclerView animation
             MyScaleInAnimationAdapter scaleInAnimationAdapter = new MyScaleInAnimationAdapter(historyAdapter);
