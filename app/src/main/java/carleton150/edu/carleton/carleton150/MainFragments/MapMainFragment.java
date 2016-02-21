@@ -1,20 +1,14 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
@@ -27,7 +21,7 @@ import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
- * Created by haleyhinze on 2/2/16.
+ * MainFragment that contains a map. Extended by HistoryFragment and QuestInProgressFragment
  */
 public class MapMainFragment extends MainFragment {
 
@@ -37,96 +31,50 @@ public class MapMainFragment extends MainFragment {
     private double MAX_LATITUDE = 44.488045;
     private double MIN_LATITUDE = 44.458869;
     private int PROVIDER_NUMBER = 256;
-    private int MAX_ZOOM_TILING = 5000;
-    private int MIN_ZOOM_TILING = -5000;
     private int DEFAULT_ZOOM = 15;
     private int DEFAULT_BEARING = 0;
-
     private int DEFAULT_MAX_ZOOM = 13;
 
     private String baseURLString = " https://www.carleton.edu/global_stock/images/campus_map/tiles/base/%d_%d_%d.png";
     private String labelURLString = " https://www.carleton.edu/global_stock/images/campus_map/tiles/labels/%d_%d_%d.png";
 
-    private int X_MIN_TILING = 15807;
-    private int X_MAX_TILING = 15813;
-    private int Y_MIN_TILING = 23705;
-    private int Y_MAX_TILING = 23715;
-
     protected boolean zoomCamera = true;
     public GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
 
-    //This is a variable and not a function
+    //TileProvider for Carleton map tiling
     public TileProvider baseTileProvider = new UrlTileProvider(PROVIDER_NUMBER, PROVIDER_NUMBER) {
         @Override
         public URL getTileUrl(int x, int y, int zoom) {
 
-    /* Define the URL pattern for the tile images */
+         /* Define the URL pattern for the tile images */
             String s = String.format(baseURLString,
                     zoom, x, y);
-
-            /**if (!checkTileExists(x, y, zoom)) {
-                return null;
-            } **/
-
             try {
                 return new URL(s);
             } catch (MalformedURLException e) {
                 throw new AssertionError(e);
             }
         }
-
-
-
-        /*
-         * Check that the tile server supports the requested x, y and zoom.
-         * Complete this stub according to the tile range you support.
-         * If you support a limited range of tiles at different zoom levels, then you
-         * need to define the supported x, y range at each zoom level.
-         */
-        private boolean checkTileExists(int x, int y, int zoom) {
-
-            return true;
-        }
     };
-    //end of tileProvider
 
-    //This is a variable and not a function
+
+    //TileProvider for Carleton label tiling
     public TileProvider labelTileProvider = new UrlTileProvider(PROVIDER_NUMBER, PROVIDER_NUMBER) {
         @Override
         public URL getTileUrl(int x, int y, int zoom) {
 
-    /* Define the URL pattern for the tile images */
+        /* Define the URL pattern for the tile images */
             String s = String.format(labelURLString,
                     zoom, x, y);
-
-            /**if (!checkTileExists(x, y, zoom)) {
-             return null;
-             } **/
-
             try {
                 return new URL(s);
             } catch (MalformedURLException e) {
                 throw new AssertionError(e);
             }
         }
-
-
-
-        /*
-         * Check that the tile server supports the requested x, y and zoom.
-         * Complete this stub according to the tile range you support.
-         * If you support a limited range of tiles at different zoom levels, then you
-         * need to define the supported x, y range at each zoom level.
-         */
-        private boolean checkTileExists(int x, int y, int zoom) {
-
-            return true;
-        }
     };
-    //end of tileProvider
 
-    public TileOverlay tileOverlay;
 
     /***** Sets up the map if it is possible to do so *****/
     public boolean setUpMapIfNeeded() {
@@ -163,7 +111,6 @@ public class MapMainFragment extends MainFragment {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
                 setCamera();
-                //TODO: figure out best zoom level for campus
                 if (cameraPosition.zoom <= DEFAULT_MAX_ZOOM) {
                     if (cameraPosition.target == null) {
                         setCamera();
@@ -172,7 +119,6 @@ public class MapMainFragment extends MainFragment {
                 }
 
                 //makes it so user can't scroll too far off campus
-                //TODO: figure out best map limits
                 double latitude = cameraPosition.target.latitude;
                 double longitude = cameraPosition.target.longitude;
                 if (cameraPosition.target.longitude > MAX_LONGITUDE) {
@@ -238,10 +184,12 @@ public class MapMainFragment extends MainFragment {
 
     }
 
+    /**
+     * Draws map tiling for campus
+     */
     public void drawTiles(){
         MainActivity mainActivity = (MainActivity) getActivity();
-        if(mainActivity.getMemoryClass() > 160) {
-
+        if(mainActivity.getMemoryClass() > 100) {
             if (mMap != null) {
                 setUpMap();
             }

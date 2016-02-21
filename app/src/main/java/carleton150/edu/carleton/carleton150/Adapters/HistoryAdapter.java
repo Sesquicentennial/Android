@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import android.widget.TextView;
 
 import carleton150.edu.carleton.carleton150.Models.BitmapWorkerTask;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
-import carleton150.edu.carleton.carleton150.POJO.Quests.Image;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Waypoint;
 import carleton150.edu.carleton.carleton150.R;
 
@@ -30,6 +28,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public boolean isMemories;
     public boolean isQuestProgress;
     public Context context;
+    private static int PLACEHOLDER_BITMAP_SIZE = 10;
 
     public HistoryAdapter(Context context, GeofenceInfoContent[] historyList, Waypoint[] waypoints, int screenWidth, int screenHeight, boolean isMemories, boolean isQuestProgress) {
         this.historyList = historyList;
@@ -47,28 +46,23 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     /**
-     * Returns 0 if the object contains an image, 1 if it contains text
+     * Returns 0 if the object contains an image, 1 if it contains text, 2
+     * if it contains a quest waypoint
      * @param position
      * @return
      */
     @Override
     public int getItemViewType(int position) {
         if(isMemories){
-            Log.i("debugging quest progres", "HistoryAdapter: getItemViewType: returning 0!");
             return 0;
         }if(isQuestProgress){
-            Log.i("debugging quest progres", "HistoryAdapter: getItemViewType: returning 2!");
-
             return 2;
         }
         if(historyList[position].getType().equals(historyList[position].TYPE_IMAGE)){
-            Log.i("debugging quest progres", "HistoryAdapter: getItemViewType: returning 0!");
             return 0;
         } if(historyList[position].getType().equals(historyList[position].TYPE_TEXT)){
-            Log.i("debugging quest progres", "HistoryAdapter: getItemViewType: returning 1!");
             return 1;
         } else {
-            Log.i("debugging quest progres", "HistoryAdapter: getItemViewType: returning -1!");
             return -1;
         }
     }
@@ -78,11 +72,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     /**
      * Depending on the type, creates a ViewHolder from either the
-     * history_info_card_image or the history_info_card_text
+     * history_info_card_image, the history_info_card_text,
+     * history_info_card_memories, or the info_card_quest_in_progress
+     *
      *
      * @param parent
      * @param viewType
-     * @return
+     * @return RecyclerView.ViewHolder for the view
      */
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -95,8 +91,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         switch (viewType) {
             case 0:
                 View itemView = LayoutInflater.
-                    from(parent.getContext()).
-                    inflate(R.layout.history_info_card_image, parent, false);
+                        from(parent.getContext()).
+                        inflate(R.layout.history_info_card_image, parent, false);
                 return new HistoryViewHolderImage(itemView);
             case 1:
                 View view = LayoutInflater.
@@ -104,15 +100,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         inflate(R.layout.history_info_card_text, parent, false);
                 return new HistoryViewHolderText(view);
             case 2:
-                Log.i("debugging quest progres", "onCreateViewHolder: creating type 2!");
-
                 View questInProgressView = LayoutInflater.
                         from(parent.getContext()).
                         inflate(R.layout.info_card_quest_in_progress, parent, false);
                 return new ViewHolderQuestInProgress(questInProgressView);
         }
-        Log.i("debugging quest progres", "onCreateViewHolder: creating type null!");
-
         return null;
     }
 
@@ -124,6 +116,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
 
+        //Sets fields of a HistoryViewHolderText and sets an OnClickListener to expand the view
         if(holder instanceof HistoryViewHolderText){
             final GeofenceInfoContent geofenceInfoContent = historyList[position];
             ((HistoryViewHolderText) holder).setTxtSummary(geofenceInfoContent.getSummary());
@@ -138,13 +131,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             imgExpanded.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i("ClickListener", "item clicked!");
                     geofenceInfoContent.setExpanded(!geofenceInfoContent.isExpanded());
                     ((HistoryViewHolderText) holder).setExpanded(geofenceInfoContent.isExpanded());
                     ((HistoryViewHolderText) holder).setIconExpand(context);
                 }
             });
+
+
         }else if(holder instanceof HistoryViewHolderImage){
+            //Sets fields of a HistoryViewHolderImage and sets an OnClickListener to expand the view
             final GeofenceInfoContent geofenceInfoContent = historyList[position];
             if(!isMemories && !isQuestProgress) {
                 ((HistoryViewHolderImage) holder).setImage(position, geofenceInfoContent.getData(), screenWidth, screenHeight);
@@ -158,16 +153,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 imgExpanded.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.i("ClickListener", "item clicked!");
                         geofenceInfoContent.setExpanded(!geofenceInfoContent.isExpanded());
                         ((HistoryViewHolderImage) holder).setExpanded(geofenceInfoContent.isExpanded());
                         ((HistoryViewHolderImage) holder).setIconExpand(context);
                     }
                 });
-
-
             }else if (isMemories){
-                Log.i("HistoryAdapter", "Image string for memory is: " + geofenceInfoContent.getImage());
+                //Sets fields of a HistoryViewHolderImage and sets an OnClickListener to expand the view
+                //not that the memories use the HistoryViewHolderImage, but just fills in different fields
                 ((HistoryViewHolderImage) holder).setImage(position, geofenceInfoContent.getImage(), screenWidth, screenHeight);
                 ((HistoryViewHolderImage) holder).setTxtDate(geofenceInfoContent.getTimestamp());
                 ((HistoryViewHolderImage) holder).setTxtCaption(geofenceInfoContent.getCaption());
@@ -179,16 +172,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 imgExpanded.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.i("ClickListener", "item clicked!");
                         geofenceInfoContent.setExpanded(!geofenceInfoContent.isExpanded());
                         ((HistoryViewHolderImage) holder).setExpanded(geofenceInfoContent.isExpanded());
                         ((HistoryViewHolderImage) holder).setIconExpand(context);
                     }
                 });
             }
-        }else if(holder instanceof ViewHolderQuestInProgress) {
-            Log.i("debugging quest progres", "instance of ViwHolderQuestInProgress!");
 
+        }else if(holder instanceof ViewHolderQuestInProgress) {
+            //Sets fields of a ViewHolderQuestInProgress and sets an OnClickListener to expand the view
             final Waypoint waypoint = waypointList[position];
             ((ViewHolderQuestInProgress) holder).setVisibilities(waypoint);
             if(waypoint.getClue().getImage() != null) {
@@ -218,8 +210,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     /**
-     * returns the number of items in the historyList
-     * @return
+     * returns the number of items in the historyList or, if this
+     * is being used to display the progress through quest, returns the number
+     * of items in the waypoint list
+     * @return number of items in list
      */
     @Override
     public int getItemCount() {
@@ -227,18 +221,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return historyList.length;
         } else if (waypointList != null){
             return waypointList.length;
-    }else{
+        }else{
             return 0;
         }
     }
 
-    public GeofenceInfoContent[] getHistoryList(){
-        return this.historyList;
-    }
-
-
     /**
-     * A ViewHolder for views that contain only an image and date
+     * A ViewHolder for views that contain an image, a date, a caption, and a description
      */
     public static class HistoryViewHolderImage extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView txtDate;
@@ -251,28 +240,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public HistoryViewHolderImage(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-
             txtDate = (TextView) itemView.findViewById(R.id.txt_date);
             imgMedia = (ImageView) itemView.findViewById(R.id.img_history_info_image);
             txtCaption = (TextView) itemView.findViewById(R.id.txt_caption);
             iconExpand = (ImageView) itemView.findViewById(R.id.img_expand);
             txtDescription = (TextView) itemView.findViewById(R.id.txt_image_description);
-
-
-        }
-
-
-        public String getTxtDescription() {
-            return txtDescription.getText().toString();
         }
 
         public void setTxtDescription(String txtDescription) {
             this.txtDescription.setText(txtDescription);
-        }
-
-
-        public String getTxtDate() {
-            return txtDate.getText().toString();
         }
 
         public void setTxtDate(String txtDate) {
@@ -295,7 +271,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return this.iconExpand;
         }
 
-
+        /**
+         * If the item should be expanded, sets the icon to the expand less icon and shows the description
+         * If it should be shrunk, sets the icon to the expand more icon and hides the description
+         * @param context
+         */
         public void setIconExpand(Context context){
             if(context != null) {
                 if (expanded) {
@@ -310,18 +290,21 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
         /**
+         * Sets the image by downsizing and decoding the image string, then putting the image
+         * into the recyclerView at the specified position
+         *
+         * @param resId position of image in RecyclerView
+         * @param encodedImage 64-bit encoded image
+         * @param screenWidth width of phone screen
+         * @param screenHeight height of phone screen
          */
         public void setImage(int resId, String encodedImage, int screenWidth, int screenHeight) {
             System.gc();
-            int w = 10, h = 10;
-
+            int w = PLACEHOLDER_BITMAP_SIZE, h = PLACEHOLDER_BITMAP_SIZE;
             Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
             Bitmap mPlaceHolderBitmap = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
 
-
             if (cancelPotentialWork(resId, imgMedia)) {
-
-                //TODO: find better formula than dividing by 2
                 final BitmapWorkerTask task = new BitmapWorkerTask(imgMedia,  encodedImage
                         , screenWidth/2, screenHeight/3);
                 final BitmapWorkerTask.AsyncDrawable asyncDrawable =
@@ -329,9 +312,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 imgMedia.setImageDrawable(asyncDrawable);
                 task.execute(resId);
             }
-
         }
 
+        /**
+         * Cancels the previous task if a view is recycled so it can use the correct image
+         *
+         * @param data
+         * @param imageView
+         * @return
+         */
         public static boolean cancelPotentialWork(int data, ImageView imageView) {
             final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
 
@@ -351,6 +340,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
 
+        /**
+         * Gets the worker task that is trying to decode an image for the imageView
+         * @param imageView
+         * @return
+         */
         private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) {
             if (imageView != null) {
                 final Drawable drawable = imageView.getDrawable();
@@ -362,6 +356,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return null;
         }
 
+        /**
+         * Expands or shrinks the view depending on whether it is expanded or not
+         * @param v
+         */
         @Override
         public void onClick(View v) {
             swapExpanded();
@@ -370,9 +368,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
     /**
-     * A ViewHolder for views that contain only a text description and date
+     * A ViewHolder for views that contain only a text description, date, and summary
      */
-
     public static class HistoryViewHolderText extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView txtSummary;
         private TextView txtDate;
@@ -383,44 +380,33 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public HistoryViewHolderText(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-
             txtSummary = (TextView) itemView.findViewById(R.id.txt_txt_summary);
             txtDate = (TextView) itemView.findViewById(R.id.txt_date);
             iconExpand = (ImageView) itemView.findViewById(R.id.img_expand);
             txtDescription = (TextView) itemView.findViewById(R.id.txt_txt_description);
-
-
         }
 
         public ImageView getIconExpand(){
             return this.iconExpand;
         }
 
-        public String getTxtDescription() {
-            return txtDescription.getText().toString();
-        }
-
         public void setTxtDescription(String txtDescription) {
             this.txtDescription.setText(txtDescription);
-        }
-
-        public String getTxtSummary() {
-            return txtSummary.getText().toString();
         }
 
         public void setTxtSummary(String txtSummary) {
             this.txtSummary.setText(txtSummary);
         }
 
-        public String getTxtDate() {
-            return txtDate.getText().toString();
-        }
-
         public void setTxtDate(String txtDate) {
             this.txtDate.setText(txtDate);
         }
 
-
+        /**
+         * If the item should be expanded, sets the icon to the expand less icon and shows the description
+         * If it should be shrunk, sets the icon to the expand more icon and hides the description
+         * @param context
+         */
         public void setIconExpand(Context context){
             if(expanded){
                 txtDescription.setVisibility(View.VISIBLE);
@@ -518,6 +504,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             this.expanded = !this.expanded;
         }
 
+        /**
+         * If the item should be expanded, sets the icon to the expand less icon and shows the
+         * information about the clue and the hint
+         * If it should be shrunk, sets the icon to the expand more icon and hides the
+         * information about the clue and the hint
+         * @param context
+         */
         public void setIconExpand(Context context){
             if(context != null) {
                 if (expanded) {
@@ -546,6 +539,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return this.iconExpand;
         }
 
+        /**
+         * Sets booleans for images that the waypoint contains since a waypoint
+         * doesn't have to contain images. Also sets the completion image to visible
+         * if the waypoint has a completion image
+         * @param waypoint
+         */
         public void setVisibilities(Waypoint waypoint){
             if(waypoint.getClue().getImage() != null){
                 if(!waypoint.getClue().getImage().equals("")){
@@ -557,10 +556,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 hasClueImage = false;
                 cardClue.setVisibility(View.GONE);
             }if(waypoint.getHint().getImage() != null){
-                    if(!waypoint.getHint().getImage().equals("")) {
-                        hasHintImage = true;
-                    }else{
-                        hasHintImage = false;
+                if(!waypoint.getHint().getImage().equals("")) {
+                    hasHintImage = true;
+                }else{
+                    hasHintImage = false;
                 }
             }else{
                 hasHintImage = false;
@@ -581,19 +580,21 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
         /**
+         * Sets the image by downsizing and decoding the image string, then putting the image
+         * into the recyclerView at the specified position in the imgClue space
+         *
+         * @param resId position of image in RecyclerView
+         * @param encodedImage 64-bit encoded image
+         * @param screenWidth width of phone screen
+         * @param screenHeight height of phone screen
          */
         public void setImageClue(int resId, String encodedImage, int screenWidth, int screenHeight) {
             if(hasClueImage) {
                 System.gc();
                 int w = 10, h = 10;
-
                 Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
                 Bitmap mPlaceHolderBitmap = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
-
-
                 if (cancelPotentialWork(resId, imgClue)) {
-
-                    //TODO: find better formula than dividing by 2
                     final BitmapWorkerTask task = new BitmapWorkerTask(imgClue, encodedImage
                             , screenWidth / 2, screenHeight / 3);
                     final BitmapWorkerTask.AsyncDrawable asyncDrawable =
@@ -606,19 +607,21 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         /**
+         * Sets the image by downsizing and decoding the image string, then putting the image
+         * into the recyclerView at the specified position in the imgHint space
+         *
+         * @param resId position of image in RecyclerView
+         * @param encodedImage 64-bit encoded image
+         * @param screenWidth width of phone screen
+         * @param screenHeight height of phone screen
          */
         public void setImageHint(int resId, String encodedImage, int screenWidth, int screenHeight) {
             if(hasHintImage) {
                 System.gc();
-                int w = 10, h = 10;
-
+                int w = PLACEHOLDER_BITMAP_SIZE, h = PLACEHOLDER_BITMAP_SIZE;
                 Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
                 Bitmap mPlaceHolderBitmap = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
-
-
                 if (cancelPotentialWork(resId, imgHint)) {
-
-                    //TODO: find better formula than dividing by 2
                     final BitmapWorkerTask task = new BitmapWorkerTask(imgHint, encodedImage
                             , screenWidth / 2, screenHeight / 3);
                     final BitmapWorkerTask.AsyncDrawable asyncDrawable =
@@ -627,23 +630,24 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     task.execute(resId);
                 }
             }
-
         }
 
         /**
+         * Sets the image by downsizing and decoding the image string, then putting the image
+         * into the recyclerView at the specified position in the imgComp space
+         *
+         * @param resId position of image in RecyclerView
+         * @param encodedImage 64-bit encoded image
+         * @param screenWidth width of phone screen
+         * @param screenHeight height of phone screen
          */
         public void setImageComp(int resId, String encodedImage, int screenWidth, int screenHeight) {
             if(hasCompImage) {
                 System.gc();
-                int w = 10, h = 10;
-
+                int w = PLACEHOLDER_BITMAP_SIZE, h = PLACEHOLDER_BITMAP_SIZE;
                 Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
                 Bitmap mPlaceHolderBitmap = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
-
-
                 if (cancelPotentialWork(resId, imgCompImage)) {
-
-                    //TODO: find better formula than dividing by 2
                     final BitmapWorkerTask task = new BitmapWorkerTask(imgCompImage, encodedImage
                             , screenWidth / 2, screenHeight / 3);
                     final BitmapWorkerTask.AsyncDrawable asyncDrawable =
@@ -652,12 +656,17 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     task.execute(resId);
                 }
             }
-
         }
 
+        /**
+         * Cancels the previous task if a view is recycled so it can use the correct image
+         *
+         * @param data
+         * @param imageView
+         * @return
+         */
         public static boolean cancelPotentialWork(int data, ImageView imageView) {
             final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
-
             if (bitmapWorkerTask != null) {
                 final int bitmapData = bitmapWorkerTask.data;
                 // If bitmapData is not yet set or it differs from the new data
@@ -673,7 +682,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return true;
         }
 
-
+        /**
+         * Gets the worker task that is trying to decode an image for the imageView
+         * @param imageView
+         * @return
+         */
         private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) {
             if (imageView != null) {
                 final Drawable drawable = imageView.getDrawable();
@@ -690,7 +703,4 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             swapExpanded();
         }
     }
-
-
-
 }

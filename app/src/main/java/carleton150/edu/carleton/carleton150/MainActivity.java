@@ -2,7 +2,6 @@ package carleton150.edu.carleton.carleton150;
 
 import android.app.ActivityManager;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -14,9 +13,6 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -35,16 +31,12 @@ import com.google.android.gms.location.LocationServices;
 
 
 import java.util.ArrayList;
-import java.util.prefs.Preferences;
 
-import carleton150.edu.carleton.carleton150.ExtraFragments.AddMemoryFragment;
 import carleton150.edu.carleton.carleton150.ExtraFragments.QuestCompletedFragment;
 import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
-import carleton150.edu.carleton.carleton150.Interfaces.ViewFragmentChangedListener;
 import carleton150.edu.carleton.carleton150.MainFragments.EventsFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.HistoryFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.MainFragment;
-import carleton150.edu.carleton.carleton150.Adapters.MyFragmentPagerAdapter;
 import carleton150.edu.carleton.carleton150.MainFragments.QuestFragment;
 import carleton150.edu.carleton.carleton150.MainFragments.QuestInProgressFragment;
 import carleton150.edu.carleton.carleton150.Models.GeofenceErrorMessages;
@@ -58,7 +50,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
  * to handle geofence and location changes. Also controls which fragment is in view.
  */
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status>, FragmentChangeListener, ViewFragmentChangedListener{
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status>, FragmentChangeListener{
 
     //things for managing fragments
     //public static FragmentManager fragmentManager;
@@ -642,19 +634,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         int memoryClass = am.getMemoryClass();
         Log.v(logMessages.MEMORY_MONITORING, "memoryClass:" + Integer.toString(memoryClass));
         return memoryClass;
-    }
-
-    @Override
-    public void viewFragmentChanged(MainFragment viewFragment) {
-        if(viewFragment instanceof HistoryFragment){
-            Log.i("Fragment Handling", "MainActivity : viewFragment is instanceof HistoryFragment");
-        }else{
-
-                Log.i("Fragment Handling", "MainActivity : viewFragment is not an instanceof HistoryFragment");
-
-        }
-        checkIfFragmentNeedsToHandleGeofenceChange();
-        checkIfFragmentNeedsNewGeofences();
     }
 
 }

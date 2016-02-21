@@ -105,14 +105,14 @@ public class QuestCompletedFragment extends MainFragment {
         System.gc();
 
         FragmentManager fm = getActivity().getSupportFragmentManager();
-        HistoryPopoverFragment historyPopoverFragment = HistoryPopoverFragment.newInstance(this, quest, quest.getWaypoints().length);
+        RecyclerViewPopoverFragment recyclerViewPopoverFragment = RecyclerViewPopoverFragment.newInstance(this, quest, quest.getWaypoints().length);
 
         // Transaction start
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
 
         fragmentTransaction.setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom,
                 R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
-        fragmentTransaction.add(R.id.fragment_container, historyPopoverFragment, "QuestProgressPopoverFragment");
+        fragmentTransaction.add(R.id.fragment_container, recyclerViewPopoverFragment, "QuestProgressPopoverFragment");
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }

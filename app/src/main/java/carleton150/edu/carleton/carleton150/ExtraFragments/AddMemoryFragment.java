@@ -1,6 +1,5 @@
 package carleton150.edu.carleton.carleton150.ExtraFragments;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -16,8 +15,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Base64;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,17 +40,12 @@ import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.R;
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link AddMemoryFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link AddMemoryFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Fragment to add a new memory, allows user to either take a picture
+ * or choose one from their documents to upload
  */
 public class AddMemoryFragment extends Fragment {
 
     private View v;
-    private Uri imageUri = null;
     private File photoFile = null;
     private ArrayList<EditText> editTexts = new ArrayList();
     private String imageString = null;
@@ -63,11 +55,8 @@ public class AddMemoryFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param
-     * @param
      * @return A new instance of fragment AddMemoryFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static AddMemoryFragment newInstance() {
         AddMemoryFragment fragment = new AddMemoryFragment();
         Bundle args = new Bundle();
@@ -85,10 +74,17 @@ public class AddMemoryFragment extends Fragment {
 
     }
 
+    /**
+     * Manages view items
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_add_memory, container, false);
         EditText etTitle = (EditText) v.findViewById(R.id.et_memory_title);
         EditText etDesc = (EditText) v.findViewById(R.id.et_memory_description);
@@ -125,23 +121,9 @@ public class AddMemoryFragment extends Fragment {
         return v;
     }
 
-
-
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     * Removes itself and makes sure to close the keyboard
      */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
-    }
-
     private void removeCurrentFragment(){
         EditText focusedEditText = null;
         for(int i = 0; i<editTexts.size(); i++){
@@ -155,10 +137,13 @@ public class AddMemoryFragment extends Fragment {
         FragmentTransaction fm = getActivity().getSupportFragmentManager().beginTransaction();
         fm.setCustomAnimations(R.anim.abc_slide_in_bottom, R.anim.abc_slide_out_bottom);
         fm.detach(this).remove(this).commit();
-
     }
 
-
+    /**
+     * Called when user clicks "Add Image" button. Creates an image file
+     * for the photo and starts an intent for the user to select a photo
+     * or take a photo
+     */
     public void takePhoto() {
         try {
             photoFile = Camera.createImageFile();
@@ -168,17 +153,21 @@ public class AddMemoryFragment extends Fragment {
         startActivityForResult(Camera.photoIntent(getActivity(), photoFile), 5);
     }
 
+    /**
+     * Called when the user selects or takes a photo.
+     * Displays the selected image on the screen.
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        //TODO : Taking photo crashes app
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == 5) { //TODO uri get path is null
+            if (requestCode == 5) {
                 Log.i("photo location", photoFile.getAbsolutePath());
                 String path = Camera.photoResult(getActivity(), photoFile, data);
                 setImageString(path, getActivity());
-                //add your own logic for path
-
                 ImageView imgMemoryView = (ImageView) v.findViewById(R.id.img_memory_view);
                 Button btnSelectImage = (Button) v.findViewById(R.id.btn_select_image);
 
@@ -200,6 +189,13 @@ public class AddMemoryFragment extends Fragment {
         }
     }
 
+    /**
+     * Downsizes the bitmap the path refers to and turns it to a 64-bit string.
+     * Sets imageString to refer to that string
+     *
+     * @param path the path of the file where the image is stored
+     * @param context
+     */
     private void setImageString(String path, Context context){
         Bitmap downsizedBitmap = null;
         try {
@@ -209,7 +205,6 @@ public class AddMemoryFragment extends Fragment {
             e.printStackTrace();
             return;
         }
-
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         downsizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
         byte[] byteArray = bos.toByteArray();
@@ -217,6 +212,14 @@ public class AddMemoryFragment extends Fragment {
         Log.i(new LogMessages().MEMORY_MONITORING, "setImageString : imageString is : " + imageString);
     }
 
+    /**
+     * Decodes a uri into a bitmap
+     * @param c context
+     * @param uri the uri of the photo to change to a bitmap
+     * @param requiredSize size of the output bitmap
+     * @return
+     * @throws FileNotFoundException
+     */
     public static Bitmap decodeUri(Context c, Uri uri, final int requiredSize)
             throws FileNotFoundException {
         BitmapFactory.Options o = new BitmapFactory.Options();
@@ -234,7 +237,6 @@ public class AddMemoryFragment extends Fragment {
             height_tmp /= 2;
             scale *= 2;
         }
-
         BitmapFactory.Options o2 = new BitmapFactory.Options();
         o2.inSampleSize = scale;
         return BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o2);
@@ -247,27 +249,26 @@ public class AddMemoryFragment extends Fragment {
         editTexts = null;
     }
 
-
+    /**
+     * Attempts to upload a memory if the user has entered all the required fields.
+     * If the user entered required fields, displays a dialog telling the user that
+     * the image is being uploaded
+     */
     private void uploadMemoryIfPossible(){
         EditText etTitle = (EditText) v.findViewById(R.id.et_memory_title);
         EditText etDesc = (EditText) v.findViewById(R.id.et_memory_description);
         EditText etUploader = (EditText) v.findViewById(R.id.et_memory_uploader);
         MainActivity mainActivity = (MainActivity) getActivity();
-        ImageView image = (ImageView) v.findViewById(R.id.img_memory_view);
-
         if(imageString == null){
             AlertDialog alertDialog = new AlertDialog.Builder(mainActivity).create();
             mainActivity.showAlertDialog(getResources().getString(R.string.unable_to_decode_image), alertDialog);
             return;
         }
-
         if(checkTextFieldsEntered()){
             String title = etTitle.getText().toString();
             String desc = etDesc.getText().toString();
             String uploader = etUploader.getText().toString();
-
             String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
-
             Location curLocation = mainActivity.getLastLocation();
             double lat;
             double lng;
@@ -280,32 +281,20 @@ public class AddMemoryFragment extends Fragment {
                 return;
             }
             VolleyRequester volleyRequester = new VolleyRequester();
-
             volleyRequester.addMemory(imageString, title, uploader, desc, timestamp, lat, lng, this);
-
-
-
             RelativeLayout layout = new RelativeLayout(getActivity());
-
             TextView textView = new TextView(getActivity());
             textView.setText("Uploading memory...");
             textView.setTextColor(getResources().getColor(R.color.colorAccent));
             textView.setBackgroundColor(getResources().getColor(R.color.transparent));
-
             RelativeLayout.LayoutParams childParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             childParams.addRule(RelativeLayout.CENTER_IN_PARENT);
             layout.addView(textView, childParams);
-
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-
-
             alertDialogLoading = new Dialog(getActivity(), R.style.LoadingDialogTheme);
             alertDialogLoading.addContentView(layout, params);
             alertDialogLoading.show();
-
         }
-
-
     }
 
 
@@ -338,11 +327,20 @@ public class AddMemoryFragment extends Fragment {
         return true;
     }
 
+    /**
+     * Closes the soft keyboard
+     * @param c
+     * @param windowToken
+     */
     public static void closeKeyboard(Context c, IBinder windowToken) {
         InputMethodManager mgr = (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
         mgr.hideSoftInputFromWindow(windowToken, 0);
     }
 
+    /**
+     * Method that is called when the memory was uploaded successfully. Closes the
+     * AddMemoryFragment and returns to the HistoryView
+     */
     public void addMemorySuccess(){
         if(alertDialogLoading != null){
             alertDialogLoading.dismiss();
@@ -354,6 +352,10 @@ public class AddMemoryFragment extends Fragment {
         removeCurrentFragment();
     }
 
+    /**
+     * Method that is called when the memory was not uploaded successfully. Displays an
+     * AlertDialog requesting that the user try to upload the memory again at another time
+     */
     public void addMemoryError(){
         if(alertDialogLoading != null){
             alertDialogLoading.dismiss();
