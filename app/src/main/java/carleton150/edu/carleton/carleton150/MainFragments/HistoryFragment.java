@@ -540,7 +540,7 @@ public class HistoryFragment extends MapMainFragment {
                     mainActivity.getGeofenceMonitor().handleNewGeofences(geofencesContent);
                     drawGeofences(geofencesContent);
 
-                } else if (mainActivity.getGeofenceMonitor().allGeopointsByName.size() == 0){
+                } else if (mainActivity.getGeofenceMonitor().allGeopointsByName.size() == 0 || geofencesContent == null){
 
                         btnRequestGeofences.setVisibility(View.VISIBLE);
                         txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
@@ -550,10 +550,6 @@ public class HistoryFragment extends MapMainFragment {
         }catch (IllegalStateException e){
             e.printStackTrace();
         }
-    }
-
-    private void removeMarker(int itemToRemove){
-
     }
 
     /**
