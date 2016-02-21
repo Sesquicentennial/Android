@@ -21,6 +21,8 @@
     <color name = "colorSecondary">#F7E042</color>
     <color name ="white">#FFFFFF</color>
     <color name="windowBackground">#e4decf</color>
+    <color name="windowBackgroundSecondary">#E6E4DF</color>
+    <color name="windowBackgroundDark">#D1C29D</color>
     <color name="black">#181823</color>
 
 

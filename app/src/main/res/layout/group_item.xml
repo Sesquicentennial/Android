@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:id="@+id/list_item"
+
     android:layout_height="match_parent">
+    <!-- android:background="@color/windowBackground" -->
 
     <TextView
         android:id="@+id/txt_title"
@@ -13,7 +15,6 @@
         android:padding="22dp"
         android:layout_height="match_parent"
         android:textColor="@color/darkAccent"
-        android:background="@color/windowBackground"
         android:text="description"/>
 
     <TextView
@@ -22,7 +23,6 @@
         android:layout_height="match_parent"
         android:textSize="17sp"
         android:textColor="@color/darkAccent"
-        android:background="@color/windowBackground"
         android:gravity="center"
         android:text="Date" />
 
@@ -32,7 +32,6 @@
         android:layout_height="match_parent"
         android:textSize="13sp"
         android:textColor="@color/darkAccent"
-        android:background="@color/windowBackground"
         android:textStyle="italic"
         android:text="Full Description"
         android:paddingBottom="20dp"
@@ -45,7 +44,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:textColor="@color/darkAccent"
-        android:background="@color/colorPrimarySemiTransparent"
         android:text="Description"
         android:visibility="gone" />
 
