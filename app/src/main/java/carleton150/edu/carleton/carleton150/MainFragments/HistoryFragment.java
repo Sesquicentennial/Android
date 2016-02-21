@@ -437,6 +437,9 @@ public class HistoryFragment extends MapMainFragment {
      */
     private void showPopup(GeofenceInfoContent[] geofenceInfoObject){
 
+        RelativeLayout relLayoutTutorial = (RelativeLayout) view.findViewById(R.id.tutorial);
+        relLayoutTutorial.setVisibility(View.GONE);
+
         GeofenceInfoContent[] sortedContent = sortByDate(geofenceInfoObject);
         FragmentManager fm = getActivity().getSupportFragmentManager();
         HistoryPopoverFragment historyPopoverFragment = HistoryPopoverFragment.newInstance(sortedContent);
@@ -637,6 +640,9 @@ public class HistoryFragment extends MapMainFragment {
     }
 
     private void showMemoriesPopover(){
+
+        RelativeLayout relLayoutTutorial = (RelativeLayout) view.findViewById(R.id.tutorial);
+        relLayoutTutorial.setVisibility(View.GONE);
 
         FragmentManager fm = getActivity().getSupportFragmentManager();
         HistoryPopoverFragment historyPopoverFragment = HistoryPopoverFragment.newInstance(this);

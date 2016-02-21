@@ -238,7 +238,7 @@ public class VolleyRequester {
     public void requestQuests(final MainFragment callerFragment){
         final Gson gson = new Gson();
         JSONObject emptyRequest = new JSONObject();
-        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/quest_re", emptyRequest,
+        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/quest", emptyRequest,
                 new Response.Listener<JSONObject>() {
 
                     @Override
