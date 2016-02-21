@@ -438,6 +438,14 @@ public class QuestInProgressFragment extends MapMainFragment {
                 txtClueNumberCompMessage.setText((numClue) + "/" + quest.getWaypoints().length);
                 return finished;
             }
+
+            RelativeLayout relLayoutFoundItHint = (RelativeLayout) v.findViewById(rel_layout_found_it_hint);
+            RelativeLayout relLayoutFoundItClue = (RelativeLayout) v.findViewById(R.id.rel_layout_found_it_clue);
+
+            float scale = getResources().getDisplayMetrics().density;
+            int dpAsPixelsSmallPadding = (int) (10*scale + 0.5f);
+            int dpAsPixelsBigPadding = (int) (80*scale + 0.5f);
+
             TextView txtClue = (TextView) v.findViewById(R.id.txt_clue);
             TextView txtClueNumber = (TextView) v.findViewById(R.id.txt_clue_number);
             TextView txtClueNumberBack = (TextView) v.findViewById(R.id.txt_clue_number_hint);
@@ -467,15 +475,22 @@ public class QuestInProgressFragment extends MapMainFragment {
             if (image != null){
                 slidingDrawerClue.setVisibility(View.VISIBLE);
                 setImage(image, screenWidth, screenHeight, imgClue);
+                relLayoutFoundItClue.setPadding(0, 0, 0, dpAsPixelsBigPadding);
             }else{
                 slidingDrawerClue.setVisibility(View.GONE);
+                relLayoutFoundItClue.setPadding(0, 0, 0, dpAsPixelsSmallPadding);
+
             }
 
             if (hintImage != null){
                 slidingDrawerHint.setVisibility(View.VISIBLE);
                 setImage(hintImage, screenWidth, screenHeight, imgHint);
+                relLayoutFoundItHint.setPadding(0, 0, 0, dpAsPixelsBigPadding);
+
             }else{
                 slidingDrawerHint.setVisibility(View.GONE);
+                relLayoutFoundItHint.setPadding(0, 0, 0, dpAsPixelsSmallPadding);
+
             }
             return finished;
         } catch (NullPointerException e){
@@ -489,8 +504,11 @@ public class QuestInProgressFragment extends MapMainFragment {
      * number, updating the current waypoint, and checking if the quest is completed
      */
     public void clueCompleted() {
-        Log.i(logMessages.GEOFENCE_MONITORING, "QuestInProgressFragment: clueCompleted");
-        showClueCompletedMessage();
+
+        if(numClue + 1 != quest.getWaypoints().length){
+            showClueCompletedMessage();
+        }
+
         numClue += 1;
 
         //saves the quest progress into SharedPreferences
@@ -499,10 +517,13 @@ public class QuestInProgressFragment extends MapMainFragment {
         sharedPrefsEditor.putInt(quest.getName(), numClue);
         sharedPrefsEditor.commit();
 
+        Log.i(logMessages.GEOFENCE_MONITORING, "QuestInProgressFragment: clueCompleted");
         boolean completedQuest = updateCurrentWaypoint();
         if (completedQuest){
             showCompletedQuestMessage();
         }
+
+
 
     }
 
