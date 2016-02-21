@@ -7,16 +7,19 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:clickable="true"
-    card_view:cardBackgroundColor="@color/windowBackground"
-    card_view:contentPadding="1dp">
+    android:layout_marginBottom="5dp"
+    card_view:cardElevation="3dp"
+    card_view:cardCornerRadius="0dp"
+    card_view:contentPaddingRight="1dp">
 
     <TextView
         android:id="@+id/event_date_title"
-        android:background="@drawable/rounded_corner"
+        android:background="@color/colorPrimary"
         android:textColor="@color/white"
         android:gravity="center"
         android:textStyle="bold"
         android:textSize="16sp"
+        android:layout_marginBottom="0dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

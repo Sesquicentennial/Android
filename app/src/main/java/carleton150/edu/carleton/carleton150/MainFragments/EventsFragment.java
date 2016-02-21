@@ -44,8 +44,6 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
     List<EventContent> childList;
     ExpandableListView eventsListView;
 
-    // Commented ArrayList below because doing hashmap
-    //private ArrayList<EventContent> eventsByDate = new ArrayList();
     HorizontalScrollView datesScrollView;
     private String strDate;
 
@@ -70,8 +68,7 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
         btnTryAgain = (Button) v.findViewById(R.id.btn_try_getting_events);
         txtTryAgain = (TextView) v.findViewById(R.id.txt_request_events);
 
-        // Before buildRecyclerViews is called, we need to grab all events and put key for each date in a hashmap
-        // Request events
+        // Before buildRecyclerViews is called, we need to grab all events
         requestEvents();
 
         eventsListView = (ExpandableListView) v.findViewById(R.id.lst_events);
@@ -141,11 +138,11 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
         String[] completeDateArray;
         String dateByDay;
         eventsMapByDate.clear();
+
         /*This is a call from the VolleyRequester, so this check prevents the app from
         crashing if the user leaves the tab while the app is trying
         to get quests from the server
          */
-
         try {
 
             try {
@@ -181,16 +178,11 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
                         eventsMapByDate.put(dateByDay, eventContents1);
                     }
 
-                    // TODO: Figure out size of list in eventsMapBySize
-                    Log.d("eventsdebugging", String.valueOf(eventsMapByDate.get(dateByDay).size()));
-
                 }
                 dateInfo.clear();
                 for (Map.Entry<String, ArrayList<EventContent>> entry : eventsMapByDate.entrySet()) {
                     dateInfo.add(entry.getKey());
                 }
-
-                Log.i("eventsdebugging", "length of dateInfo : " + dateInfo.size());
 
                 eventDateCardAdapter.notifyDataSetChanged();
 
@@ -235,7 +227,6 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
 
     @Override
     public void recyclerViewListClicked(String dateInfo) {
-        Log.i("debugginginfo", "recyclerViewListClicked! dateInfo : " + dateInfo);
         ArrayList<EventContent> newEvents = eventsMapByDate.get(dateInfo);
         eventsList.clear();
         for(int i = 0; i<newEvents.size(); i++){
