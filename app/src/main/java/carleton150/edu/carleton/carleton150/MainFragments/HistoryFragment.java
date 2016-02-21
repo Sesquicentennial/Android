@@ -282,18 +282,20 @@ public class HistoryFragment extends MapMainFragment {
         MainActivity mainActivity = (MainActivity) getActivity();
 
         for(Map.Entry<String, GeofenceInfoContent[]> e : geofenceToAdd.entrySet()){
-            currentGeofencesInfoMap.put(e.getKey(), e.getValue());
-            String curGeofenceName = e.getKey();
-            GeofenceObjectContent geofence = mainActivity.getGeofenceMonitor().curGeofencesMap.get(curGeofenceName);
-            Bitmap markerIcon = BitmapFactory.decodeResource(getResources(), R.drawable.basic_map_marker);
-            LatLng position = new LatLng(geofence.getGeofence().getLocation().getLat(), geofence.getGeofence().getLocation().getLng());
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(markerIcon);
-            MarkerOptions geofenceMarkerOptions = new MarkerOptions()
-                    .position(position)
-                    .title(curGeofenceName)
-                    .icon(icon);
-            Marker curGeofenceMarker = mMap.addMarker(geofenceMarkerOptions);
-            currentGeofenceMarkers.add(curGeofenceMarker);
+            if(!currentGeofencesInfoMap.containsKey(e.getKey())) {
+                currentGeofencesInfoMap.put(e.getKey(), e.getValue());
+                String curGeofenceName = e.getKey();
+                GeofenceObjectContent geofence = mainActivity.getGeofenceMonitor().curGeofencesMap.get(curGeofenceName);
+                Bitmap markerIcon = BitmapFactory.decodeResource(getResources(), R.drawable.basic_map_marker);
+                LatLng position = new LatLng(geofence.getGeofence().getLocation().getLat(), geofence.getGeofence().getLocation().getLng());
+                BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(markerIcon);
+                MarkerOptions geofenceMarkerOptions = new MarkerOptions()
+                        .position(position)
+                        .title(curGeofenceName)
+                        .icon(icon);
+                Marker curGeofenceMarker = mMap.addMarker(geofenceMarkerOptions);
+                currentGeofenceMarkers.add(curGeofenceMarker);
+            }
         }
     }
 
@@ -546,6 +548,13 @@ public class HistoryFragment extends MapMainFragment {
         }
     }
 
+    private void removeMarker(int itemToRemove){
+        currentGeofenceMarkers.get(itemToRemove).remove();
+        Marker marker = currentGeofenceMarkers.get(itemToRemove);
+        marker = null;
+        currentGeofenceMarkers.remove(itemToRemove);
+        currentGeofencesInfoMap.remove(currentGeofencesInfoMap.get(currentGeofenceMarkers.get(itemToRemove).getTitle()));
+    }
 
     /**
      * When geofences change, queries database for information about geofences
@@ -564,10 +573,8 @@ public class HistoryFragment extends MapMainFragment {
                 }
             }
             if(removeMarker){
-                currentGeofenceMarkers.get(i).remove();
-                currentGeofenceMarkers.remove(i);
-                currentGeofencesInfoMap.remove(currentGeofencesInfoMap.get(currentGeofenceMarkers.get(i).getTitle()));
 
+                removeMarker(i);
             }
         }
 
