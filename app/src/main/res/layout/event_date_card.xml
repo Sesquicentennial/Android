@@ -5,13 +5,14 @@
     android:id="@+id/event_card_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="true"
     android:clickable="true"
-    card_view:cardBackgroundColor="@color/colorPrimary"
-    card_view:contentPadding="2dp">
+    card_view:cardBackgroundColor="@color/windowBackground"
+    card_view:contentPadding="1dp">
 
     <TextView
         android:id="@+id/event_date_title"
-        android:background="@drawable/btn_pressed"
+        android:background="@drawable/rounded_corner"
         android:textColor="@color/white"
         android:gravity="center"
         android:textStyle="bold"

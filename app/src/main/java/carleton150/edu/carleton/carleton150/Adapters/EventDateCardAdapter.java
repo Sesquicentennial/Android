@@ -2,12 +2,16 @@ package carleton150.edu.carleton.carleton150.Adapters;
 
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewDatesClickListener;
 import carleton150.edu.carleton.carleton150.R;
@@ -81,24 +85,33 @@ public class EventDateCardAdapter extends RecyclerView.Adapter<EventDateCardAdap
         @Override
         public void onClick(View v) {
             TextView dateTitle = (TextView) itemView.findViewById(R.id.event_date_title);
-            String dateInfo = dateTitle.getText().toString();
-
-            // TODO: Parse dateInfo to Calendar object -> String
-//            DateFormat df = new SimpleDateFormat("EEEE',' MMM dd");
-//            String[] dateArray = dateInfo.split("-");
-//            GregorianCalendar dateCalendar = new GregorianCalendar(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2]));
-//            String cleanDateInfo = df.format(dateCalendar);
-//
-//            clickListener.recyclerViewListClicked(cleanDateInfo);
+            String dateInfo = dateTitle.getTag().toString();
 
             clickListener.recyclerViewListClicked(dateInfo);
 
         }
 
         public void setDate(String dateInfo) {
+            Log.i(dateInfo, "Meow");
             TextView dateTitle = (TextView) itemView.findViewById(R.id.event_date_title);
-            dateTitle.setText(dateInfo);
+            DateFormat df = new SimpleDateFormat("EEEE'\r\n' MMM dd");
+            String[] dateArray = dateInfo.split("-");
+            Log.d(String.valueOf(dateArray[0] + dateArray[1] + dateArray[2]), "dateArray should be this");
+            Date dateCalendar = new Date(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1])-1, Integer.parseInt(dateArray[2]));
+            String cleanDateInfo = df.format(dateCalendar);
+            Log.d(cleanDateInfo, "cleanDateInfo");
+
+            dateTitle.setText(cleanDateInfo);
+            dateTitle.setTag(dateInfo);
         }
 
     }
 }
+//// TODO: Parse dateInfo to Calendar object -> String
+//String currentDateInfo = dateInfo.get(position);
+//DateFormat df = new SimpleDateFormat("EEEE',' MMM dd");
+//String[] dateArray = currentDateInfo.split("-");
+//GregorianCalendar dateCalendar = new GregorianCalendar(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2]));
+//String cleanDateInfo = df.format(dateCalendar);
+//Log.d(cleanDateInfo, "cleanDateInfo");
+//        holder.setDate(cleanDateInfo);

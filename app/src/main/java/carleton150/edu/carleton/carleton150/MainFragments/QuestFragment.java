@@ -1,6 +1,5 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.DisplayMetrics;
@@ -8,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -19,13 +17,11 @@ import com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager;
 import java.util.ArrayList;
 
 import carleton150.edu.carleton.carleton150.Adapters.QuestAdapter;
-import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.Interfaces.FragmentChangeListener;
+import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.MainActivity;
-import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 import carleton150.edu.carleton.carleton150.R;
-import jp.wasabeef.recyclerview.animators.adapters.ScaleInAnimationAdapter;
 
 /**
  * Class to display quests and allow a user to select a quest to view information about it
@@ -185,7 +181,6 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
                         if (quests != null) {
                             quests.setVisibility(View.GONE);
                         }
-
                 }
             } catch (IllegalStateException e) {
                 e.printStackTrace();
