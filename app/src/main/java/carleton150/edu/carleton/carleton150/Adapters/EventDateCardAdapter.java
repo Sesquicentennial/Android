@@ -51,7 +51,7 @@ public class EventDateCardAdapter extends RecyclerView.Adapter<EventDateCardAdap
         holder.setDate(dateInfo.get(position));
 
         //TODO: get a good width...
-        holder.setWidth((int) (screenWidth / 3));
+        holder.setWidth((int) (screenWidth / 2.5));
     }
 
     @Override
@@ -82,7 +82,17 @@ public class EventDateCardAdapter extends RecyclerView.Adapter<EventDateCardAdap
         public void onClick(View v) {
             TextView dateTitle = (TextView) itemView.findViewById(R.id.event_date_title);
             String dateInfo = dateTitle.getText().toString();
+
+            // TODO: Parse dateInfo to Calendar object -> String
+//            DateFormat df = new SimpleDateFormat("EEEE',' MMM dd");
+//            String[] dateArray = dateInfo.split("-");
+//            GregorianCalendar dateCalendar = new GregorianCalendar(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]), Integer.parseInt(dateArray[2]));
+//            String cleanDateInfo = df.format(dateCalendar);
+//
+//            clickListener.recyclerViewListClicked(cleanDateInfo);
+
             clickListener.recyclerViewListClicked(dateInfo);
+
         }
 
         public void setDate(String dateInfo) {

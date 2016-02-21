@@ -13,6 +13,7 @@
         android:padding="15dp"
         android:paddingLeft="25dp"
         android:textColor="@color/colorPrimary"
+        android:background="@color/windowBackgroundDark"
         android:layout_marginBottom="1dp" />
 
 </LinearLayout>
