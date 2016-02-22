@@ -49,6 +49,7 @@ public class HistoryFragment extends MapMainFragment {
 
     private View view;
     private boolean needToCallUpdateGeofences = true;
+    private boolean isMonitoringGeofences = false;
 
     //The geofences the user is currently in
     ArrayList<GeofenceObjectContent> currentGeofences;
@@ -115,8 +116,11 @@ public class HistoryFragment extends MapMainFragment {
         needToCallUpdateGeofences = false;
         MainActivity mainActivity = (MainActivity) getActivity();
 
-        //starts the mainActivity monitoring geofences
-        mainActivity.getGeofenceMonitor().startGeofenceMonitoring();
+        if(mainActivity.checkIfGPSEnabled()) {
+            //starts the mainActivity monitoring geofences
+            mainActivity.getGeofenceMonitor().startGeofenceMonitoring();
+            isMonitoringGeofences = true;
+        }
 
         if(mainActivity.isConnectedToNetwork()) {
             setUpMapIfNeeded(); // For setting up the MapFragment
@@ -182,13 +186,15 @@ public class HistoryFragment extends MapMainFragment {
         super.setUpMap();
         // For showing a move to my location button and a blue
         // dot to show user's location
-        mMap.setMyLocationEnabled(true);
+        MainActivity mainActivity = (MainActivity) getActivity();
+        mMap.setMyLocationEnabled(mainActivity.checkIfGPSEnabled());
     }
 
 
     /**
      * Lifecycle method overridden to set up the map and check for internet connectivity
-     * when the fragment comes into focus
+     * when the fragment comes into focus. If fragment is not already monitoring geofences,
+     * begins monitoring geofences
      */
     @Override
     public void onResume() {
@@ -197,6 +203,12 @@ public class HistoryFragment extends MapMainFragment {
         if(mainActivity.isConnectedToNetwork()) {
             setUpMapIfNeeded();
         }
+        if(mainActivity.checkIfGPSEnabled() && !isMonitoringGeofences) {
+            //starts the mainActivity monitoring geofences
+            mainActivity.getGeofenceMonitor().startGeofenceMonitoring();
+            isMonitoringGeofences = true;
+        }
+        mMap.setMyLocationEnabled(mainActivity.checkIfGPSEnabled());
         if(needToCallUpdateGeofences) {
             updateGeofences();
         }
@@ -533,11 +545,9 @@ public class HistoryFragment extends MapMainFragment {
                 if (txtRequestGeofences != null) {
                     txtRequestGeofences.setVisibility(View.GONE);
                     btnRequestGeofences.setVisibility(View.GONE);
-
                 }
             }
         }
-
     }
 
     /**

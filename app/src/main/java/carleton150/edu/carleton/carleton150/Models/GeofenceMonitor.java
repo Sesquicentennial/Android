@@ -46,8 +46,6 @@ public class GeofenceMonitor{
 
     private MainActivity activity;
     private LogMessages logMessages = new LogMessages();
-    private boolean googlePlayConnected = false;
-
     public GeofenceMonitor(MainActivity activity) {
         this.activity = activity;
     }
@@ -107,14 +105,6 @@ public class GeofenceMonitor{
         activity.handleGeofenceChange(currentGeofences);
     }
 
-
-
-
-
-    public ArrayList<GeofenceObjectContent> getCurGeofences(){
-        return this.curGeofences;
-    }
-
     /**
      * Called from MainActivity if user's location changes. If
      * a certain distance has passed since the last geofence update
@@ -126,7 +116,6 @@ public class GeofenceMonitor{
      */
     public void handleLocationChange(Location newLocation) {
         currentLocation = newLocation;
-
         if (lastGeofenceUpdateLocation == null) {
             currentGeofenceUpdateRequestLocation = newLocation;
             getNewGeofences();
@@ -281,12 +270,6 @@ public class GeofenceMonitor{
 
     }
 
-    public void startMonitoringGeofencesAfterPause(){
-        if(googlePlayConnected) {
-            removeAllGeofences();
-            addGeofences();
-        }
-    }
 
     /**
      * Adds geofences, which sets alerts to be notified when the device enters or exits one of the
@@ -320,7 +303,6 @@ public class GeofenceMonitor{
      * Requests new geofences.
      */
     public void googlePlayServicesConnected() {
-        googlePlayConnected = true;
         if(currentLocation!=null) {
             getNewGeofences();
         }
