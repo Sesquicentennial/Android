@@ -189,7 +189,7 @@ public class MapMainFragment extends MainFragment {
      */
     public void drawTiles(){
         MainActivity mainActivity = (MainActivity) getActivity();
-        if(mainActivity.getMemoryClass() > 100) {
+        if(mainActivity.getMemoryClass() > 80) {
             if (mMap != null) {
                 setUpMap();
             }

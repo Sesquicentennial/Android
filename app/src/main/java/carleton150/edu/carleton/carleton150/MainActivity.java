@@ -11,6 +11,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -40,7 +41,6 @@ import carleton150.edu.carleton.carleton150.Models.GeofenceErrorMessages;
 import carleton150.edu.carleton.carleton150.Models.GeofenceMonitor;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceObject.GeofenceObjectContent;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Monitors location and geofence information and calls methods in the main view fragments
@@ -64,7 +64,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static int DISPLACEMENT = 10; // 10 meters
     private LogMessages logMessages = new LogMessages();
     MainFragment curFragment = null;
-    // private MyFragmentPagerAdapter adapter;
+    public boolean needToShowGPSAlert = true;
+
+    private Handler handler = new Handler();
+
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.i(logMessages.GEOFENCE_MONITORING, "MainActivity: trying to connect mGoogleApiClient");
+            mGoogleApiClient.connect();
+        }
+    };
 
     public VolleyRequester mVolleyRequester = new VolleyRequester();
     AlertDialog networkAlertDialog;
@@ -174,21 +184,24 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onPause() {
         super.onPause();
+        needToShowGPSAlert = true;
         stopLocationUpdates();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        checkIfGPSEnabled();
 
         // Resuming the periodic location updates
         if (mGoogleApiClient.isConnected()) {
             isConnectedToNetwork();
             if (mRequestingLocationUpdates) {
-                startLocationUpdates();
+                if(checkIfGPSEnabled()) {
+                    startLocationUpdates();
+                }
             }
         } else {
+            checkIfGPSEnabled();
             if (isConnectedToNetwork()) {
                 // check availability of play services for location data and geofencing
                 if (checkPlayServices()) {
@@ -198,7 +211,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
             }
         }
-
     }
 
 
@@ -210,13 +222,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onConnected(Bundle bundle) {
         // Once connected with google api, get the location
-        mLastLocation = LocationServices.FusedLocationApi
-                .getLastLocation(mGoogleApiClient);
-        tellFragmentLocationChanged();
+        if(checkIfGPSEnabled()) {
+            mLastLocation = LocationServices.FusedLocationApi
+                    .getLastLocation(mGoogleApiClient);
+            tellFragmentLocationChanged();
+        }
 
         //starts periodic location updates
         if (mRequestingLocationUpdates) {
-            startLocationUpdates();
+            if(checkIfGPSEnabled()) {
+                startLocationUpdates();
+            }
         }
         //tells the geofenceMonitor that googlePlayServices is connected so that
         //it can register geofences
@@ -231,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     @Override
     public void onConnectionSuspended(int i) {
-        mGoogleApiClient.connect();
+        handler.postDelayed(runnable, 1000);
     }
 
     /**
@@ -303,17 +319,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     /**
-     * Overridden to use custom fonts using Calligraphy
-     *
-     * @param newBase
-     */
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
-
-
-    /**
      * Method called from the geofenceMonitor when the geofences currently
      * triggered by the user change. Passes this information on to
      * the fragment currently in view. GeofenceMonitor stores a record
@@ -344,11 +349,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * Starting the location updates
      */
     protected void startLocationUpdates() {
-
-        if (mGoogleApiClient.isConnected()) {
-            if (mRequestingLocationUpdates) {
-                LocationServices.FusedLocationApi.requestLocationUpdates(
-                        mGoogleApiClient, mLocationRequest, this);
+        if(checkIfGPSEnabled()) {
+            if (mGoogleApiClient.isConnected()) {
+                if (mRequestingLocationUpdates) {
+                    LocationServices.FusedLocationApi.requestLocationUpdates(
+                            mGoogleApiClient, mLocationRequest, this);
+                }
             }
         }
     }
@@ -533,9 +539,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     public boolean checkIfGPSEnabled() {
         final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
-        {
+        if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            if(needToShowGPSAlert) {
+                needToShowGPSAlert = false;
             buildAlertMessageNoGps();
+        }
             return false;
         }return true;
     }

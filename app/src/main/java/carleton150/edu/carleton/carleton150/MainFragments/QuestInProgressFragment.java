@@ -337,6 +337,7 @@ public class QuestInProgressFragment extends MapMainFragment {
      */
     private void checkIfClueFound(){
         MainActivity mainActivity = (MainActivity) getActivity();
+        mainActivity.needToShowGPSAlert = true;
         if(mainActivity.checkIfGPSEnabled()) {
             Location curLocation = mainActivity.mLastLocation;
             if (curLocation != null) {
