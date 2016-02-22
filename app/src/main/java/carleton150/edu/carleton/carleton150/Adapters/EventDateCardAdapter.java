@@ -87,9 +87,9 @@ public class EventDateCardAdapter extends RecyclerView.Adapter<EventDateCardAdap
         // Set date in event calendar date tabs
         public void setDate(String dateInfo) {
             TextView dateTitle = (TextView) itemView.findViewById(R.id.event_date_title);
-            DateFormat df = new SimpleDateFormat("EEEE'\r\n' MMM dd");
+            DateFormat df = new SimpleDateFormat("EEEE'\r\n'MMM dd");
             String[] dateArray = dateInfo.split("-");
-            Date dateCalendar = new Date(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]) - 1, Integer.parseInt(dateArray[2]));
+            Date dateCalendar = new Date(Integer.parseInt(dateArray[0]) - 1, Integer.parseInt(dateArray[1]) - 1, Integer.parseInt(dateArray[2]));
             String cleanDateInfo = df.format(dateCalendar);
 
             dateTitle.setText(cleanDateInfo);
