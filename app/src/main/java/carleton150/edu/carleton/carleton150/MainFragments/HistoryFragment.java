@@ -540,6 +540,9 @@ public class HistoryFragment extends MapMainFragment {
                 if (!gotGeofences) {
                     btnRequestGeofences.setVisibility(View.VISIBLE);
                     txtRequestGeofences.setText(getResources().getString(R.string.no_geofences_retrieved));
+                }else{
+                    btnRequestGeofences.setVisibility(View.GONE);
+                    txtRequestGeofences.setVisibility(View.GONE);
                 }
             } else {
                 if (txtRequestGeofences != null) {

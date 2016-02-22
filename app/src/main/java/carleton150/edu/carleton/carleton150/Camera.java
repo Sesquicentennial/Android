@@ -29,7 +29,8 @@ import java.util.List;
 
 
 /**
- * Created by haleyhinze on 2/16/16.
+ * Class for managing user selecting or taking photos.
+ * Taken from http://andreborud.com/android-photo-intent-chooser-cameragallery/
  */
 
 
@@ -55,6 +56,13 @@ import java.util.List;
             return "com.google.android.apps.photos.content".equals(uri.getAuthority());
         }
 
+    /**
+     * Gets the file path for a give Uri
+     *
+     * @param context
+     * @param uri
+     * @return
+     */
         @TargetApi(Build.VERSION_CODES.KITKAT)
         private static String getPath(final Context context, final Uri uri) {
 
@@ -146,6 +154,11 @@ import java.util.List;
             return null;
         }
 
+    /**
+     * Gets the orientation of an image given a path to the image
+     * @param imagePath
+     * @return
+     */
         private static int getImageOrientation(String imagePath){
             int rotate = 0;
             try {
@@ -174,6 +187,15 @@ import java.util.List;
             return rotate;
         }
 
+    /**
+     * Given a BitmapFactory.Options and required width and height, determines
+     * how much the Bitmap needs to be scaled down
+     *
+     * @param options
+     * @param reqWidth
+     * @param reqHeight
+     * @return
+     */
         private static int calculateInSampleSize(BitmapFactory.Options options,
                                                  int reqWidth, int reqHeight) {
             final int height = options.outHeight;
@@ -189,6 +211,13 @@ import java.util.List;
             return inSampleSize;
         }
 
+    /**
+     * Starts an intent to take a photo or select a photo from gallery
+     * and puts the photo in the photoFile
+     * @param context
+     * @param photoFile file in which to store image
+     * @return
+     */
         public static Intent photoIntent(Context context, File photoFile) {
             List<Intent> cameraIntents = new ArrayList<>();
             Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -214,6 +243,11 @@ import java.util.List;
             return chooserIntent;
         }
 
+    /**
+     * creates an image file for the image
+     * @return
+     * @throws IOException
+     */
         public static File createImageFile() throws IOException {
             String dir = Environment.getExternalStorageDirectory() + File.separator
                     + "Pictures" + File.separator + "SomeFolder" + File.separator;
@@ -274,6 +308,13 @@ import java.util.List;
 
         }
 
+    /**
+     * Resizes the bitmap
+     *
+     * @param source
+     * @param size
+     * @return
+     */
         private static Bitmap getResizedBitmap(Bitmap source, int size){
 
             if(source.getWidth()>size) {

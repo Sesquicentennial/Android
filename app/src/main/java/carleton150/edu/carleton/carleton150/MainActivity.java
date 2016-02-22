@@ -149,7 +149,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
                 int commit = getSupportFragmentManager()
                         .beginTransaction().replace(R.id.containerLayout, curFragment).commit();
-                Log.i("UI", "newTabSelectedTablistener");
             }
 
             @Override
@@ -181,6 +180,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Stops location updates to save battery
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -188,6 +190,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         stopLocationUpdates();
     }
 
+    /**
+     * Overridden lifecycle method to start location updates if possible
+     * and necessary, and connect mGoogleApiClient if possible and necessary
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -314,6 +320,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
+    /**
+     *
+     * @return last known location
+     */
     public Location getLastLocation() {
         return mLastLocation;
     }
@@ -432,7 +442,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     public void showAlertDialogNoNeutralButton(AlertDialog dialog) {
-
         dialog.show();
     }
 
