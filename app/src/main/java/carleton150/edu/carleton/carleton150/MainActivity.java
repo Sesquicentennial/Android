@@ -99,6 +99,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             showGooglePlayServicesUnavailableDialog();
         }
 
+        ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+//Prefer mobile over wifi
+        cm.setNetworkPreference(ConnectivityManager.TYPE_MOBILE);
+
+
         //managing fragments and UI
         // fragmentManager = getSupportFragmentManager();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
