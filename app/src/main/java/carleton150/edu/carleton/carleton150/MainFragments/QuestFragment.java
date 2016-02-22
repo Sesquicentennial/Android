@@ -44,8 +44,6 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        RecyclerViewPager quests;
         final TextView txtInfo;
         final Button btnTryAgain;
         view =  inflater.inflate(R.layout.fragment_quest, container, false);
@@ -75,8 +73,6 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
 
         //builds RecyclerViews to display quests
         buildRecyclerViews();
-        //requests quests from server
-
         fragmentInView();
 
         // Toggle tutorial if first time using app
@@ -121,22 +117,11 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         screenWidth = metrics.widthPixels;
         RecyclerViewPager quests = (RecyclerViewPager) view.findViewById(R.id.lst_quests);
         questLayoutManager = new LinearLayoutManager(getActivity());
-
-
-
         questLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         quests.setLayoutManager(questLayoutManager);
-
         MainActivity mainActivity = (MainActivity) getActivity();
-
-
-        questAdapter = new QuestAdapter(questInfo, this, screenWidth, metrics.heightPixels, getResources(), mainActivity.getPersistentQuestStorage());
-
-        //RecyclerView animation
-        /*scaleAdapter = new ScaleInAnimationAdapter(questAdapter);
-        scaleAdapter.setFirstOnly(false);
-        scaleAdapter.setDuration(200);*/
-
+        questAdapter = new QuestAdapter(questInfo, this, screenWidth, metrics.heightPixels,
+                getResources(), mainActivity.getPersistentQuestStorage());
         quests.setAdapter(questAdapter);
     }
 
@@ -168,16 +153,11 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
                     return;
                 }
                 else if (newQuests != null) {
-
-                    //btnTryAgain.setVisibility(View.GONE);
                     requestQuests = false;
                     questInfo = newQuests;
-
                     questAdapter.updateQuestList(questInfo);
                     questAdapter.notifyDataSetChanged();
-
                     quests.setVisibility(View.VISIBLE);
-                    //scaleAdapter.notifyDataSetChanged();
                     Log.i(logMessages.VOLLEY, "QuestFragment: handleNewQuests : questAdapter contains : " + questAdapter.getItemCount());
                 }
                     if (questInfo == null) {
@@ -194,12 +174,6 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         }
     }
 
-    @Override
-    public void fragmentOutOfView() {
-        super.fragmentOutOfView();
-        Log.i("UI", "QuestFragment : fragmentOutOfView");
-    }
-
     /**
      * When the fragment comes into view, requests quests from the server
      */
@@ -213,6 +187,10 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         }
     }
 
+    /**
+     * Sets view items to null when view is destroyed to avoid
+     * memory leaks
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -223,7 +201,9 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         questInfo = null;
     }
 
-
+    /**
+     * If the tutorial is in view, hides it. Otherwise, shows it
+     */
     private void toggleTutorial(){
         final RelativeLayout relLayoutTutorial = (RelativeLayout) view.findViewById(R.id.tutorial);
         if(relLayoutTutorial.getVisibility() == View.VISIBLE){
@@ -239,5 +219,4 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
             }
         });
     }
-
 }

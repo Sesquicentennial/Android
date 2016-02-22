@@ -5,9 +5,6 @@
     android:paddingTop="?attr/actionBarSize"
     android:layout_height="match_parent" >
 
-
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="vertical"
@@ -32,40 +29,44 @@
                 android:layout_height="wrap_content">
 
 
-
-                <TextView
-                    android:id="@+id/txt_try_getting_geofences"
-                    android:text="Getting geofences. Please wait..."
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:background="@color/windowBackground"
+                    android:layout_gravity="center"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textSize="20sp"
-                    android:paddingTop="10dp"
-                    android:paddingLeft="10dp" />
-                <Button
-                    android:id="@+id/btn_request_geofences"
-                    android:text="Try again"
-                    android:visibility="gone"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <Button
-                    android:id="@+id/btn_request_info"
-                    android:text="Try again"
-                    android:visibility="gone"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:id="@+id/txt_query_result"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:paddingTop="10dp"
-                    android:visibility="gone"
-                    android:paddingLeft="10dp"
-                    />
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/txt_try_getting_geofences"
+                        android:text="Getting geofences. Please wait..."
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:gravity="center"
+                        android:textSize="20sp"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:paddingTop="10dp"
+                        android:paddingLeft="10dp" />
+                    <Button
+                        android:id="@+id/btn_request_geofences"
+                        android:text="Try again"
+                        android:visibility="gone"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="@color/windowBackground"
+                        android:background="@drawable/scroll_year_bg"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <Button
+                        android:id="@+id/btn_request_info"
+                        android:text="Try again"
+                        android:visibility="gone"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="@color/windowBackground"
+                        android:background="@drawable/scroll_year_bg"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/txt_geopoint_info"
@@ -77,14 +78,9 @@
                     android:paddingLeft="10dp"
                     />
 
-                <Button
-                    android:id="@+id/btn_debug_toggle"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:text="Debug Toggle"
-                    android:layout_height="wrap_content" />
                 <TextView
                     android:id="@+id/txt_lat"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="20sp"
@@ -92,6 +88,7 @@
                     android:paddingLeft="10dp" />
                 <TextView
                     android:id="@+id/txt_long"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="20sp"
@@ -112,19 +109,6 @@
 
             </LinearLayout>
         </RelativeLayout>
-
-       <!-- <android.support.v7.widget.RecyclerView
-            android:id="@+id/lst_images"
-            android:background="@color/colorPrimaryDark"
-            android:layout_weight="3"
-            android:layout_gravity="center_horizontal"
-            android:padding="3dp"
-            android:scrollbars="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"/>-->
-
-
-
     </LinearLayout>
 
     <ImageView
@@ -139,8 +123,6 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
-
 
     <include layout="@layout/tutorial_history" />
 

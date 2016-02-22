@@ -3,7 +3,7 @@ package carleton150.edu.carleton.carleton150.Interfaces;
 import android.view.View;
 
 /**
- * Created by haleyhinze on 1/19/16.
+ * Interface used to monitor clicks on a RecyclerView
  */
 public interface RecyclerViewClickListener {
 
