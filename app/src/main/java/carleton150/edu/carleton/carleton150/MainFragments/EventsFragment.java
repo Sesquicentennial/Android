@@ -153,15 +153,11 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
                     completeDate = eventContents[i].getStartTime();
                     completeDateArray = completeDate.split("T");
                     dateByDay = completeDateArray[0];
-                    Log.d(dateByDay, "date without hours/mins/sec");
-                    Log.d(String.valueOf(eventsMapByDate), "eventsMapByDate");
-                    Log.i("Date is : ", dateByDay);
 
 
                     // If key already there, add + update new values
                     if (!eventsMapByDate.containsKey(dateByDay)) {
                         tempEventContentLst.clear();
-                        Log.d("Debugging", "Does not contain the key!" + dateByDay);
                         tempEventContentLst.add(eventContents[i]);
                         ArrayList<EventContent> eventContents1 = new ArrayList<>();
                         for(int k = 0; k<tempEventContentLst.size(); k++){

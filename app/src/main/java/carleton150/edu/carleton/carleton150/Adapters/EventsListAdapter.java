@@ -152,6 +152,7 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
+    // Format date tabs to display day of the week
     private String formatStartTime(EventContent event) {
         String startTime = event.getStartTime();
         String[] dateArray = startTime.split("(-)|(T)|(:)");

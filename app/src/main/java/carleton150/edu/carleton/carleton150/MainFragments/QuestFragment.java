@@ -78,6 +78,12 @@ public class QuestFragment extends MainFragment implements RecyclerViewClickList
         //requests quests from server
 
         fragmentInView();
+
+        // Toggle tutorial if first time using app
+        if (checkFirstQuestRun()) {
+            toggleTutorial();
+        }
+
         return view;
     }
 

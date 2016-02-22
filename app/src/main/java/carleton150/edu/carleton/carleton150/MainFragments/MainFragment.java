@@ -1,7 +1,9 @@
 package carleton150.edu.carleton.carleton150.MainFragments;
 
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 
 import java.util.ArrayList;
@@ -21,18 +23,10 @@ import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
  */
 public class MainFragment extends Fragment{
 
-    //communicates with server
+    //Communicates with server
     VolleyRequester volleyRequester = new VolleyRequester();
     public LogMessages logMessages = new LogMessages();
     public boolean isVisible = false;
-
-//    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-//    boolean previouslyStarted = prefs.getBoolean(getString(R.string.pref_previously_started), false);
-//    if(!previouslyStarted) {
-//        SharedPreferences.Editor edit = prefs.edit();
-//        edit.putBoolean(getString(R.string.pref_previously_started), Boolean.TRUE);
-//        edit.commit();
-//    }
 
     /**
      * Required empty constructor
@@ -44,6 +38,34 @@ public class MainFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    /**
+     * Checks if this is app's first launch
+     */
+    public boolean checkFirstHistoryRun() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        boolean isFirstHistoryRun = sharedPreferences.getBoolean("isFirstHistoryRun", false);
+        if (isFirstHistoryRun == false) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("isFirstRun", true);
+            editor.commit();
+        }
+        return isFirstHistoryRun;
+    }
+
+    /**
+     * Checks if this is app's first launch
+     */
+    public boolean checkFirstQuestRun() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        boolean isFirstQuestRun = sharedPreferences.getBoolean("isFirstQuestRun", false);
+        if (isFirstQuestRun == false) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("isFirstQuestRun", true);
+            editor.commit();
+        }
+        return isFirstQuestRun;
     }
 
     /**
