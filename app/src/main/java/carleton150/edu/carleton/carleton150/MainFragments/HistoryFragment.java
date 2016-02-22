@@ -371,13 +371,13 @@ public class HistoryFragment extends MapMainFragment {
 
 
                 }
-                Log.i(logMessages.GEOFENCE_MONITORING, "handleResult: result length is: " + result.getContent().size());
-                Log.i(logMessages.GEOFENCE_MONITORING, "handleResult: result is: " + result.getContent().toString());
-
 
                 if (result != null) {
                     TextView queryResult = (TextView) view.findViewById(R.id.txt_query_result);
                     try {
+                        Log.i(logMessages.GEOFENCE_MONITORING, "handleResult: result length is: " + result.getContent().size());
+                        Log.i(logMessages.GEOFENCE_MONITORING, "handleResult: result is: " + result.getContent().toString());
+
                         //Gives information to the infoWindowAdapter for displaying info windows
 
                         // historyCardAdapter.updateGeofences(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);

@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_centerInParent="true"
         android:background="@drawable/bg_tutorial"
+        android:paddingBottom="30dp"
         android:layout_height="wrap_content">
 
         <Button
@@ -29,7 +30,6 @@
             android:padding="20dp"
             android:layout_below="@id/btn_close_tutorial"
             android:textSize="@dimen/abc_text_size_medium_material"
-
             android:textColor="@color/windowBackground"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

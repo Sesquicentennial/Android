@@ -2,17 +2,11 @@ package carleton150.edu.carleton.carleton150.MainFragments;
 
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import carleton150.edu.carleton.carleton150.LogMessages;
-import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.EventObject.Events;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoObject;
@@ -32,6 +26,13 @@ public class MainFragment extends Fragment{
     public LogMessages logMessages = new LogMessages();
     public boolean isVisible = false;
 
+//    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+//    boolean previouslyStarted = prefs.getBoolean(getString(R.string.pref_previously_started), false);
+//    if(!previouslyStarted) {
+//        SharedPreferences.Editor edit = prefs.edit();
+//        edit.putBoolean(getString(R.string.pref_previously_started), Boolean.TRUE);
+//        edit.commit();
+//    }
 
     /**
      * Required empty constructor
