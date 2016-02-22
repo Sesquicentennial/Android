@@ -149,8 +149,10 @@ public class VolleyRequester {
                     public void onResponse(JSONObject response) {
                         String responseString = response.toString();
                         Log.i(logMessages.VOLLEY, "requestGeofences : response string = : " + responseString);
+
                         try {
                             GeofenceObject responseObject = gson.fromJson(responseString, GeofenceObject.class);
+                            Log.i(logMessages.VOLLEY, "requestGeofences : response string shortened = : " + responseObject.toString());
                             callerActivity.handleNewGeofences(responseObject.getContent());
                         }catch (Exception e){
                             Log.i(logMessages.VOLLEY, "requestGeofences : error parsing result");
@@ -174,7 +176,6 @@ public class VolleyRequester {
                     }
                 }
         );
-        //TODO: check what request object is to make sure it isn't GET
         MyApplication.getInstance().getRequestQueue().add(request);
     }
 
@@ -246,17 +247,18 @@ public class VolleyRequester {
                         try {
                             JSONArray responseArr = response.getJSONArray("content");
                             Log.i(logMessages.VOLLEY, "requestQuests : length of responseArr is: " + responseArr.length());
-
-                            try {
-                                for (int i = 0; i < responseArr.length(); i++) {
+                            for (int i = 0; i < responseArr.length(); i++) {
+                                try {
                                     Quest responseQuest = gson.fromJson(responseArr.getString(i), Quest.class);
                                     Log.i(logMessages.VOLLEY, "requestQuests : quest response string = : " + responseArr.getString(i));
                                     quests.add(responseQuest);
                                 }
-                            }catch (Exception e) {
-                                Log.i(logMessages.VOLLEY, "requestQuests : unable to parse result");
-                                e.getMessage();
-                                e.printStackTrace();
+                                catch (Exception e) {
+                                    Log.i(logMessages.VOLLEY, "requestQuests : quest response string = : " + responseArr.getString(i));
+                                    Log.i(logMessages.VOLLEY, "requestQuests : unable to parse result");
+                                    e.getMessage();
+                                    e.printStackTrace();
+                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -314,7 +316,7 @@ public class VolleyRequester {
             e.printStackTrace();
         }
 
-Log.i(logMessages.MEMORY_MONITORING, "requestMemories: JSON request : " + memoriesRequest);
+        Log.i(logMessages.MEMORY_MONITORING, "requestMemories: JSON request : " + memoriesRequest);
         JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/memories_fetch", memoriesRequest,
                 new Response.Listener<JSONObject>() {
 
@@ -431,6 +433,4 @@ Log.i(logMessages.MEMORY_MONITORING, "requestMemories: JSON request : " + memori
 
         }
     }
-
-
 }

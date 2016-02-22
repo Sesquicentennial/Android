@@ -20,6 +20,10 @@ public class GeofenceObject
     @Override
     public String toString()
     {
-        return "GeofenceObject [content = "+content+"]";
+        String contentString = "";
+        for(int i = 0; i<content.length; i++){
+            contentString += content[i].toString();
+        }
+        return "GeofenceObject [content = "+contentString+"]";
     }
 }
