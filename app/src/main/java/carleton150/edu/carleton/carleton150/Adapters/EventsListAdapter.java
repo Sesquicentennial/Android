@@ -41,20 +41,15 @@ import carleton150.edu.carleton.carleton150.POJO.EventObject.EventContent;
 import carleton150.edu.carleton.carleton150.R;
 
 // Adapter for the events list view
-
-
 public class EventsListAdapter extends BaseExpandableListAdapter {
 
     private List<EventContent> events;
     private Activity context;
-    private ViewHolder activeHolder = null;
-    private LayoutInflater layoutInflater;
 
     static class ViewHolder{
         TextView txtTitle;
         TextView txtLocation;
         TextView txtDate;
-        //Button btnDate;
         View view;
     }
 
@@ -120,7 +115,7 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
     }
 
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        EventContent eventName = (EventContent) getGroup(groupPosition);
+        //EventContent eventName = (EventContent) getGroup(groupPosition);
 
         final ViewHolder holder;
 
@@ -132,7 +127,6 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        //holder.btnDate = (Button) convertView.findViewById(R.id.btn_date);
         holder.txtTitle = (TextView) convertView.findViewById(R.id.txt_title);
         holder.txtLocation = (TextView) convertView.findViewById(R.id.txt_location);
         holder.txtDate = (TextView) convertView.findViewById(R.id.txt_date);
@@ -140,46 +134,14 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
         convertView.setTag(holder);
 
         final EventContent event = events.get(groupPosition);
-        //final ViewHolder holder = (ViewHolder) v.getTag();
 
         if(event != null){
-            //holder.btnDate.setText(event.getStartTime());
             holder.txtTitle.setText(event.getTitle());
             holder.txtLocation.setText(event.getLocation());
 
-            // Format date string by creating new Date object
-            String startTime = event.getStartTime();
-            String[] dateArray = startTime.split("(-)|(T)|(:)");
-
-            try {
-                Log.d(dateArray[0], " year");
-                Log.d(dateArray[1], " month");
-                Log.d(dateArray[2], " day");
-                Log.d(dateArray[3], " hour");
-                Log.d(dateArray[4], " minute");
-                Log.d(dateArray[5], " second");
-            } catch (IndexOutOfBoundsException e) {
-                Log.i(e.getMessage(), "All-day long event");
-            }
-
-            // Check if hours/minutes/seconds included
-            DateFormat df;
-            Date newStartTime;
-            if (dateArray.length >= 6) {
-                df = new SimpleDateFormat("MMM dd hh:mm a");
-                newStartTime = new Date(Integer.parseInt(dateArray[0]),
-                        Integer.parseInt(dateArray[1])-1, Integer.parseInt(dateArray[2]),
-                        Integer.parseInt(dateArray[3]), Integer.parseInt(dateArray[4]),
-                        Integer.parseInt(dateArray[5]));
-            } else {
-                df = new SimpleDateFormat("MMM dd");
-                newStartTime = new Date(Integer.parseInt(dateArray[0]),
-                        Integer.parseInt(dateArray[1])-1, Integer.parseInt(dateArray[2]));
-            }
-
-            // Set display to new formatted startTime
-            startTime = df.format(newStartTime);
-            holder.txtDate.setText(startTime);
+            // Format date string to display Days of Week
+            String formattedStartTime = formatStartTime(event);
+            holder.txtDate.setText(formattedStartTime);
         }
 
         if (event.isExpanded()) {
@@ -188,6 +150,41 @@ public class EventsListAdapter extends BaseExpandableListAdapter {
             event.setIsExpanded(false);
         }
         return convertView;
+    }
+
+    private String formatStartTime(EventContent event) {
+        String startTime = event.getStartTime();
+        String[] dateArray = startTime.split("(-)|(T)|(:)");
+
+        try {
+            Log.d(dateArray[0], " year");
+            Log.d(dateArray[1], " month");
+            Log.d(dateArray[2], " day");
+            Log.d(dateArray[3], " hour");
+            Log.d(dateArray[4], " minute");
+            Log.d(dateArray[5], " second");
+        } catch (IndexOutOfBoundsException e) {
+            Log.i(e.getMessage(), "All-day long event");
+        }
+
+        // Check if hours/minutes/seconds included
+        DateFormat df;
+        Date newStartTime;
+        if (dateArray.length >= 6) {
+            df = new SimpleDateFormat("MMM dd hh:mm a");
+            newStartTime = new Date(Integer.parseInt(dateArray[0]),
+                    Integer.parseInt(dateArray[1])-1, Integer.parseInt(dateArray[2]),
+                    Integer.parseInt(dateArray[3]), Integer.parseInt(dateArray[4]),
+                    Integer.parseInt(dateArray[5]));
+        } else {
+            df = new SimpleDateFormat("MMM dd");
+            newStartTime = new Date(Integer.parseInt(dateArray[0]),
+                    Integer.parseInt(dateArray[1])-1, Integer.parseInt(dateArray[2]));
+        }
+
+        // Set display to new formatted startTime
+        String formattedStartTime = df.format(newStartTime);
+        return formattedStartTime;
     }
 
     public boolean hasStableIds() {

@@ -26,6 +26,13 @@ public class MainFragment extends Fragment{
     public LogMessages logMessages = new LogMessages();
     public boolean isVisible = false;
 
+//    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+//    boolean previouslyStarted = prefs.getBoolean(getString(R.string.pref_previously_started), false);
+//    if(!previouslyStarted) {
+//        SharedPreferences.Editor edit = prefs.edit();
+//        edit.putBoolean(getString(R.string.pref_previously_started), Boolean.TRUE);
+//        edit.commit();
+//    }
 
     /**
      * Required empty constructor

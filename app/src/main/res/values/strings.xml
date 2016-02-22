@@ -68,4 +68,6 @@
     <string name = "gps_not_enabled">Your GPS seems to be disabled, do you want to enable it?</string>
     <string name = "yes">Yes</string>
     <string name="no">No</string>
+    <string name="pref_previously_started">false</string>
+
 </resources>

@@ -13,7 +13,10 @@
         android:padding="15dp"
         android:paddingLeft="25dp"
         android:textColor="@color/colorPrimary"
-        android:background="@color/windowBackgroundDark"
-        android:layout_marginBottom="1dp" />
+        android:layout_marginBottom="6dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/box_shadow_event_child_item"
+        />
 
 </LinearLayout>

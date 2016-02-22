@@ -305,11 +305,11 @@ public class HistoryFragment extends MapMainFragment {
                     }
                 }
 
-
                 if (result != null) {
                     try {
                         Log.i(logMessages.GEOFENCE_MONITORING, "handleResult: result length is: " + result.getContent().size());
                         Log.i(logMessages.GEOFENCE_MONITORING, "handleResult: result is: " + result.getContent().toString());
+
                         btnRequestInfo.setVisibility(View.GONE);
                         txtRequestGeofences.setVisibility(View.GONE);
                         if(debugMode) {
