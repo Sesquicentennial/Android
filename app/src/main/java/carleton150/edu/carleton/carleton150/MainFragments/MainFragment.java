@@ -27,6 +27,8 @@ public class MainFragment extends Fragment{
     VolleyRequester volleyRequester = new VolleyRequester();
     public LogMessages logMessages = new LogMessages();
     public boolean isVisible = false;
+    public static final String isFirstHistoryRunStr = "isFirstHistoryRun";
+    public static final String isFirstQuestRunStr = "isFirstQuestRun";
 
     /**
      * Required empty constructor
@@ -41,28 +43,30 @@ public class MainFragment extends Fragment{
     }
 
     /**
-     * Checks if this is app's first launch
+     * Checks if this is app's first launch to display history tutorial
      */
     public boolean checkFirstHistoryRun() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        boolean isFirstHistoryRun = sharedPreferences.getBoolean("isFirstHistoryRun", false);
-        if (isFirstHistoryRun == false) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("isFirstRun", true);
+        SharedPreferences.Editor editor;
+
+        boolean isFirstHistoryRun = sharedPreferences.getBoolean(isFirstHistoryRunStr, true);
+        if (isFirstHistoryRun) {
+            editor = sharedPreferences.edit();
+            editor.putBoolean(isFirstHistoryRunStr, false);
             editor.commit();
         }
         return isFirstHistoryRun;
     }
 
     /**
-     * Checks if this is app's first launch
+     * Checks if this is app's first launch to display quest tutorial
      */
     public boolean checkFirstQuestRun() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        boolean isFirstQuestRun = sharedPreferences.getBoolean("isFirstQuestRun", false);
-        if (isFirstQuestRun == false) {
+        boolean isFirstQuestRun = sharedPreferences.getBoolean(isFirstQuestRunStr, true);
+        if (isFirstQuestRun) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("isFirstQuestRun", true);
+            editor.putBoolean(isFirstQuestRunStr, false);
             editor.commit();
         }
         return isFirstQuestRun;

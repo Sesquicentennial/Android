@@ -126,18 +126,14 @@ public class HistoryFragment extends MapMainFragment {
             setUpMapIfNeeded(); // For setting up the MapFragment
         }
 
-<<<<<<< HEAD
         // Toggle tutorial if first time using app
         if (checkFirstHistoryRun()) {
             toggleTutorial();
         }
 
-        //drawGeofenceMapMarker(mainActivity.getGeofenceMonitor().curGeofenceInfoMap);
-=======
         if(debugMode){
             displayGeofenceInfo();
         }
->>>>>>> 7b4b5579e4eea85539005adeb4461730ee977e0f
         return view;
     }
 

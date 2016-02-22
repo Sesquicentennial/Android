@@ -1,6 +1,5 @@
 package carleton150.edu.carleton.carleton150.Adapters;
 
-import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,17 +22,14 @@ public class EventDateCardAdapter extends RecyclerView.Adapter<EventDateCardAdap
 
     public static RecyclerViewDatesClickListener clickListener;
     private int screenWidth;
-    private View itemView;
-    private Resources resources;
     private ArrayList<String> dateInfo;
 
 
     public EventDateCardAdapter(ArrayList<String> dateInfo, RecyclerViewDatesClickListener clickListener,
-                                int screenWidth, Resources resources) {
+                                int screenWidth) {
 
         this.clickListener = clickListener;
         this.screenWidth = screenWidth;
-        this.resources = resources;
         this.dateInfo = dateInfo;
     }
 
@@ -93,7 +89,7 @@ public class EventDateCardAdapter extends RecyclerView.Adapter<EventDateCardAdap
             TextView dateTitle = (TextView) itemView.findViewById(R.id.event_date_title);
             DateFormat df = new SimpleDateFormat("EEEE'\r\n' MMM dd");
             String[] dateArray = dateInfo.split("-");
-            Date dateCalendar = new Date(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1])-1, Integer.parseInt(dateArray[2]));
+            Date dateCalendar = new Date(Integer.parseInt(dateArray[0]), Integer.parseInt(dateArray[1]) - 1, Integer.parseInt(dateArray[2]));
             String cleanDateInfo = df.format(dateCalendar);
 
             dateTitle.setText(cleanDateInfo);

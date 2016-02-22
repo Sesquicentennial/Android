@@ -4,19 +4,16 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
-import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import carleton150.edu.carleton.carleton150.Adapters.EventDateCardAdapter;
@@ -39,13 +36,7 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
     ArrayList<String> dateInfo = new ArrayList<>();
 
     private EventsListAdapter eventsListAdapter;
-
-    List<EventContent> groupList;
-    List<EventContent> childList;
     ExpandableListView eventsListView;
-
-    HorizontalScrollView datesScrollView;
-    private String strDate;
 
     // RecyclerView Pager
     private static View v;
@@ -63,6 +54,7 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_events, container, false);
         btnTryAgain = (Button) v.findViewById(R.id.btn_try_getting_events);
@@ -106,9 +98,7 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
         dateLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         dates.setLayoutManager(dateLayoutManager);
 
-        eventDateCardAdapter = new EventDateCardAdapter(dateInfo, this, screenWidth, getResources());
-
-
+        eventDateCardAdapter = new EventDateCardAdapter(dateInfo, this, screenWidth);
         dates.setAdapter(eventDateCardAdapter);
         eventDateCardAdapter.notifyDataSetChanged();
     }
@@ -124,7 +114,8 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
         String monthString = String.format("%02d", month);
         String dayString = String.format("%02d", day);
         String startTime = monthString + "/" + dayString + "/" + year;
-        Log.i(logMessages.VOLLEY, "requestEvents : start time is : " + startTime);
+        txtTryAgain.setText(getString(R.string.requesting_events));
+        txtTryAgain.setVisibility(View.VISIBLE);
         volleyRequester.requestEvents(startTime, 100, this);
     }
 
@@ -149,7 +140,7 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
                 EventContent[] eventContents = events.getContent();
                 for (int i = 0; i < eventContents.length; i++) {
 
-                    // Begin battle
+                    // Add new date values to hashmap if not already there
                     completeDate = eventContents[i].getStartTime();
                     completeDateArray = completeDate.split("T");
                     dateByDay = completeDateArray[0];
@@ -207,19 +198,6 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void fragmentOutOfView() {
-        super.fragmentOutOfView();
-        Log.i("UI", "EventsFragment : fragmentOutOfView");
-    }
-
-    @Override
-    public void fragmentInView() {
-        super.fragmentInView();
-        Log.i("UI", "EventsFragment : fragmentInView");
-    }
-
 
     @Override
     public void recyclerViewListClicked(String dateInfo) {
