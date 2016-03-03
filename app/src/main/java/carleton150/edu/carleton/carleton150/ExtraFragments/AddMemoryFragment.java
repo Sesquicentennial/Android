@@ -199,7 +199,7 @@ public class AddMemoryFragment extends Fragment {
     private void setImageString(String path, Context context){
         Bitmap downsizedBitmap = null;
         try {
-            downsizedBitmap = decodeUri(context,Uri.fromFile(new File(path)), 400);
+            downsizedBitmap = decodeUri(context,Uri.fromFile(new File(path)), 800);
         } catch (FileNotFoundException e) {
             Log.i(new LogMessages().MEMORY_MONITORING, "setImageString : unable to downsize bitmap");
             e.printStackTrace();

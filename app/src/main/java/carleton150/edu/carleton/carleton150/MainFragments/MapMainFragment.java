@@ -36,7 +36,7 @@ public class MapMainFragment extends MainFragment {
         public URL getTileUrl(int x, int y, int zoom) {
 
          /* Define the URL pattern for the tile images */
-            String s = String.format(constants.baseURLString,
+            String s = String.format(constants.BASE_URL_STRING,
                     zoom, x, y);
             try {
                 return new URL(s);
@@ -53,7 +53,7 @@ public class MapMainFragment extends MainFragment {
         public URL getTileUrl(int x, int y, int zoom) {
 
         /* Define the URL pattern for the tile images */
-            String s = String.format(constants.labelURLString,
+            String s = String.format(constants.LABEL_URL_STRING,
                     zoom, x, y);
             try {
                 return new URL(s);

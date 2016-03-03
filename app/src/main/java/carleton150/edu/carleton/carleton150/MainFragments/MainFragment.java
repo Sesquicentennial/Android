@@ -49,10 +49,10 @@ public class MainFragment extends Fragment{
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         SharedPreferences.Editor editor;
 
-        boolean isFirstHistoryRun = sharedPreferences.getBoolean(constants.isFirstHistoryRunStr, true);
+        boolean isFirstHistoryRun = sharedPreferences.getBoolean(constants.IS_FIRST_HISTORY_RUN_STRING, true);
         if (isFirstHistoryRun) {
             editor = sharedPreferences.edit();
-            editor.putBoolean(constants.isFirstHistoryRunStr, false);
+            editor.putBoolean(constants.IS_FIRST_HISTORY_RUN_STRING, false);
             editor.commit();
         }
         return isFirstHistoryRun;
@@ -63,10 +63,10 @@ public class MainFragment extends Fragment{
      */
     public boolean checkFirstQuestRun() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        boolean isFirstQuestRun = sharedPreferences.getBoolean(constants.isFirstQuestRunStr, true);
+        boolean isFirstQuestRun = sharedPreferences.getBoolean(constants.IS_FIRST_QUEST_RUN_STRING, true);
         if (isFirstQuestRun) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean(constants.isFirstQuestRunStr, false);
+            editor.putBoolean(constants.IS_FIRST_QUEST_RUN_STRING, false);
             editor.commit();
         }
         return isFirstQuestRun;
