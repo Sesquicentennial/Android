@@ -19,6 +19,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import carleton150.edu.carleton.carleton150.Constants;
 import carleton150.edu.carleton.carleton150.ExtraFragments.AddMemoryFragment;
 import carleton150.edu.carleton.carleton150.ExtraFragments.RecyclerViewPopoverFragment;
 import carleton150.edu.carleton.carleton150.LogMessages;
@@ -44,6 +45,7 @@ import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
 public class VolleyRequester {
 
     private LogMessages logMessages = new LogMessages();
+    private Constants constants = new Constants();
 
     public VolleyRequester(){
     }
@@ -76,7 +78,7 @@ public class VolleyRequester {
             e.printStackTrace();
         }
         Log.i(logMessages.VOLLEY, "request : requestObject: " + jsonObjectrequest.toString());
-        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/info", jsonObjectrequest,
+        JsonObjectRequest request = new JsonObjectRequest(constants.INFO_ENDPOINT, jsonObjectrequest,
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -141,7 +143,7 @@ public class VolleyRequester {
             e.printStackTrace();
         }
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://carl150.carleton.edu/geofences",
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, constants.GEOFENCES_ENDPOINT,
                 jsonObjectrequest,
                 new Response.Listener<JSONObject>() {
 
@@ -199,7 +201,7 @@ public class VolleyRequester {
         }
 
 
-        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/events", eventRequest,
+        JsonObjectRequest request = new JsonObjectRequest(constants.EVENTS_ENDPOINT, eventRequest,
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -237,7 +239,7 @@ public class VolleyRequester {
     public void requestQuests(final MainFragment callerFragment){
         final Gson gson = new Gson();
         JSONObject emptyRequest = new JSONObject();
-        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/quest", emptyRequest,
+        JsonObjectRequest request = new JsonObjectRequest(constants.QUESTS_ENDPOINT, emptyRequest,
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -317,7 +319,7 @@ public class VolleyRequester {
         }
 
         Log.i(logMessages.MEMORY_MONITORING, "requestMemories: JSON request : " + memoriesRequest);
-        JsonObjectRequest request = new JsonObjectRequest("https://carl150.carleton.edu/memories_fetch", memoriesRequest,
+        JsonObjectRequest request = new JsonObjectRequest(constants.MEMORIES_ENDPOINT, memoriesRequest,
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -379,7 +381,7 @@ public class VolleyRequester {
         Log.i(logMessages.MEMORY_MONITORING, "addMemory: JsonObject is: " + addMemoryRequest.toString());
 
         //createFile("memoryRequest1", addMemoryRequest.toString());
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, "https://carl150.carleton.edu/memories_add", addMemoryRequest,
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, constants.ADD_MEMORY_ENDPOINT, addMemoryRequest,
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -409,15 +411,11 @@ public class VolleyRequester {
         MyApplication.getInstance().getRequestQueue().add(request);
     }
 
-
     public void createFile(String sFileName, String sBody){
         try
         {
-
             File root = new File(Environment.getExternalStorageDirectory(), "Notes");
-
             Log.i(logMessages.MEMORY_MONITORING, "createFile: path : " + Environment.getExternalStorageDirectory().getPath());
-
             if (!root.exists()) {
                 root.mkdirs();
             }
@@ -430,7 +428,6 @@ public class VolleyRequester {
         catch(IOException e)
         {
             e.printStackTrace();
-
         }
     }
 }

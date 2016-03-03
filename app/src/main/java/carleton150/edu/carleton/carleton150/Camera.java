@@ -37,8 +37,7 @@ import java.util.List;
 
     public class Camera {
 
-        private static final String JPEG_FILE_PREFIX = "IMG_";
-        private static final String JPEG_FILE_SUFFIX = ".jpg";
+       private static Constants constants = new Constants();
 
         private static boolean isExternalStorageDocument(Uri uri) {
             return "com.android.externalstorage.documents".equals(uri.getAuthority());
@@ -253,8 +252,8 @@ import java.util.List;
                     + "Pictures" + File.separator + "SomeFolder" + File.separator;
             File directory = new File(dir);
             if (directory.mkdir()) Log.d("dir created", dir);
-            return new File(dir, JPEG_FILE_PREFIX
-                    + Calendar.getInstance().getTimeInMillis() + JPEG_FILE_SUFFIX);
+            return new File(dir, constants.JPEG_FILE_PREFIX
+                    + Calendar.getInstance().getTimeInMillis() + constants.JPEG_FILE_SUFFIX);
         }
 
         public static String photoResult(Context context, File file, Intent data) {

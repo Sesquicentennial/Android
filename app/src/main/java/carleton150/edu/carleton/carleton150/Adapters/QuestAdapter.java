@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import carleton150.edu.carleton.carleton150.Constants;
 import carleton150.edu.carleton.carleton150.Interfaces.RecyclerViewClickListener;
 import carleton150.edu.carleton.carleton150.Models.BitmapWorkerTask;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Quest;
@@ -33,7 +34,7 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
     private int screenHeight;
     private Resources resources;
     private SharedPreferences sharedPreferences;
-    private static int PLACEHOLDER_BITMAP_SIZE = 10;
+    private static Constants constants = new Constants();
 
 
     public QuestAdapter(ArrayList<Quest> questList, RecyclerViewClickListener clickListener, int screenWidth, int screenHeight, Resources resources, SharedPreferences sharedPreferences) {
@@ -222,7 +223,7 @@ public class QuestAdapter extends RecyclerView.Adapter<QuestAdapter.QuestViewHol
                 image.setImageResource(R.drawable.test_image1);
                 image.setColorFilter(R.color.blackSemiTransparent);
             }else {
-                int w = PLACEHOLDER_BITMAP_SIZE, h = PLACEHOLDER_BITMAP_SIZE;
+                int w = constants.PLACEHOLDER_IMAGE_DIMENSIONS, h = constants.PLACEHOLDER_IMAGE_DIMENSIONS;
                 Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
                 Bitmap mPlaceHolderBitmap = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
                 if (cancelPotentialWork(resId, image)) {

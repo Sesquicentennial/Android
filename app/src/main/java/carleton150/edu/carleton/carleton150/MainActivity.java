@@ -50,18 +50,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status>, FragmentChangeListener {
 
     //things for location
-    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
-    private final static String QUEST_PREFERENCES_KEY = "QuestPreferences";
+
     public Location mLastLocation = null;
     // Google client to interact with Google API
     public GoogleApiClient mGoogleApiClient;
     // boolean flag to toggle periodic location updates
     private boolean mRequestingLocationUpdates = true;
     private LocationRequest mLocationRequest;
-    // Location updates intervals in milliseconds
-    private static int UPDATE_INTERVAL = 30000; // 30 sec
-    private static int FASTEST_INTERVAL = 10000; // 10 sec
-    private static int DISPLACEMENT = 10; // 10 meters
+    private static Constants constants = new Constants();
     private LogMessages logMessages = new LogMessages();
     MainFragment curFragment = null;
     public boolean needToShowGPSAlert = true;
@@ -292,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
                 GooglePlayServicesUtil.getErrorDialog(resultCode, this,
-                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+                        constants.PLAY_SERVICES_RESOLUTION_REQUEST).show();
             } else {
                 finish();
             }
@@ -354,10 +350,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+        mLocationRequest.setInterval(constants.UPDATE_INTERVAL);
+        mLocationRequest.setFastestInterval(constants.FASTEST_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setSmallestDisplacement(DISPLACEMENT);
+        mLocationRequest.setSmallestDisplacement(constants.DISPLACEMENT);
     }
 
     /**
@@ -531,7 +527,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * after killing the app or going back to the quest selection screen
      */
     public SharedPreferences getPersistentQuestStorage() {
-        return getSharedPreferences(QUEST_PREFERENCES_KEY, 0);
+        return getSharedPreferences(constants.QUEST_PREFERENCES_KEY, 0);
 
     }
 

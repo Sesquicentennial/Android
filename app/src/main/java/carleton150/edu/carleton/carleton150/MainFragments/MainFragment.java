@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 
 import java.util.ArrayList;
 
+import carleton150.edu.carleton.carleton150.Constants;
 import carleton150.edu.carleton.carleton150.LogMessages;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
 import carleton150.edu.carleton.carleton150.POJO.EventObject.Events;
@@ -27,8 +28,7 @@ public class MainFragment extends Fragment{
     VolleyRequester volleyRequester = new VolleyRequester();
     public LogMessages logMessages = new LogMessages();
     public boolean isVisible = false;
-    public static final String isFirstHistoryRunStr = "isFirstHistoryRun";
-    public static final String isFirstQuestRunStr = "isFirstQuestRun";
+    public Constants constants = new Constants();
 
     /**
      * Required empty constructor
@@ -49,10 +49,10 @@ public class MainFragment extends Fragment{
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         SharedPreferences.Editor editor;
 
-        boolean isFirstHistoryRun = sharedPreferences.getBoolean(isFirstHistoryRunStr, true);
+        boolean isFirstHistoryRun = sharedPreferences.getBoolean(constants.isFirstHistoryRunStr, true);
         if (isFirstHistoryRun) {
             editor = sharedPreferences.edit();
-            editor.putBoolean(isFirstHistoryRunStr, false);
+            editor.putBoolean(constants.isFirstHistoryRunStr, false);
             editor.commit();
         }
         return isFirstHistoryRun;
@@ -63,10 +63,10 @@ public class MainFragment extends Fragment{
      */
     public boolean checkFirstQuestRun() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        boolean isFirstQuestRun = sharedPreferences.getBoolean(isFirstQuestRunStr, true);
+        boolean isFirstQuestRun = sharedPreferences.getBoolean(constants.isFirstQuestRunStr, true);
         if (isFirstQuestRun) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean(isFirstQuestRunStr, false);
+            editor.putBoolean(constants.isFirstQuestRunStr, false);
             editor.commit();
         }
         return isFirstQuestRun;

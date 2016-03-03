@@ -1,8 +1,7 @@
 package carleton150.edu.carleton.carleton150.POJO.Quests;
 
-import android.media.Image;
+import android.util.Log;
 
-import java.util.HashMap;
 
 public class Quest
 {
@@ -29,6 +28,7 @@ public class Quest
 
     public void setDesc (String desc)
     {
+        Log.i("JSON debugging", "Quest: setDesc");
         this.desc = desc;
     }
 
@@ -39,16 +39,19 @@ public class Quest
 
     public void setCompMsg (String compMsg)
     {
+        Log.i("JSON debugging", "Quest: setCompMsg");
         this.compMsg = compMsg;
     }
 
     public String getName ()
     {
+
         return name;
     }
 
     public void setName (String name)
     {
+        Log.i("JSON debugging", "Quest: setName");
         this.name = name;
     }
 
@@ -62,11 +65,14 @@ public class Quest
     }
 
     public void setImage(String image) {
+        Log.i("JSON debugging", "Quest: setImage");
         this.image = image;
     }
 
     public void setWaypoints (Waypoint[] waypoints)
+
     {
+        Log.i("JSON debugging", "Quest: setWaypoint");
         this.waypoints = waypoints;
     }
 
@@ -75,6 +81,7 @@ public class Quest
     }
 
     public void setCreator(String creator) {
+        Log.i("JSON debugging", "Quest: setCreator");
         this.creator = creator;
     }
 
@@ -82,7 +89,9 @@ public class Quest
         return difficulty;
     }
 
-    public void setDifficulty(String difficulty) {
+    public void setDifficulty(String difficulty)
+    {
+        Log.i("JSON debugging", "Quest: setDifficulty");
         this.difficulty = difficulty;
     }
 
@@ -91,6 +100,7 @@ public class Quest
     }
 
     public void setAudience(String audience) {
+        Log.i("JSON debugging", "Quest: setAudience");
         this.audience = audience;
     }
 

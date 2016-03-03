@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import carleton150.edu.carleton.carleton150.Constants;
 import carleton150.edu.carleton.carleton150.Models.BitmapWorkerTask;
 import carleton150.edu.carleton.carleton150.POJO.GeofenceInfoObject.GeofenceInfoContent;
 import carleton150.edu.carleton.carleton150.POJO.Quests.Waypoint;
@@ -28,7 +29,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public boolean isMemories;
     public boolean isQuestProgress;
     public Context context;
-    private static int PLACEHOLDER_BITMAP_SIZE = 10;
+    private static Constants constants = new Constants();
 
     public HistoryAdapter(Context context, GeofenceInfoContent[] historyList, Waypoint[] waypoints, int screenWidth, int screenHeight, boolean isMemories, boolean isQuestProgress) {
         this.historyList = historyList;
@@ -300,7 +301,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
          */
         public void setImage(int resId, String encodedImage, int screenWidth, int screenHeight) {
             System.gc();
-            int w = PLACEHOLDER_BITMAP_SIZE, h = PLACEHOLDER_BITMAP_SIZE;
+            int w = constants.PLACEHOLDER_IMAGE_DIMENSIONS, h = constants.PLACEHOLDER_IMAGE_DIMENSIONS;
             Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
             Bitmap mPlaceHolderBitmap = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
 
@@ -618,7 +619,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public void setImageHint(int resId, String encodedImage, int screenWidth, int screenHeight) {
             if(hasHintImage) {
                 System.gc();
-                int w = PLACEHOLDER_BITMAP_SIZE, h = PLACEHOLDER_BITMAP_SIZE;
+                int w = constants.PLACEHOLDER_IMAGE_DIMENSIONS, h = constants.PLACEHOLDER_IMAGE_DIMENSIONS;
                 Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
                 Bitmap mPlaceHolderBitmap = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
                 if (cancelPotentialWork(resId, imgHint)) {
@@ -644,7 +645,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public void setImageComp(int resId, String encodedImage, int screenWidth, int screenHeight) {
             if(hasCompImage) {
                 System.gc();
-                int w = PLACEHOLDER_BITMAP_SIZE, h = PLACEHOLDER_BITMAP_SIZE;
+                int w = constants.PLACEHOLDER_IMAGE_DIMENSIONS, h = constants.PLACEHOLDER_IMAGE_DIMENSIONS;
                 Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
                 Bitmap mPlaceHolderBitmap = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
                 if (cancelPotentialWork(resId, imgCompImage)) {

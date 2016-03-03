@@ -25,30 +25,18 @@ import carleton150.edu.carleton.carleton150.R;
  */
 public class MapMainFragment extends MainFragment {
 
-    protected static LatLng CENTER_CAMPUS = new LatLng(44.460174, -93.154726);
-    private double MAX_LONGITUDE = -93.141134;
-    private double MIN_LONGITUDE = -93.161333;
-    private double MAX_LATITUDE = 44.488045;
-    private double MIN_LATITUDE = 44.458869;
-    private int PROVIDER_NUMBER = 256;
-    private int DEFAULT_ZOOM = 15;
-    private int DEFAULT_BEARING = 0;
-    private int DEFAULT_MAX_ZOOM = 13;
-
-    private String baseURLString = " https://www.carleton.edu/global_stock/images/campus_map/tiles/base/%d_%d_%d.png";
-    private String labelURLString = " https://www.carleton.edu/global_stock/images/campus_map/tiles/labels/%d_%d_%d.png";
 
     protected boolean zoomCamera = true;
     public GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
 
     //TileProvider for Carleton map tiling
-    public TileProvider baseTileProvider = new UrlTileProvider(PROVIDER_NUMBER, PROVIDER_NUMBER) {
+    public TileProvider baseTileProvider = new UrlTileProvider(constants.PROVIDER_NUMBER, constants.PROVIDER_NUMBER) {
         @Override
         public URL getTileUrl(int x, int y, int zoom) {
 
          /* Define the URL pattern for the tile images */
-            String s = String.format(baseURLString,
+            String s = String.format(constants.baseURLString,
                     zoom, x, y);
             try {
                 return new URL(s);
@@ -60,12 +48,12 @@ public class MapMainFragment extends MainFragment {
 
 
     //TileProvider for Carleton label tiling
-    public TileProvider labelTileProvider = new UrlTileProvider(PROVIDER_NUMBER, PROVIDER_NUMBER) {
+    public TileProvider labelTileProvider = new UrlTileProvider(constants.PROVIDER_NUMBER, constants.PROVIDER_NUMBER) {
         @Override
         public URL getTileUrl(int x, int y, int zoom) {
 
         /* Define the URL pattern for the tile images */
-            String s = String.format(labelURLString,
+            String s = String.format(constants.labelURLString,
                     zoom, x, y);
             try {
                 return new URL(s);
@@ -111,27 +99,27 @@ public class MapMainFragment extends MainFragment {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
                 setCamera();
-                if (cameraPosition.zoom <= DEFAULT_MAX_ZOOM) {
+                if (cameraPosition.zoom <= constants.DEFAULT_MAX_ZOOM) {
                     if (cameraPosition.target == null) {
                         setCamera();
                     }
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(DEFAULT_MAX_ZOOM));
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(constants.DEFAULT_MAX_ZOOM));
                 }
 
                 //makes it so user can't scroll too far off campus
                 double latitude = cameraPosition.target.latitude;
                 double longitude = cameraPosition.target.longitude;
-                if (cameraPosition.target.longitude > MAX_LONGITUDE) {
-                    longitude = MAX_LONGITUDE;
+                if (cameraPosition.target.longitude > constants.MAX_LONGITUDE) {
+                    longitude = constants.MAX_LONGITUDE;
                 }
-                if (cameraPosition.target.longitude < MIN_LONGITUDE) {
-                    longitude = MIN_LONGITUDE;
+                if (cameraPosition.target.longitude < constants.MIN_LONGITUDE) {
+                    longitude = constants.MIN_LONGITUDE;
                 }
-                if (cameraPosition.target.latitude > MAX_LATITUDE) {
-                    latitude = MAX_LATITUDE;
+                if (cameraPosition.target.latitude > constants.MAX_LATITUDE) {
+                    latitude = constants.MAX_LATITUDE;
                 }
-                if (cameraPosition.target.latitude < MIN_LATITUDE) {
-                    latitude = MIN_LATITUDE;
+                if (cameraPosition.target.latitude < constants.MIN_LATITUDE) {
+                    latitude = constants.MIN_LATITUDE;
                 }
 
                 CameraPosition newCameraPosition = new CameraPosition.Builder()
@@ -162,16 +150,16 @@ public class MapMainFragment extends MainFragment {
                 zoomCamera = false;
                 CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(new LatLng(mainActivity.getGeofenceMonitor().currentLocation.getLatitude(), mainActivity.getGeofenceMonitor().currentLocation.getLongitude()))
-                        .zoom(DEFAULT_ZOOM)
-                        .bearing(DEFAULT_BEARING)
+                        .zoom(constants.DEFAULT_ZOOM)
+                        .bearing(constants.DEFAULT_BEARING)
                         .build();
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
             if (mainActivity.getGeofenceMonitor().currentLocation == null) {
                 CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(CENTER_CAMPUS.latitude, CENTER_CAMPUS.longitude))
-                        .zoom(DEFAULT_ZOOM)
-                        .bearing(DEFAULT_BEARING)
+                        .target(new LatLng(constants.CENTER_CAMPUS.latitude, constants.CENTER_CAMPUS.longitude))
+                        .zoom(constants.DEFAULT_ZOOM)
+                        .bearing(constants.DEFAULT_BEARING)
                         .build();
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }

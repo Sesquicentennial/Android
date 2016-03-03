@@ -42,9 +42,8 @@ public class RecyclerViewPopoverFragment extends Fragment{
     private int screenWidth;
     private int screenHeight;
     private TextView txtErrorGettingMemories;
-    private double MEMORIES_RADIUS = 0.1;
+    private double memoriesRadius = 0.1;
     private static HistoryFragment parentFragment;
-    private static Fragment parentQuestFragment;
     private static boolean isQuestInProgress = false;
     private static String geofenceName;
 
@@ -104,7 +103,6 @@ public class RecyclerViewPopoverFragment extends Fragment{
         isMemories = false;
         quest = mQuest;
         progressThroughQuest = mProgress;
-        parentQuestFragment = mParentQuestFragment;
         isQuestInProgress = true;
         return f;
     }
@@ -247,8 +245,10 @@ public class RecyclerViewPopoverFragment extends Fragment{
 
         //Need a location to request memories. If location not available, notifies user
         if(location != null) {
+
+            //TODO: make memoriesRadius dependent on distance from campus
             volleyRequester.requestMemories(location.getLatitude(), location.getLongitude(),
-                    MEMORIES_RADIUS, this);
+                    memoriesRadius, this);
         }else{
             txtErrorGettingMemories.setVisibility(View.VISIBLE);
             txtErrorGettingMemories.setText(getString(R.string.no_current_location));

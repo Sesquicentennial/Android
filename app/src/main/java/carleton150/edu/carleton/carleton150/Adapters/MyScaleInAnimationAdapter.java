@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import carleton150.edu.carleton.carleton150.Constants;
 import carleton150.edu.carleton.carleton150.R;
 import jp.wasabeef.recyclerview.animators.adapters.AnimationAdapter;
 
@@ -16,11 +17,11 @@ import jp.wasabeef.recyclerview.animators.adapters.AnimationAdapter;
 public class MyScaleInAnimationAdapter extends AnimationAdapter {
 
 
-    private static final float DEFAULT_SCALE_FROM = .5f;
+    private static Constants constants = new Constants();
     private final float mFrom;
 
     public MyScaleInAnimationAdapter(RecyclerView.Adapter adapter) {
-        this(adapter, DEFAULT_SCALE_FROM);
+        this(adapter, constants.DEFAULT_SCALE_FROM);
     }
 
     public MyScaleInAnimationAdapter(RecyclerView.Adapter adapter, float from) {

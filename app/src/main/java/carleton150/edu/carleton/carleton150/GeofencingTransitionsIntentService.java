@@ -21,14 +21,13 @@ import carleton150.edu.carleton.carleton150.Models.GeofenceErrorMessages;
  */
 public class GeofencingTransitionsIntentService extends IntentService {
 
-    protected static final String TAG = "GeofenceTransitionsIS";
-
+    private static Constants constants = new Constants();
     /**
      * This constructor is required, and calls the super IntentService(String)
      * constructor with the name for a worker thread.
      */
     public GeofencingTransitionsIntentService() {
-        super(TAG);
+        super(constants.TAG);
     }
 
     @Override
@@ -47,7 +46,7 @@ public class GeofencingTransitionsIntentService extends IntentService {
         if (geofencingEvent.hasError()) {
             String errorMessage = GeofenceErrorMessages.getErrorString(this,
                     geofencingEvent.getErrorCode());
-            Log.e(TAG, errorMessage);
+            Log.e(constants.TAG, errorMessage);
             return;
         }
 
@@ -71,11 +70,11 @@ public class GeofencingTransitionsIntentService extends IntentService {
             sendGeofenceBroadcast(mainBroadcastIntent, geofenceTransition, triggeringGeofences);
 
             // logs the transition details.
-            Log.i(TAG, geofenceTransitionDetails);
+            Log.i(constants.TAG, geofenceTransitionDetails);
 
         } else {
             // Log the error.
-            Log.e(TAG, "error end of onHandleIntent");
+            Log.e(constants.TAG, "error end of onHandleIntent");
         }
     }
 

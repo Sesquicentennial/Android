@@ -54,8 +54,6 @@ public class QuestInProgressFragment extends MapMainFragment {
     private View v;
     private boolean inView = false;
     private Marker curLocationMarker;
-    private static final int PLACEHOLDER_IMAGE_DIMENSIONS = 10;
-
 
     private SupportMapFragment mapFragment;
 
@@ -682,7 +680,7 @@ public class QuestInProgressFragment extends MapMainFragment {
      * @param imageView image view to display image
      */
     public void setImage(String encodedImage, int screenWidth, int screenHeight, ImageView imageView) {
-        int w = PLACEHOLDER_IMAGE_DIMENSIONS, h = PLACEHOLDER_IMAGE_DIMENSIONS;
+        int w = constants.PLACEHOLDER_IMAGE_DIMENSIONS, h = constants.PLACEHOLDER_IMAGE_DIMENSIONS;
         Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
         Bitmap mPlaceHolderBitmap = Bitmap.createBitmap(w, h, conf); // this creates a MUTABLE bitmap
         final BitmapWorkerTask task = new BitmapWorkerTask(imageView,  encodedImage
