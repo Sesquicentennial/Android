@@ -307,7 +307,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             if (cancelPotentialWork(resId, imgMedia)) {
                 final BitmapWorkerTask task = new BitmapWorkerTask(imgMedia,  encodedImage
-                        , screenWidth/2, screenHeight/3);
+                        , screenWidth, screenHeight/2);
                 final BitmapWorkerTask.AsyncDrawable asyncDrawable =
                         new BitmapWorkerTask.AsyncDrawable(mPlaceHolderBitmap, task);
                 imgMedia.setImageDrawable(asyncDrawable);

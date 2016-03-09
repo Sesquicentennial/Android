@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import carleton150.edu.carleton.carleton150.Adapters.HistoryAdapter;
 import carleton150.edu.carleton.carleton150.Adapters.MyScaleInAnimationAdapter;
+import carleton150.edu.carleton.carleton150.Constants;
 import carleton150.edu.carleton.carleton150.MainActivity;
 import carleton150.edu.carleton.carleton150.MainFragments.HistoryFragment;
 import carleton150.edu.carleton.carleton150.Models.VolleyRequester;
@@ -42,7 +43,8 @@ public class RecyclerViewPopoverFragment extends Fragment{
     private int screenWidth;
     private int screenHeight;
     private TextView txtErrorGettingMemories;
-    private double memoriesRadius = 0.1;
+    private double memoriesRadius;
+    private Constants constants = new Constants();
     private static HistoryFragment parentFragment;
     private static boolean isQuestInProgress = false;
     private static String geofenceName;
@@ -93,12 +95,11 @@ public class RecyclerViewPopoverFragment extends Fragment{
      * the quest waypoints that were completed by the user. This method is to be called by the
      * QuestInProgress fragment or the QuestCompletedFragment
      *
-     * @param mParentQuestFragment QuestInProgress fragment or QuestCompletedFragment
      * @param mQuest the user's current quest
      * @param mProgress the user's progress through the quest
      * @return the RecyclerViewPopoverFragment that was created
      */
-    public static RecyclerViewPopoverFragment newInstance(Fragment mParentQuestFragment, Quest mQuest, int mProgress){
+    public static RecyclerViewPopoverFragment newInstance(Quest mQuest, int mProgress){
         RecyclerViewPopoverFragment f = new RecyclerViewPopoverFragment();
         isMemories = false;
         quest = mQuest;
@@ -245,8 +246,15 @@ public class RecyclerViewPopoverFragment extends Fragment{
 
         //Need a location to request memories. If location not available, notifies user
         if(location != null) {
-
-            //TODO: make memoriesRadius dependent on distance from campus
+            Location centerCampus = new Location("");
+            centerCampus.setLatitude(constants.CENTER_CAMPUS.latitude);
+            centerCampus.setLongitude(constants.CENTER_CAMPUS.longitude);
+            float distanceOffCampusInMeters = location.distanceTo(centerCampus);
+            if(distanceOffCampusInMeters >= constants.DISTANCE_OFF_CAMPUS_TO_INCREASE_MEMORIES_RADIUS){
+                memoriesRadius = constants.AWAY_FROM_CAMPUS_MEMORIES_RADIUS;
+            }else{
+                memoriesRadius = constants.NEAR_CAMPUS_MEMORIES_RADIUS;
+            }
             volleyRequester.requestMemories(location.getLatitude(), location.getLongitude(),
                     memoriesRadius, this);
         }else{

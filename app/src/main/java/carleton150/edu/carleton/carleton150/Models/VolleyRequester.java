@@ -248,6 +248,7 @@ public class VolleyRequester {
                         ArrayList<Quest> quests = new ArrayList<>();
                         try {
                             JSONArray responseArr = response.getJSONArray("content");
+                            createFile("questResponseFile", responseArr.toString());
                             Log.i(logMessages.VOLLEY, "requestQuests : length of responseArr is: " + responseArr.length());
                             for (int i = 0; i < responseArr.length(); i++) {
                                 try {
@@ -348,7 +349,7 @@ public class VolleyRequester {
         );
 
         request.setRetryPolicy(new DefaultRetryPolicy(
-                30000,
+                60000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 

@@ -549,7 +549,7 @@ public class QuestInProgressFragment extends MapMainFragment {
         txtQuestCompleted.setMovementMethod(new ScrollingMovementMethod());
 
         if(quest.getWaypoints()[numClue].getCompletion().getImage() != null){
-            setImage(quest.getWaypoints()[numClue].getCompletion().getImage(),
+            setImage(quest.getWaypoints()[numClue].getCompletion().getImage().getImage(),
                     screenWidth, screenHeight, imgQuestCompleted);
         }else{
             imgQuestCompleted.setVisibility(View.GONE);
@@ -788,7 +788,7 @@ public class QuestInProgressFragment extends MapMainFragment {
         relLayoutTutorial.setVisibility(View.GONE);
 
         FragmentManager fm = getActivity().getSupportFragmentManager();
-        RecyclerViewPopoverFragment recyclerViewPopoverFragment = RecyclerViewPopoverFragment.newInstance(this, quest, numClue);
+        RecyclerViewPopoverFragment recyclerViewPopoverFragment = RecyclerViewPopoverFragment.newInstance(quest, numClue);
 
         // Transaction start
         FragmentTransaction fragmentTransaction = fm.beginTransaction();

@@ -105,7 +105,7 @@ public class QuestCompletedFragment extends MainFragment {
         System.gc();
 
         FragmentManager fm = getActivity().getSupportFragmentManager();
-        RecyclerViewPopoverFragment recyclerViewPopoverFragment = RecyclerViewPopoverFragment.newInstance(this, quest, quest.getWaypoints().length);
+        RecyclerViewPopoverFragment recyclerViewPopoverFragment = RecyclerViewPopoverFragment.newInstance(quest, quest.getWaypoints().length);
 
         // Transaction start
         FragmentTransaction fragmentTransaction = fm.beginTransaction();

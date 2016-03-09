@@ -110,13 +110,13 @@ public class EventsFragment extends MainFragment implements RecyclerViewDatesCli
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH) + 1;
-        int day = c.get(Calendar.DAY_OF_MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH) - 1;
         String monthString = String.format("%02d", month);
         String dayString = String.format("%02d", day);
         String startTime = monthString + "/" + dayString + "/" + year;
         txtTryAgain.setText(getString(R.string.requesting_events));
         txtTryAgain.setVisibility(View.VISIBLE);
-        volleyRequester.requestEvents(startTime, 100, this);
+        volleyRequester.requestEvents(startTime, 1000, this);
     }
 
     /**

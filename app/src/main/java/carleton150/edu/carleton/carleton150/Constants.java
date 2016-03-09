@@ -22,7 +22,8 @@ public class Constants {
     public final static String QUEST_PREFERENCES_KEY = "QuestPreferences";
 
     //Coordinates for setting map zoom and not allowing user to scroll too far off campus
-    public static final LatLng CENTER_CAMPUS = new LatLng(44.460174, -93.154726);
+    public static final LatLng CENTER_CAMPUS = new LatLng(44.460421, -93.152749);
+
     public static final double MAX_LONGITUDE = -93.141134;
     public static final double MIN_LONGITUDE = -93.161333;
     public static final double MAX_LATITUDE = 44.488045;
@@ -56,6 +57,11 @@ public class Constants {
     public static final String BASE_URL_STRING = " https://www.carleton.edu/global_stock/images/campus_map/tiles/base/%d_%d_%d.png";
     public static final String LABEL_URL_STRING = " https://www.carleton.edu/global_stock/images/campus_map/tiles/labels/%d_%d_%d.png";
 
+    //distance in meters
+    public static final int DISTANCE_OFF_CAMPUS_TO_INCREASE_MEMORIES_RADIUS = 7000;
 
+    //radius in kilometers
+    public static final float NEAR_CAMPUS_MEMORIES_RADIUS = .2f;
+    public static final float AWAY_FROM_CAMPUS_MEMORIES_RADIUS = 5f;
 
 }
