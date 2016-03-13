@@ -8,5 +8,4 @@
 .idea/
 /src/release/res/values/google_maps_api.xml
 *.bks
-
 *.iml
